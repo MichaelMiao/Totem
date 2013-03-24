@@ -1,4 +1,4 @@
-# Compiled Object files
+﻿# Compiled Object files
 *.slo
 *.lo
 *.o
@@ -21,6 +21,8 @@
 *.exe
 *.pdb
 *.lib
+*.lik
+*.exp
 
 # 忽略生成的MOC文件还有ui文件、qrc文件
 moc_*.cpp
