@@ -21,7 +21,7 @@
 *.exe
 *.pdb
 *.lib
-*.lik
+*.ilk
 *.exp
 
 # 忽略生成的MOC文件还有ui文件、qrc文件
