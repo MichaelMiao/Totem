@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/customui">
+        <file>media/x_down.png</file>
+        <file>media/x_hover.png</file>
+        <file>media/x_normal.png</file>
+        <file>media/lt.png</file>
+        <file>media/rt.png</file>
+        <file>media/editclear.png</file>
+        <file>media/add_file.png</file>
+        <file>media/add_folder.png</file>
+        <file>media/delete.png</file>
+    </qresource>
+</RCC>

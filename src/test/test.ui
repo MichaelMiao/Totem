@@ -1,0 +1,25 @@
+<UI version="4.0" >
+ <class>testClass</class>
+ <widget class="QDialog" name="testClass" >
+  <property name="objectName" >
+   <string notr="true">testClass</string>
+  </property>
+  <property name="geometry" >
+   <rect>
+	<x>0</x>
+	<y>0</y>
+	<width>600</width>
+	<height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>test</string>
+  </property>
+ </widget>
+ <layoutDefault spacing="6" margin="11" />
+ <pixmapfunction></pixmapfunction>
+ <resources>
+   <include location="test.qrc"/>
+ </resources>
+ <connections/>
+</UI>

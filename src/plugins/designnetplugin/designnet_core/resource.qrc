@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>media/item-close.png</file>
+        <file>media/blackboard.jpg</file>
+        <file>media/port_connected.png</file>
+        <file>media/port_notconnected.png</file>
+        <file>media/DesignNet.png</file>
+        <file>media/topmost_hover.png</file>
+        <file>media/topmost_normal.png</file>
+        <file>media/untopmost_hover.png</file>
+        <file>media/untopmost_normal.png</file>
+        <file>media/default_processor.png</file>
+    </qresource>
+</RCC>

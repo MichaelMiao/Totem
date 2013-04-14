@@ -1,0 +1,11 @@
+#ifndef DESIGNNET_CORE_GLOBAL_H
+#define DESIGNNET_CORE_GLOBAL_H
+#include <qglobal.h>
+
+#if defined(DESIGNNET_CORE_LIBRARY)
+#  define DESIGNNET_CORE_EXPORT Q_DECL_EXPORT
+#else
+#  define DESIGNNET_CORE_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // DESIGNNET_CORE_GLOBAL_H
