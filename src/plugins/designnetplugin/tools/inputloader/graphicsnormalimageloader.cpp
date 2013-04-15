@@ -48,15 +48,26 @@ QString GraphicsNormalImageLoader::category() const
     return tr("Loader");
 }
 
-bool GraphicsNormalImageLoader::process()
+bool GraphicsNormalImageLoader::process(QFutureInterface<bool> &fi)
 {
     emit logout(tr("GraphicsNormalImageLoader Process"));
     QList<Utils::Path> paths = m_imageFile->paths();
     if(paths.count() > 0)
     {
         QString path = paths.at(0).m_path;
-        m_imageData->setImageData(cv::imread(std::string(path.toUtf8().constData())));
-        pushData(m_imageData, "ImageData");
+		std::string str = path.toLocal8Bit().data();
+		cv::Mat mat = cv::imread(str);
+		if(!mat.data)
+		{
+			emit logout(tr("Image Loader %1 load %2 failed").arg(id()).arg(path));
+			return false;
+		}
+		else
+		{
+			m_imageData->setImageData(mat);
+			pushData(m_imageData, "ImageData");
+		}
+		
     }
 
     return true;

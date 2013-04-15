@@ -75,6 +75,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "inputloader", "src\plugins\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "src\test\test.vcxproj", "{4090891C-86BB-4496-9956-3ABD59540C73}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlowerFeatureExtraction", "src\plugins\designnetplugin\tools\FlowerFeatureExtraction\FlowerFeatureExtraction.vcxproj", "{F955F37D-EC4E-4CBB-B5C1-99101A5D18DD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Conversion", "src\plugins\designnetplugin\tools\Conversion\Conversion.vcxproj", "{647D836C-2E96-43B8-8053-59A5F7DBE2BC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -121,6 +125,14 @@ Global
 		{4090891C-86BB-4496-9956-3ABD59540C73}.Debug|Win32.Build.0 = Debug|Win32
 		{4090891C-86BB-4496-9956-3ABD59540C73}.Release|Win32.ActiveCfg = Release|Win32
 		{4090891C-86BB-4496-9956-3ABD59540C73}.Release|Win32.Build.0 = Release|Win32
+		{F955F37D-EC4E-4CBB-B5C1-99101A5D18DD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F955F37D-EC4E-4CBB-B5C1-99101A5D18DD}.Debug|Win32.Build.0 = Debug|Win32
+		{F955F37D-EC4E-4CBB-B5C1-99101A5D18DD}.Release|Win32.ActiveCfg = Release|Win32
+		{F955F37D-EC4E-4CBB-B5C1-99101A5D18DD}.Release|Win32.Build.0 = Release|Win32
+		{647D836C-2E96-43B8-8053-59A5F7DBE2BC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{647D836C-2E96-43B8-8053-59A5F7DBE2BC}.Debug|Win32.Build.0 = Debug|Win32
+		{647D836C-2E96-43B8-8053-59A5F7DBE2BC}.Release|Win32.ActiveCfg = Release|Win32
+		{647D836C-2E96-43B8-8053-59A5F7DBE2BC}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -143,5 +155,7 @@ Global
 		{37168BD1-F535-3E7A-B140-C8A3BD59E8BF} = {96F2FED6-31A9-4041-8767-F72F91968D81}
 		{0450E564-6717-47F4-AB5E-97598BC0D527} = {96F2FED6-31A9-4041-8767-F72F91968D81}
 		{2B29DAC5-B9AE-3F74-BA24-047E332E4606} = {0450E564-6717-47F4-AB5E-97598BC0D527}
+		{F955F37D-EC4E-4CBB-B5C1-99101A5D18DD} = {0450E564-6717-47F4-AB5E-97598BC0D527}
+		{647D836C-2E96-43B8-8053-59A5F7DBE2BC} = {0450E564-6717-47F4-AB5E-97598BC0D527}
 	EndGlobalSection
 EndGlobal

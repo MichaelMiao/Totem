@@ -8,6 +8,7 @@
 #include "../property/propertyowner.h"
 #include <QWaitCondition>
 #include <QMutex>
+#include <QFutureInterface>
 namespace DesignNet{
 class Port;
 class IData;
@@ -30,7 +31,7 @@ public:
 	void    removePort(Port* port);     //!< 删除端口
 
 	
-	virtual bool run();					//!< 线程执行该函数
+	virtual void run(QFutureInterface<bool> &fi);					//!< 线程执行该函数
 	
     
     void    setName(const QString& name);//!< set name
@@ -47,7 +48,7 @@ public:
 	void setDataReady(const bool &bReady = true);	//!< 设置数据是否准备好了
 	void setRepickData(const bool &repick = true);	//!< 下次执行是否重新去数据
 protected:
-	virtual bool process() = 0;			//!< 正式处理
+	virtual bool process(QFutureInterface<bool> &fi) = 0;			//!< 正式处理
 	virtual bool beforeProcess();		//!< 处理之前的准备,这里会确保数据已经准备好了
 	virtual void afterProcess(bool status = true);		//!< 完成处理
 
@@ -63,6 +64,7 @@ protected:
 
 	mutable QMutex	m_mutexReady;			//!< 数据操作锁
 	bool			m_bReady;
+	bool			m_bRunning;				//!< 是否正在执行
 	bool			m_bRepickData;					//!< 下次执行是否重新取数据
 };
 }

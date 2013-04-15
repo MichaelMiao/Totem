@@ -8,7 +8,7 @@ IPropertyWidget::IPropertyWidget(Property *prop, QWidget *parent) :
     m_property(prop)
 {
     m_label = new QLabel(this);
-    m_label->setText(prop->objectName());
+    m_label->setText(prop->name());
     m_layout = new QHBoxLayout;
     m_layout->addWidget(m_label);
 	m_layout->setSpacing(0);

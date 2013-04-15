@@ -178,6 +178,13 @@ void Port::addData(IData *data)
 {
     m_data = data;
     notifyDataArrive();
+	if(m_portType == OUT_PORT)
+	{
+		foreach(Port* port, m_portsConnected)
+		{
+			port->addData(data);
+		}
+	}
 }
 
 IData *Port::data() const

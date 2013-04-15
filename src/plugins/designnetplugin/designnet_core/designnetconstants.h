@@ -30,10 +30,11 @@ const char ITEM_IMAGE_PORT_NOTCONNECTED[]     = ":/media/port_notconnected.png";
 const char MIME_TYPE_TOOLITEM[] = "DesignNet/ToolItem";
 
 /// Normal Property Type
-const char PROPERTY_TYPE_PATHDIALOG[] = "PropertyType/PathDialog";
-
+const char PROPERTY_TYPE_PATHDIALOG[]	= "PropertyType/PathDialog";
+const char PROPERTY_TYPE_OPTION[]		= "PropertyType/Option";
 /// Data Type
 const char DATA_TYPE_IMAGE[] = "DataType/Image";
+const char DATA_TYPE_LABEL[] = "DataType/Label";
 /// Data Widget Factory ID
 const char DATA_WIDGET_FACTORY_NORMAL[] = "DataWidgetFactory/Normal";
 

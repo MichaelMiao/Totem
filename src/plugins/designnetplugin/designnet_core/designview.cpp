@@ -194,8 +194,8 @@ PortGraphicsItem *DesignView::getPortGraphicsItem(Port *port)
 
 void DesignView::removeArrow(PortArrowLinkItem *arrow)
 {
-    m_designnetSpace->disconnectPort(arrow->getSourcePort()->getPort(),
-                                 arrow->getTargetPort()->getPort());
+    m_designnetSpace->disconnectPort(arrow->getTargetPort()->getPort(),
+		arrow->getSourcePort()->getPort());
 }
 
 void DesignView::updatedSelectedItems()
@@ -232,7 +232,9 @@ void DesignView::onConnectionAdded(Port *inputPort, Port *outputPort)
     PortGraphicsItem *inputPortItem = getPortGraphicsItem(inputPort);
     PortGraphicsItem *outputPortItem = getPortGraphicsItem(outputPort);
     PortArrowLinkItem *linkItem = new PortArrowLinkItem(outputPortItem);
+	linkItem->blockSignals(true);
     linkItem->setTargetPort(inputPortItem);
+	linkItem->blockSignals(false);
     scene()->addItem(linkItem);
     m_arrowLinkItems.insert(outputPort, linkItem);
 }
@@ -252,6 +254,15 @@ void DesignView::onConnectionRemoved(Port *inputPort, Port *outputPort)
         }
         ++itr;
     }
+}
+
+DesignView::~DesignView()
+{
+	foreach(DesignNet::PortArrowLinkItem *item, m_arrowLinkItems.values())
+	{
+		removeArrow(item);
+	}
+	m_arrowLinkItems.clear();
 }
 
 }

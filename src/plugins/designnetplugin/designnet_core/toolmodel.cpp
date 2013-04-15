@@ -150,7 +150,7 @@ void ToolModel::objectAdded(QObject *obj)
             int childrenCount = parentItem->children().count();
             for(int i = 0; i < childrenCount; ++i)
             {
-                QModelIndex ind = index(0, 0,parentIndex);
+                QModelIndex ind = index(i, 0,parentIndex);
                 ToolItem* item = (ToolItem*)(ind.internalPointer());
                 if(subTitle == item->text() && item->data() == 0)
                 {

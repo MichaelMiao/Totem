@@ -119,5 +119,6 @@
     <CustomBuild Include="resource.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
+    <None Include="inputloader.pluginspec" />
   </ItemGroup>
 </Project>

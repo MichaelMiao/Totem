@@ -6,7 +6,7 @@
 #include "../designnetbase/processor.h"
 #include "../designnetconstants.h"
 #include <QList>
-
+#include <QIcon>
 namespace DesignNet{
 class PortGraphicsItem;
 class DesignView;
@@ -51,7 +51,7 @@ signals:
 public slots:
 	void onPropertyChanged_internal();
 protected:
-	virtual bool process();     //!< 处理函数
+	virtual bool process(QFutureInterface<bool> &fi);     //!< 处理函数
 	virtual void propertyChanged(Property *prop);
     void stateChanged(Port *port);
     virtual void dataArrived(Port* port);  //!< 数据到达

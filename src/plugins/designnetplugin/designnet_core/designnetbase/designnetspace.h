@@ -4,6 +4,8 @@
 #include <QObject>
 #include "processor.h"
 #include <QList>
+#include <QHash>
+#include <QFutureWatcher>
 namespace DesignNet{
 
 class DesignNetSpace : public QObject, public Processor
@@ -25,7 +27,7 @@ public:
     virtual void propertyRemoving(Property* prop);//!< 属性移除前调用
     virtual void propertyRemoved(Property* prop); //!< 属性移除完成
 	virtual void propertyAdded(Property* prop);
-    virtual bool process();                     //!< 处理函数
+    virtual bool process(QFutureInterface<bool> &fi);                     //!< 处理函数
     virtual Core::Id typeID() const;            //!<
     virtual QString category() const;//!< 返回种类
 signals:
@@ -41,6 +43,7 @@ public slots:
 protected:
 	virtual void propertyChanged(Property *prop);
     QList<Processor*> m_processors;
+	QHash<Processor*, QFutureWatcher<bool>* > m_processorWatchers;//!< 监控着所有正在执行的Processor。
     int     m_iMaxUID;          //!< 记录目前的最大ID，用来产生UID
     bool    m_bProcessing;      //!< 是否正在执行
 };

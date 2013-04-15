@@ -2,6 +2,7 @@
 #include "../designnetbase/block.h"
 #include "GraphicsUI/graphicsautoshowhideitem.h"
 #include "designnetconstants.h"
+#include "graphicsitem/blocktextitem.h"
 
 #include <QApplication>
 #include <QPainter>
@@ -10,7 +11,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
 #include <QDebug>
-#include <QGraphicsTextItem>
+
 #include <QFont>
 #include <QTimer>
 using namespace GraphicsUI;
@@ -33,7 +34,7 @@ GraphicsBlock::GraphicsBlock(int iWidth, int iHeight,
     connect(m_closeItem, SIGNAL(clicked()), this, SIGNAL(closed()));
     ///
     /// title
-    m_titleItem = new QGraphicsTextItem(this);
+    m_titleItem = new BlockTextItem(this);
     QTimer::singleShot(0, this, SLOT(relayout()));
 }
 
@@ -45,7 +46,7 @@ void GraphicsBlock::paint(QPainter *painter, const QStyleOptionGraphicsItem *, Q
 {
     layoutItems();
     setTitle(title());
-    m_titleItem->setPos(boundingRect().left(), boundingRect().top());
+    m_titleItem->setPos(boundingRect().left() + ITEMSPACING, boundingRect().top() + ITEMSPACING);
     QRectF rectF = boundingRect();
     rectF.adjust(2, 2, -2, -2);
 

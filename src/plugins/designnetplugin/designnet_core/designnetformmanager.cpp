@@ -168,7 +168,7 @@ void DesignNetFormManager::createControlToolBar()
 void DesignNetFormManager::runSpace(QFutureInterface<bool> &fi, DesignNetSpace *space)
 {
     fi.reportStarted();
-    space->run();
+    space->run(fi);
     fi.reportFinished();
 }
 

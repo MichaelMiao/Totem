@@ -452,6 +452,33 @@
     <ClCompile Include="data\labeldata.cpp">
       <Filter>Source Files\data</Filter>
     </ClCompile>
+    <ClCompile Include="Debug\moc_blocktextitem.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_blocktextitem.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="graphicsitem\blocktextitem.cpp">
+      <Filter>Source Files\graphicsitem</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_optionproperty.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_optionproperty.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="property\optionproperty.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_optionpropertywidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_optionpropertywidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\optionpropertywidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="designmode.h">
@@ -586,6 +613,15 @@
     <CustomBuild Include="data\labeldata.h">
       <Filter>Header Files\data</Filter>
     </CustomBuild>
+    <CustomBuild Include="graphicsitem\blocktextitem.h">
+      <Filter>Header Files\graphicsitem</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\optionproperty.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\optionpropertywidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\shared\totem_gui_pch.h.cpp">
@@ -626,6 +662,7 @@
     <None Include="media\untopmost_normal.png">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="designnet_core.pluginspec" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="designnetbase\block.h">

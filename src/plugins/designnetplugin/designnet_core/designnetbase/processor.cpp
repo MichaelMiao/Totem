@@ -117,14 +117,6 @@ void Processor::dataArrived(Port *port)
 
 bool Processor::beforeProcess()
 {
-// 	QList<Property*> invalidProperties = getInvalidProperties();
-// 	if(invalidProperties.count() > 0)
-// 	{
-// 		foreach(Property* p, invalidProperties){
-// 			m_space->onShowMessage(QObject::tr("Property %1 is invalid!").arg(p->name()));
-// 		}
-// 		return false;
-// 	}
 	QMutexLocker lock(&m_mutexReady);
 	if(!m_bReady)
 	{
@@ -138,17 +130,24 @@ bool Processor::beforeProcess()
 
 void Processor::afterProcess(bool status)
 {
-	if(m_bRepickData)
-		setDataReady(false);
 }
 
-bool Processor::run()
+void Processor::run(QFutureInterface<bool> &fi)
 {
 	if(!beforeProcess())
-		return false;
-	bool ret = process();
+		return ;
+	{
+		QMutexLocker lock(&m_mutexReady);
+		m_bRunning = true;
+	}
+	bool ret = process(fi);
+	{
+		QMutexLocker lock(&m_mutexReady);
+		m_bRunning = false;
+	}
 	afterProcess(ret);
-	return ret;
+
+	return ;
 }
 
 void Processor::setDataReady( const bool &bReady /*= true*/ )

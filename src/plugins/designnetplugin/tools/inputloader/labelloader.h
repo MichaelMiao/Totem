@@ -15,9 +15,9 @@ class LabelLoader : public DesignNet::ProcessorGraphicsBlock
 {
 	Q_OBJECT
 public:
-	LabelLoader(QObject *parent);
+	LabelLoader(DesignNet::DesignNetSpace *space, QGraphicsItem *parent = 0);
 	~LabelLoader();
-	virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const;
+	virtual DesignNet::Processor* create(DesignNet::DesignNetSpace *space = 0) const;
 	virtual QString title() const;
 	virtual QString category() const;//!< 种类
 	virtual bool process();     //!< 处理函数

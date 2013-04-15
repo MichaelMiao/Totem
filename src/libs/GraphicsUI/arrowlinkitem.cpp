@@ -19,12 +19,12 @@ ArrowLinkItem::ArrowLinkItem(QGraphicsItem *parent) :
 
     setAcceptHoverEvents(true);
     setFlags(ItemIsSelectable);
+	setCacheMode(QGraphicsItem::ItemCoordinateCache);
 }
 
 ArrowLinkItem::~ArrowLinkItem()
 {
-    delete m_controlPoint_1;
-    delete m_controlPoint_2;
+
 }
 
 QPainterPath ArrowLinkItem::shape() const
@@ -164,33 +164,18 @@ void ArrowLinkItem::controlItemPositionChanged()
 void ArrowLinkItem::updateGeometory()
 {
     prepareGeometryChange();
-    int controlDeltaWidth = 50;
-    int controlDeltaHeight = 10;
+    
 
     QPointF c1;
     QPointF c2;
     QPointF startPoint = getStartPoint();
     QPointF endPoint = getEndPoint();
-    if(startPoint.y() > endPoint.y())
-    {
-        c1.setY(startPoint.y() - controlDeltaHeight);
-        c2.setY(endPoint.y() + controlDeltaHeight);
-    }
-    else
-    {
-        c1.setY(startPoint.y() + controlDeltaHeight);
-        c2.setY(endPoint.y() - controlDeltaHeight);
-    }
-    if(startPoint.x() > endPoint.x())
-    {
-        c1.setX(startPoint.x() - controlDeltaWidth);
-        c2.setX(endPoint.x() + controlDeltaWidth);
-    }
-    else
-    {
-        c1.setX(startPoint.x() + controlDeltaWidth);
-        c2.setX(endPoint.x() - controlDeltaWidth);
-    }
+	int controlDeltaWidth = qAbs(startPoint.x() - endPoint.x()) / 2;
+	c1.setY(startPoint.y());
+	c2.setY(endPoint.y());
+
+	c1.setX(startPoint.x() + controlDeltaWidth);
+	c2.setX(endPoint.x() - controlDeltaWidth);
     m_controlPoint_1->setPos(mapToItem(m_controlPoint_1->parentItem(), c1));
     m_controlPoint_2->setPos(mapToItem(m_controlPoint_2->parentItem(), c2));
 

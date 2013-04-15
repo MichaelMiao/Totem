@@ -1,0 +1,12 @@
+#ifndef CONVERSION_GLOBAL_H
+#define CONVERSION_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#ifdef CONVERSION_LIB
+# define CONVERSION_EXPORT Q_DECL_EXPORT
+#else
+# define CONVERSION_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // CONVERSION_GLOBAL_H

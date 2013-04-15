@@ -18,6 +18,16 @@ PortArrowLinkItem::PortArrowLinkItem(PortGraphicsItem *sourcePort,
 
 PortArrowLinkItem::~PortArrowLinkItem()
 {
+	if (m_controlPoint_1)
+	{
+		m_controlPoint_1->setParent(0);
+		delete m_controlPoint_1;
+	}
+	if (m_controlPoint_2)
+	{
+		m_controlPoint_2->setParent(0);
+		delete m_controlPoint_2;
+	}
 }
 
 void PortArrowLinkItem::setSourcePort(PortGraphicsItem *sourcePort)
@@ -38,8 +48,8 @@ PortGraphicsItem *PortArrowLinkItem::getSourcePort() const
 void PortArrowLinkItem::setTargetPort(PortGraphicsItem *targetPort)
 {
     m_targetPort = targetPort;
+	m_controlPoint_2->setParentItem(m_targetPort);
     setEndPoint(targetPort->scenePos());
-    m_controlPoint_2->setParentItem(m_targetPort);
     if(m_sourcePort && m_targetPort)
     {
         emit arrowConnected(m_sourcePort, m_targetPort);

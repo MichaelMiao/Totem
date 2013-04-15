@@ -30,7 +30,7 @@ QRectF ProcessorGraphicsBlock::boundingRect() const
     int maxCount = qMax(inputPortCount, outputPortCount);
 
     float fHeight = 0;
-    float fWidth = m_titleItem->boundingRect().width();
+    float fWidth = m_titleItem->boundingRect().width() + ITEMSPACING * 2;
     if(maxCount > 0)
     {
         fHeight = PORT_MARGIN + maxCount * PORT_MARGIN;
@@ -38,8 +38,8 @@ QRectF ProcessorGraphicsBlock::boundingRect() const
     else
         fHeight = 2*PORT_MARGIN;
     QSizeF miniSize = minimumSizeHint();
-    fHeight = qMax(fHeight,(float) miniSize.height());
-    fWidth = qMax(fWidth, (float)miniSize.width());
+    fHeight = qMax(fHeight,(float) miniSize.height()) + ITEMSPACING * 2;
+    fWidth = qMax(fWidth, (float)miniSize.width()) + m_closeItem->boundingRect().width() * 2;
     return QRectF(-fWidth/2, -fHeight/2, fWidth, fHeight);
 }
 
@@ -115,7 +115,7 @@ void ProcessorGraphicsBlock::createPortItems()
     }
 }
 
-bool ProcessorGraphicsBlock::process()
+bool ProcessorGraphicsBlock::process(QFutureInterface<bool> &fi)
 {
     emit logout(tr("process"));
     return true;

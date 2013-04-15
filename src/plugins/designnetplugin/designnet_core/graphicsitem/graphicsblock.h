@@ -17,7 +17,8 @@ class DESIGNNET_CORE_EXPORT GraphicsBlock : public QGraphicsObject
 public:
     enum{DEFAULT_WIDTH = 110,
          DEFAULT_HEIGHT = 150,
-        TITLE_HEIGHT = 30};
+        TITLE_HEIGHT = 30,
+		ITEMSPACING = 5};
     explicit GraphicsBlock(int iWidth = DEFAULT_WIDTH,
                            int iHeight = DEFAULT_HEIGHT,
                            QGraphicsItem *parent = 0);

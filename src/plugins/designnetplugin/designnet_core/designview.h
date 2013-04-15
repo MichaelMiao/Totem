@@ -26,7 +26,7 @@ class DesignView : public QGraphicsView
     Q_OBJECT
 public:
     explicit DesignView(DesignNetSpace *space, QWidget *parent = 0);
-
+	virtual ~DesignView();
     DesignNetSpace* getSpace() const;//!< 返回相应的Space
     void removeItems(QList<QGraphicsItem*> items);//!< 删除Item
     virtual void contextMenuEvent ( QContextMenuEvent * event );

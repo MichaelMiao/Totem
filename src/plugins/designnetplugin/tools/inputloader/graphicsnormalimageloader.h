@@ -24,7 +24,7 @@ public:
     virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const;
     virtual QString title() const;
     virtual QString category() const;//!< 种类
-    virtual bool process();     //!< 处理函数
+    virtual bool process(QFutureInterface<bool> &fi);     //!< 处理函数
 
 protected:
     virtual void dataArrived(DesignNet::Port* port);  //!< 数据到达

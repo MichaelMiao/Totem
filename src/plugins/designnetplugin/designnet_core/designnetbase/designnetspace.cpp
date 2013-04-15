@@ -1,9 +1,12 @@
 #include "designnetspace.h"
 #include "utils/totemassert.h"
 #include "port.h"
-#include <QDebug>
 #include "coreplugin/icore.h"
 #include "coreplugin/messagemanager.h"
+
+#include <QDebug>
+#include "utils/runextensions.h"
+
 namespace DesignNet{
 
 DesignNetSpace::DesignNetSpace(DesignNetSpace *space, QObject *parent) :
@@ -90,8 +93,8 @@ void DesignNetSpace::removeProcessor(Processor *processor)
     delete processor;
 }
 
-bool DesignNetSpace::process()
-{
+bool DesignNetSpace::process(QFutureInterface<bool> &fi)
+{	
     m_bProcessing = true;
     ///
     /// \brief 首先进行拓扑排序
@@ -118,22 +121,22 @@ bool DesignNetSpace::process()
         emit logout(tr("The designnet space can't be processed. Maybe there are some circle relationships in the space."));
         return false;
     }
-    int failedCount = 0;
+    
     foreach(Processor* processor, exclusions)
     {
-        if(!processor->run())
-        {
-            failedCount++;
-        }
+		QFutureWatcher<bool> *watcher = new QFutureWatcher<bool>(this);
+		watcher->setFuture(QtConcurrent::run(&Processor::run, processor));
+        m_processorWatchers.insert(processor, watcher);
     }
-    QString log = tr("The designnet space has been processed.");
-    if(failedCount > 0)
-    {
-        log+= tr("But there are(is) %1 procedure(s) failed.");
-    }
-    emit logout(log);
-    m_bProcessing = false;
-    return failedCount == 0;
+    foreach(QFutureWatcher<bool> watcher, m_processorWatchers)
+	{
+		watcher.waitForFinished();
+	}
+	QString log = tr("The designnet space has been processed.");
+    
+	emit logout(log);
+	m_bProcessing = false;
+	return true;
 }
 
 Core::Id DesignNetSpace::typeID() const
