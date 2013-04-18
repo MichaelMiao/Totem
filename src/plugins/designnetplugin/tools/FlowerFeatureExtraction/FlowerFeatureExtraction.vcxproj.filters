@@ -52,9 +52,21 @@
     <ClCompile Include="GeneratedFiles\Release\moc_flowerfeatureextractionplugin.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="hscolorhistogram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_hscolorhistogram.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_hscolorhistogram.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="flowerfeatureextractionplugin.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hscolorhistogram.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

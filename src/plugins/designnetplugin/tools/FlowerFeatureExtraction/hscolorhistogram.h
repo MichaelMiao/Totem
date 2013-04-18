@@ -12,7 +12,7 @@ class HSColorHistogram : public DesignNet::ProcessorGraphicsBlock
 	Q_OBJECT
 
 public:
-	HSColorHistogram(QObject *parent);
+	HSColorHistogram(DesignNet::DesignNetSpace *space, QGraphicsItem *parent = 0);
 	~HSColorHistogram();
 	virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const;
 	virtual QString title() const;
