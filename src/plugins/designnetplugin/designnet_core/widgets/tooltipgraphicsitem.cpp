@@ -2,6 +2,8 @@
 #include "data/idata.h"
 #include "idatawidget.h"
 #include "data/datamanager.h"
+#include "graphicsitem/portgraphicsitem.h"
+#include "designnetbase/port.h"
 
 #include <QGraphicsLinearLayout>
 #include <QToolButton>
@@ -70,7 +72,7 @@ ToolTipGraphicsItem::ToolTipGraphicsItem(PortGraphicsItem *parent)
 {
     this->resize(255, 255);
     connect(d->m_closeItem, SIGNAL(clicked()), this, SLOT(onClosed()));
-
+	setData(parent->getPort()->data());
 }
 
 void ToolTipGraphicsItem::setText(const QString &text)
@@ -93,7 +95,7 @@ QRectF ToolTipGraphicsItem::boundingRect() const
     width = qMax(width, (float)rectText.width()) + 10;
     rectF.setWidth(width);
     float height = customRect.height() + 10 + rectText.bottom();
-    height = qMax((float)height, MINIMUM_HEIGHT) + 10;
+    height = qMax((float)height, MINIMUM_HEIGHT) + 20;
     rectF.setHeight(height);
     return rectF;
 }
@@ -142,6 +144,7 @@ bool ToolTipGraphicsItem::topmost() const
 
 void ToolTipGraphicsItem::setData(IData *data)
 {
+	prepareGeometryChange();
     if(d->m_customWidget && d->m_data != data)
     {
         delete d->m_customWidget;
@@ -151,8 +154,7 @@ void ToolTipGraphicsItem::setData(IData *data)
     if(d->m_data)
     {
         d->m_customWidget = DataManager::instance()->createWidget(data, this);
-        prepareGeometryChange();
-        relayout();
+		connect(d->m_customWidget, SIGNAL(geometryChanged()), this, SLOT(relayout()));
         d->m_customWidget->setVisible(true);
     }
     update();
@@ -160,7 +162,9 @@ void ToolTipGraphicsItem::setData(IData *data)
 
 void ToolTipGraphicsItem::relayout()
 {
+	prepareGeometryChange();
     QRectF rect = boundingRect();
+	qDebug() << "relayout";
     QSizeF closeSize = d->m_closeItem->boundingRect().size();
     d->m_closeItem->setPos(QPointF(rect.right() - closeSize.width(), rect.top()));
     d->m_anchorButton->setPos(QPointF(rect.right() - closeSize.width() - d->m_anchorButton->boundingRect().width(),
@@ -171,7 +175,7 @@ void ToolTipGraphicsItem::relayout()
         d->m_customWidget->setPos(QPointF(rect.left() + 5,
                               TITLE_HEIGHT + d->m_textItem->boundingRect().height()));
     }
-
+	scene()->update();
 }
 
 void ToolTipGraphicsItem::onClosed()
@@ -183,7 +187,7 @@ void ToolTipGraphicsItem::onTopMost(bool topmost)
 {
     if(topmost)
     {
-        this->setZValue(DesignNet::Constants::ZValue_Tooltip);
+        this->setZValue(0);
     }
     else
     {

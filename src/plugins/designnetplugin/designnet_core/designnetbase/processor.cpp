@@ -5,17 +5,34 @@
 #include "designnetspace.h"
 #include <QMutexLocker>
 #include <QDebug>
+#include <QThread>
 namespace DesignNet{
 
-Processor::Processor(DesignNetSpace *space): m_space(space)
+ProcessorWorker::ProcessorWorker( Processor *processor )
+	: m_processor(processor)
+{
+
+}
+
+void ProcessorWorker::run()
+{
+	m_processor->run();
+}
+
+Processor::Processor(DesignNetSpace *space, QObject* parent)
+	: QObject(parent), m_space(space), m_worker(this)
 {
     m_name = "";
 	m_bReady = false;
+	m_thread = new QThread(this);
+	m_worker.moveToThread(m_thread);
+	QObject::connect(m_thread, SIGNAL(started()), &m_worker, SLOT(run()));
 }
 
 Processor::~Processor()
 {
-	
+	m_thread->terminate();
+	m_thread->wait();
 }
 
 const QList<Port*> & Processor::getInputPorts() const
@@ -113,6 +130,17 @@ void Processor::stateChanged(Port *port)
 
 void Processor::dataArrived(Port *port)
 {
+	if(port->portType() == Port::OUT_PORT)
+	{
+		return;
+	}
+	if(m_thread->isRunning())
+	{
+		qDebug() << tr("Waiting %1 for finish").arg(this->name());
+		m_thread->quit();
+		m_thread->wait();
+		qDebug() << tr("%1 finished").arg(this->name());
+	}
 }
 
 bool Processor::beforeProcess()
@@ -120,9 +148,7 @@ bool Processor::beforeProcess()
 	QMutexLocker lock(&m_mutexReady);
 	if(!m_bReady)
 	{
-		qDebug() << "Waiting";
-		m_dataReadyWait.wait(&m_mutexReady);
-		qDebug() << "After Waiting";
+		emit logout(tr("Data has not been ready!"));
 	}
 	
 	return m_bReady;
@@ -130,36 +156,42 @@ bool Processor::beforeProcess()
 
 void Processor::afterProcess(bool status)
 {
+	setDataReady(false);
 }
 
-void Processor::run(QFutureInterface<bool> &fi)
+void Processor::run()
 {
+	qDebug() << name();
 	if(!beforeProcess())
 		return ;
 	{
 		QMutexLocker lock(&m_mutexReady);
 		m_bRunning = true;
 	}
-	bool ret = process(fi);
+	bool ret = process();
 	{
 		QMutexLocker lock(&m_mutexReady);
 		m_bRunning = false;
 	}
+	if(!ret)
+	{
+		emit logout(tr("Failed to process Processor(id: %1)").arg(id()));
+	}
 	afterProcess(ret);
-
-	return ;
 }
 
 void Processor::setDataReady( const bool &bReady /*= true*/ )
 {
 	QMutexLocker lock(&m_mutexReady);
-	if (m_bReady == bReady)
-	{
-		return;
-	}
+	
 	m_bReady = bReady;
 	if(m_bReady)
-		m_dataReadyWait.wakeAll();
+		qDebug() << name() << "data is ready";
+	if(m_bReady)
+	{
+		qDebug() << name() << "thread is started";
+		m_thread->start();
+	}
 }
 
 bool Processor::isDataReady() const
@@ -172,5 +204,17 @@ void Processor::setRepickData( const bool &repick /*= true*/ )
 {
 	m_bRepickData = repick;
 }
+
+void Processor::waitForFinish()
+{
+	m_thread->quit();
+	m_thread->wait();
+}
+
+
+
+
+
+
 
 }

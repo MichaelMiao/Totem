@@ -14,7 +14,7 @@ namespace InputLoader{
 const char NormalImageLoader[] = ":/InputLoader/images/NormalImageLoader.png";
 GraphicsNormalImageLoader::GraphicsNormalImageLoader(DesignNetSpace *space, QGraphicsItem *parent)
     : ProcessorGraphicsBlock(space, parent),
-      m_outPort(Port::OUT_PORT)
+      m_outPort(new ImageData(this), Port::OUT_PORT)
 {
     m_name = this->metaObject()->className();
     m_outPort.setName("ImageData");
@@ -48,9 +48,14 @@ QString GraphicsNormalImageLoader::category() const
     return tr("Loader");
 }
 
-bool GraphicsNormalImageLoader::process(QFutureInterface<bool> &fi)
+bool GraphicsNormalImageLoader::process()
 {
-    emit logout(tr("GraphicsNormalImageLoader Process"));
+    emit logout(tr("GraphicsNormalImageLoader Processing"));
+	if(!m_imageFile->isValid())
+	{
+		emit logout(tr("Property %1 is not valid.").arg(m_imageFile->name()));
+		return false;
+	}
     QList<Utils::Path> paths = m_imageFile->paths();
     if(paths.count() > 0)
     {
@@ -75,16 +80,11 @@ bool GraphicsNormalImageLoader::process(QFutureInterface<bool> &fi)
 
 void GraphicsNormalImageLoader::dataArrived(Port *port)
 {
-	
+	ProcessorGraphicsBlock::dataArrived(port);
 }
 
 void GraphicsNormalImageLoader::propertyChanged( Property *prop )
 {
-	if(m_imageFile->isValid())
-	{
-		emit logout(tr("Property %1 data is ready").arg(prop->name()));
-		setDataReady(true);
-	}
 }
 
 }

@@ -100,7 +100,7 @@ DesignNetSpace *PortGraphicsItem::designNetSpace() const
 
 void PortGraphicsItem::updateData()
 {
-    m_toolTipItem->setData(m_port->data());
+    
 }
 
 void PortGraphicsItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
@@ -163,7 +163,6 @@ void PortGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     processor()->setSelected(true);
     if(event->button() == Qt::RightButton)
     {
-        m_toolTipItem->setData(m_port->data());
         m_toolTipItem->setVisible(!m_toolTipItem->isVisible());
         event->ignore();
         return ;

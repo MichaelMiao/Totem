@@ -20,7 +20,7 @@ public:
         DEFAULT_WIDTH  = 100,
         DEFAULT_HEIGHT = 100
     };
-    explicit IDataWidget(IData *data, QGraphicsItem *parent = 0, Qt::WindowFlags wFlags = 0);
+    explicit IDataWidget(IData *data, QGraphicsItem *parent = 0, Qt::WindowFlags wFlags = Qt::FramelessWindowHint);
     virtual ~IDataWidget(){}
     virtual QRectF boundingRect() const;
     virtual QSizeF sizeHint(Qt::SizeHint which,

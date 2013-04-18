@@ -36,10 +36,12 @@ void ImageDataWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
 {
     if(!m_image.isNull())
         painter->drawImage(0, 0, m_image);
+	IDataWidget::paint(painter, option, widget);
 }
 
 void ImageDataWidget::onUpdate()
 {
+	prepareGeometryChange();
     ImageData *data = (ImageData *)m_data;
     if(data)
     {
@@ -50,6 +52,6 @@ void ImageDataWidget::onUpdate()
         QImage img;
         m_image = img;
     }
-    updateGeometry();
+    update();
 }
 }

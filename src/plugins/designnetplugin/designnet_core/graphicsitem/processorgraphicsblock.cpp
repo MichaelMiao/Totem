@@ -1,18 +1,54 @@
-﻿#include "processorgraphicsblock.h"
-#include "portgraphicsitem.h"
-#include "port.h"
+﻿
+#include "../designnetbase/block.h"
 #include "../designview.h"
 #include "../designnetbase/designnetspace.h"
+#include "processorgraphicsblock.h"
+#include "portgraphicsitem.h"
+#include "port.h"
+
 #include "property/property.h"
 #include "coreplugin/icore.h"
 #include "coreplugin/messagemanager.h"
 
+#include "GraphicsUI/graphicsautoshowhideitem.h"
+#include "designnetconstants.h"
+#include "graphicsitem/blocktextitem.h"
+
+#include <QApplication>
+#include <QPainter>
+#include <QBrush>
+#include <QGraphicsDropShadowEffect>
+#include <QGraphicsSceneMouseEvent>
+#include <QStyleOptionGraphicsItem>
+#include <QDebug>
+
+#include <QFont>
+#include <QTimer>
+using namespace GraphicsUI;
 namespace DesignNet{
 const int PORT_MARGIN = 15;
 ProcessorGraphicsBlock::ProcessorGraphicsBlock(DesignNetSpace *space, QGraphicsItem *parent)
-    : GraphicsBlock(DEFAULT_WIDTH, DEFAULT_HEIGHT, parent), Processor(space)
+    : QGraphicsItem(parent), Processor(space)
 {
-    GraphicsBlock::connect(this, SIGNAL(logout(QString)),
+	setFlag(ItemIsMovable);
+	setFlag(ItemIsSelectable);
+	setFlag(ItemSendsGeometryChanges);
+	setAcceptHoverEvents(true);
+	setCacheMode(DeviceCoordinateCache);
+	///
+	/// title
+	m_titleItem = new BlockTextItem(this);
+	///
+	/// close按钮
+	m_closeItem = new GraphicsAutoShowHideItem(this);
+	m_closeItem->setSize(QSize(16, 16));
+	m_closeItem->setPos(boundingRect().right() - 16, boundingRect().top());
+	m_closeItem->setPixmap(QPixmap(":/media/item-close.png"));
+	QObject::connect(m_closeItem, SIGNAL(clicked()), this, SIGNAL(closed()));
+	
+	QTimer::singleShot(0, this, SLOT(relayout()));
+
+    QObject::connect(this, SIGNAL(logout(QString)),
             Core::ICore::messageManager(),
             SLOT(printToOutputPanePopup(QString)));
     m_icon = QIcon(":/media/default_processor.png");
@@ -115,7 +151,7 @@ void ProcessorGraphicsBlock::createPortItems()
     }
 }
 
-bool ProcessorGraphicsBlock::process(QFutureInterface<bool> &fi)
+bool ProcessorGraphicsBlock::process()
 {
     emit logout(tr("process"));
     return true;
@@ -209,11 +245,7 @@ void ProcessorGraphicsBlock::dataArrived(Port *port)
     PortGraphicsItem *item = getPortGraphicsItem(port);
     if(item)
         item->updateData();
-}
-
-void ProcessorGraphicsBlock::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    GraphicsBlock::mouseMoveEvent(event);
+	Processor::dataArrived(port);
 }
 
 QVariant ProcessorGraphicsBlock::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
@@ -225,7 +257,7 @@ QVariant ProcessorGraphicsBlock::itemChange(QGraphicsItem::GraphicsItemChange ch
             emit selectionChanged(false);
         }
     }
-    return GraphicsBlock::itemChange(change,value);
+    return QGraphicsItem::itemChange(change,value);
 }
 
 int ProcessorGraphicsBlock::type() const
@@ -248,6 +280,94 @@ void ProcessorGraphicsBlock::onPropertyChanged_internal()
 void ProcessorGraphicsBlock::propertyChanged( Property *prop )
 {
 
+}
+
+void ProcessorGraphicsBlock::paint( QPainter* painter, const QStyleOptionGraphicsItem *option, QWidget* widget /*= 0 */ )
+{
+	layoutItems();
+	setTitle(title());
+	m_titleItem->setPos(boundingRect().left() + ITEMSPACING, boundingRect().top() + ITEMSPACING);
+	QRectF rectF = boundingRect();
+	rectF.adjust(2, 2, -2, -2);
+
+	painter->setPen(Qt::NoPen);
+	QRectF rectShadow = rectF;
+	rectShadow.translate(5, 5);
+	painter->fillRect(rectShadow, qApp->palette().shadow().color());
+
+	painter->fillRect(rectF, QColor(102, 175,253));
+	if(isSelected())
+	{
+		painter->save();
+		painter->setPen(QColor(255, 255, 255));
+		QRectF rect = boundingRect();
+		rect.adjust(2, 2, -2, -2);
+		painter->drawRect(rect);
+
+		painter->setPen(QPen(Qt::darkBlue, 2));
+		rect = boundingRect();
+		painter->drawRect(rect);
+		painter->restore();
+		this->setZValue(DesignNet::Constants::ZValue_GraphicsBlock_Emphasize);
+	}
+	else
+	{
+		this->setZValue(DesignNet::Constants::ZValue_GraphicsBlock_Normal);
+	}
+	painter->save();
+	painter->setPen(QPen(Qt::white, 1));
+	painter->drawLine(rectF.left(), rectF.top() + TITLE_HEIGHT,
+		rectF.right(), rectF.top() + TITLE_HEIGHT);
+	painter->setRenderHints(QPainter::Antialiasing);
+	painter->restore();
+}
+
+void ProcessorGraphicsBlock::setTitle( const QString &title )
+{
+	QString strTitle = "<span style=\"font-size:10pt;color:white\"> %1 </span>";
+	m_titleItem->setHtml(strTitle.arg(title));
+}
+
+void ProcessorGraphicsBlock::relayout()
+{
+	layoutItems();
+	update();
+}
+
+QRectF ProcessorGraphicsBlock::mainRect() const
+{
+	QRectF rectF = boundingRect();
+	return QRectF(rectF.left(), rectF.top() + TITLE_HEIGHT + 1,
+		rectF.width(), rectF.height() - TITLE_HEIGHT - 1);
+}
+
+void ProcessorGraphicsBlock::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
+{
+	m_closeItem->setPos(boundingRect().right() - 16, boundingRect().top());
+	m_closeItem->animateShow(true);
+}
+
+void ProcessorGraphicsBlock::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
+{
+	m_closeItem->animateShow(false);
+}
+
+void ProcessorGraphicsBlock::mousePressEvent( QGraphicsSceneMouseEvent * event )
+{
+	update();
+	QGraphicsItem::mousePressEvent(event);
+}
+
+void ProcessorGraphicsBlock::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+	this->update();
+	QGraphicsItem::mouseMoveEvent(event);
+}
+
+void ProcessorGraphicsBlock::mouseReleaseEvent( QGraphicsSceneMouseEvent *event )
+{
+	update();
+	QGraphicsItem::mouseReleaseEvent(event);
 }
 
 

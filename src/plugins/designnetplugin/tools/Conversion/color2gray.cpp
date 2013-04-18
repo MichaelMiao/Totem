@@ -7,8 +7,8 @@ namespace Conversion{
 
 Color2Gray::Color2Gray(DesignNet::DesignNetSpace *space, QGraphicsItem *parent)
 	: ProcessorGraphicsBlock(space, parent),
-	m_outputPort(Port::OUT_PORT),
-	m_inputPort(Port::IN_PORT)
+	m_outputPort(new ImageData(this), Port::OUT_PORT),
+	m_inputPort(new ImageData(this),Port::IN_PORT)
 {
 	m_inputPort.setName("InputColorImage");
 	m_outputPort.setName("grayImage");
@@ -32,8 +32,9 @@ QString Color2Gray::category() const
 	return tr("Conversion");
 }
 
-bool Color2Gray::process(QFutureInterface<bool> &fi)
+bool Color2Gray::process()
 {
+	emit logout("Color2Gray::process()");
 	cv::Mat mat;
 	cv::cvtColor(m_colorData.imageData(), mat, CV_RGB2GRAY);
 	m_grayData.setImageData(mat);
@@ -53,6 +54,7 @@ void Color2Gray::dataArrived( Port* port )
 			setDataReady(true);
 		}
 	}
+	ProcessorGraphicsBlock::dataArrived(port);
 }
 
 void Color2Gray::propertyChanged( Property *prop )

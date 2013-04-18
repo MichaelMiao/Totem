@@ -14,6 +14,8 @@ public:
     virtual Core::Id id();
     void setImageData(const cv::Mat& mat);
     cv::Mat imageData() const;
+	IData* clone(QObject *parent = 0 );
+	virtual bool copy(IData* data);
 signals:
 
 public slots:

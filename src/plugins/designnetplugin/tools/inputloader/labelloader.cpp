@@ -34,7 +34,7 @@ bool LabelLoader::process()
 
 void LabelLoader::dataArrived( DesignNet::Port* port )
 {
-
+	ProcessorGraphicsBlock::dataArrived(port);
 }
 
 void LabelLoader::propertyChanged( DesignNet::Property *prop )

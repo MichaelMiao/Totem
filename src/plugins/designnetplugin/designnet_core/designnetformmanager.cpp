@@ -167,9 +167,9 @@ void DesignNetFormManager::createControlToolBar()
 
 void DesignNetFormManager::runSpace(QFutureInterface<bool> &fi, DesignNetSpace *space)
 {
-    fi.reportStarted();
-    space->run(fi);
-    fi.reportFinished();
+	fi.reportStarted();
+	space->setDataReady();
+	fi.reportFinished();
 }
 
 void DesignNetFormManager::onModeChanged(Core::IMode *mode)
@@ -196,7 +196,8 @@ void DesignNetFormManager::onProcessAction(bool checked)
         DesignNetEditor *designNetEditor = qobject_cast<DesignNetEditor*>(editor);
         if(designNetEditor)
         {
-            m_processWatcher->setFuture(QtConcurrent::run(&DesignNetFormManager::runSpace, this, designNetEditor->designNetSpace()));
+			designNetEditor->designNetSpace()->setDataReady();
+//            m_processWatcher->setFuture(QtConcurrent::run(&DesignNetFormManager::runSpace, this, designNetEditor->designNetSpace()));
 		}
     }
 }

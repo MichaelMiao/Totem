@@ -1,19 +1,19 @@
-#ifndef COLOR2GRAY_H
-#define COLOR2GRAY_H
+#ifndef HSCOLORHISTOGRAM_H
+#define HSCOLORHISTOGRAM_H
 
 #include "designnetplugin/designnet_core/graphicsitem/processorgraphicsblock.h"
 #include "designnetplugin/designnet_core/designnetbase/port.h"
 #include "designnetplugin/designnet_core/data/imagedata.h"
 #include <opencv2/core/core.hpp>
-namespace Conversion{
 
-class Color2Gray : public DesignNet::ProcessorGraphicsBlock
+namespace FlowerFeatureExtraction{
+class HSColorHistogram : public DesignNet::ProcessorGraphicsBlock
 {
 	Q_OBJECT
 
 public:
-	Color2Gray(DesignNet::DesignNetSpace *space, QGraphicsItem *parent = 0);
-	~Color2Gray();
+	HSColorHistogram(QObject *parent);
+	~HSColorHistogram();
 	virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const;
 	virtual QString title() const;
 	virtual QString category() const;//!< 种类
@@ -26,8 +26,9 @@ private:
 	DesignNet::Port m_inputPort;	//!< 输入端口
 	DesignNet::ImageData m_colorData;				//!< 彩色图
 	DesignNet::ImageData m_grayData;				//!< 灰度图
+	
 };
 
 }
 
-#endif // COLOR2GRAY_H
+#endif // HSCOLORHISTOGRAM_H

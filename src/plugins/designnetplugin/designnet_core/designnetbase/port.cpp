@@ -4,11 +4,11 @@
 #include "coreplugin/messagemanager.h"
 namespace DesignNet{
 
-Port::Port(PortType portType) :
+Port::Port(IData *data, PortType portType) :
     m_bMultiInput(false),
     m_portType(portType),
     m_processor(0),
-    m_data(0)
+    m_data(data)
 {
 }
 /*!
@@ -176,7 +176,7 @@ void Port::notifyDataArrive()
 
 void Port::addData(IData *data)
 {
-    m_data = data;
+    m_data->copy(data);
     notifyDataArrive();
 	if(m_portType == OUT_PORT)
 	{

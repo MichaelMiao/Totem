@@ -28,10 +28,11 @@ public:
     QVariant itemChange ( GraphicsItemChange change, const QVariant & value ) ;
     bool topmost() const;
     void setData(IData* data);
-    void relayout(); //!< 重新布局
+    
 public slots:
     void onClosed();
     void onTopMost(bool topmost);
+	void relayout(); //!< 重新布局
 protected:
     ToolTipGraphicsItemPrivate *d;
 };

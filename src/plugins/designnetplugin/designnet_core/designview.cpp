@@ -1,5 +1,4 @@
 ﻿#include "designview.h"
-#include "graphicsitem/graphicsblock.h"
 #include "designnetbase/designnetspace.h"
 #include "graphicsitem/portarrowlinkitem.h"
 #include "designnetbase/port.h"

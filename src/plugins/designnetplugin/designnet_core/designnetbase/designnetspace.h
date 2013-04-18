@@ -8,7 +8,7 @@
 #include <QFutureWatcher>
 namespace DesignNet{
 
-class DesignNetSpace : public QObject, public Processor
+class DesignNetSpace : public Processor
 {
     Q_OBJECT
 public:
@@ -27,7 +27,7 @@ public:
     virtual void propertyRemoving(Property* prop);//!< 属性移除前调用
     virtual void propertyRemoved(Property* prop); //!< 属性移除完成
 	virtual void propertyAdded(Property* prop);
-    virtual bool process(QFutureInterface<bool> &fi);                     //!< 处理函数
+    virtual bool process();                     //!< 处理函数
     virtual Core::Id typeID() const;            //!<
     virtual QString category() const;//!< 返回种类
 signals:

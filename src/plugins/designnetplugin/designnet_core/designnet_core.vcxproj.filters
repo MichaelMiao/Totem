@@ -200,12 +200,6 @@
     <ClCompile Include="Release\moc_editordata.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_graphicsblock.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_graphicsblock.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="Debug\moc_iabstarctfactory.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -380,9 +374,6 @@
     <ClCompile Include="designnetbase\processresultinfo.cpp">
       <Filter>Source Files\designnetbase</Filter>
     </ClCompile>
-    <ClCompile Include="graphicsitem\graphicsblock.cpp">
-      <Filter>Source Files\graphicsitem</Filter>
-    </ClCompile>
     <ClCompile Include="graphicsitem\portarrowlinkitem.cpp">
       <Filter>Source Files\graphicsitem</Filter>
     </ClCompile>
@@ -479,6 +470,12 @@
     <ClCompile Include="widgets\optionpropertywidget.cpp">
       <Filter>Source Files\widgets</Filter>
     </ClCompile>
+    <ClCompile Include="Debug\moc_processor.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_processor.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="designmode.h">
@@ -550,9 +547,6 @@
     <CustomBuild Include="designnetbase\processresultinfo.h">
       <Filter>Header Files\designnetbase</Filter>
     </CustomBuild>
-    <CustomBuild Include="graphicsitem\graphicsblock.h">
-      <Filter>Header Files\graphicsitem</Filter>
-    </CustomBuild>
     <CustomBuild Include="graphicsitem\portarrowlinkitem.h">
       <Filter>Header Files\graphicsitem</Filter>
     </CustomBuild>
@@ -622,6 +616,9 @@
     <CustomBuild Include="widgets\optionpropertywidget.h">
       <Filter>Header Files\widgets</Filter>
     </CustomBuild>
+    <CustomBuild Include="designnetbase\processor.h">
+      <Filter>Header Files\designnetbase</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\shared\totem_gui_pch.h.cpp">
@@ -669,9 +666,6 @@
       <Filter>Header Files\designnetbase</Filter>
     </ClInclude>
     <ClInclude Include="designnetbase\port.h">
-      <Filter>Header Files\designnetbase</Filter>
-    </ClInclude>
-    <ClInclude Include="designnetbase\processor.h">
       <Filter>Header Files\designnetbase</Filter>
     </ClInclude>
     <ClInclude Include="property\propertyowner.h">

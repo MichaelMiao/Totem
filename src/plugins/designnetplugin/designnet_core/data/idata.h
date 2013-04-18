@@ -14,6 +14,8 @@ public:
     explicit IData(QObject *parent = 0);
     virtual ~IData(){}
     virtual Core::Id id() = 0;
+	virtual IData* clone(QObject *parent = 0) = 0;
+	virtual bool copy(IData* data) = 0;
 signals:
     void dataChanged();
 };

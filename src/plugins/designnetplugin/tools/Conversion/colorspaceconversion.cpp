@@ -18,8 +18,8 @@ public:
 
 ColorSpaceConversionPrivate::ColorSpaceConversionPrivate( ColorSpaceConversion * parent )
 	: m_conversion(parent),
-	m_inputPort(Port::IN_PORT),
-	m_outputPort(Port::OUT_PORT)
+	m_inputPort(new ImageData(parent), Port::IN_PORT),
+	m_outputPort(new ImageData(parent), Port::OUT_PORT)
 {
 	m_property = new OptionProperty("ConversionOption", QLatin1String("ConversionOption"), parent);
 	m_inputPort.setName(QLatin1String("InputImage"));
@@ -69,7 +69,7 @@ QString ColorSpaceConversion::category() const
 	return tr("Conversion");
 }
 
-bool ColorSpaceConversion::process( QFutureInterface<bool> &fi )
+bool ColorSpaceConversion::process()
 {
 	int iType = d->m_property->value().toInt(0);
 	if(iType != 0)
@@ -93,6 +93,7 @@ void ColorSpaceConversion::dataArrived( DesignNet::Port* port )
 			setDataReady(true);
 		}
 	}
+	ProcessorGraphicsBlock::dataArrived(port);
 }
 
 void ColorSpaceConversion::propertyChanged( Property *prop )

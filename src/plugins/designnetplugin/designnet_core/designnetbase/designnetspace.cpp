@@ -10,13 +10,11 @@
 namespace DesignNet{
 
 DesignNetSpace::DesignNetSpace(DesignNetSpace *space, QObject *parent) :
-    QObject(parent),
     Processor(space),
     m_iMaxUID(0),
     m_bProcessing(false)
 {
     connect(this, SIGNAL(logout(QString)), Core::ICore::messageManager(), SLOT(printToOutputPanePopup(QString)));
-	m_bReady = true;
 }
 
 void DesignNetSpace::addProcessor(Processor *processor)
@@ -93,7 +91,7 @@ void DesignNetSpace::removeProcessor(Processor *processor)
     delete processor;
 }
 
-bool DesignNetSpace::process(QFutureInterface<bool> &fi)
+bool DesignNetSpace::process()
 {	
     m_bProcessing = true;
     ///
@@ -121,16 +119,19 @@ bool DesignNetSpace::process(QFutureInterface<bool> &fi)
         emit logout(tr("The designnet space can't be processed. Maybe there are some circle relationships in the space."));
         return false;
     }
-    
-    foreach(Processor* processor, exclusions)
-    {
-		QFutureWatcher<bool> *watcher = new QFutureWatcher<bool>(this);
-		watcher->setFuture(QtConcurrent::run(&Processor::run, processor));
-        m_processorWatchers.insert(processor, watcher);
-    }
-    foreach(QFutureWatcher<bool> watcher, m_processorWatchers)
+	foreach(Processor* processor, exclusions)
 	{
-		watcher.waitForFinished();
+		if(processor->indegree() == 0)
+		{
+			processor->setDataReady(true);
+		}
+	}
+	foreach(Processor* processor, exclusions)
+	{
+		if(processor->indegree() == 0)
+		{
+			processor->waitForFinish();
+		}
 	}
 	QString log = tr("The designnet space has been processed.");
     

@@ -21,7 +21,7 @@ public:
         OUT_PORT    //!< 输出端口
     };
 
-    explicit Port(PortType portType);
+    explicit Port(IData *data, PortType portType);
 
     PortType portType() const{return m_portType;}
     void setPortType(const PortType &portType){m_portType = portType;}

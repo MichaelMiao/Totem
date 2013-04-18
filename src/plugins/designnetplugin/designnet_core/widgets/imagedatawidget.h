@@ -7,7 +7,7 @@ class DESIGNNET_CORE_EXPORT ImageDataWidget : public IDataWidget
 {
     Q_OBJECT
 public:
-    ImageDataWidget(IData *data, QGraphicsItem *parent = 0, Qt::WindowFlags wFlags = Qt::Window);
+    ImageDataWidget(IData *data, QGraphicsItem *parent = 0, Qt::WindowFlags wFlags = Qt::FramelessWindowHint);
     virtual QRectF boundingRect() const;
     virtual QSizeF sizeHint(Qt::SizeHint which,
                             const QSizeF & constraint = QSizeF()) const;
