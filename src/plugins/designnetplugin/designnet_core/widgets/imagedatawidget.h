@@ -15,6 +15,8 @@ public:
                        const QStyleOptionGraphicsItem *option,
                        QWidget *widget);
 protected:
+	void onShowDetail();
+protected:
     virtual void onUpdate();
     QImage m_image;
 };

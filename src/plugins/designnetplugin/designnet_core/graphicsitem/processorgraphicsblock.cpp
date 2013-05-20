@@ -13,6 +13,10 @@
 #include "GraphicsUI/graphicsautoshowhideitem.h"
 #include "designnetconstants.h"
 #include "graphicsitem/blocktextitem.h"
+#include "Utils/XML/xmlserializable.h"
+#include "Utils/XML/xmlserializer.h"
+#include "Utils/XML/xmldeserializer.h"
+
 
 #include <QApplication>
 #include <QPainter>
@@ -27,6 +31,19 @@
 using namespace GraphicsUI;
 namespace DesignNet{
 const int PORT_MARGIN = 15;
+
+
+void Position::serialize(Utils::XmlSerializer& s) const
+{
+	s.serialize("X", m_x);
+	s.serialize("Y", m_y);
+}
+
+void Position::deserialize(Utils::XmlDeserializer& s) 
+{
+	s.deserialize("X", m_x);
+	s.deserialize("Y", m_y);
+}
 ProcessorGraphicsBlock::ProcessorGraphicsBlock(DesignNetSpace *space, QGraphicsItem *parent)
     : QGraphicsItem(parent), Processor(space)
 {
@@ -52,6 +69,7 @@ ProcessorGraphicsBlock::ProcessorGraphicsBlock(DesignNetSpace *space, QGraphicsI
             Core::ICore::messageManager(),
             SLOT(printToOutputPanePopup(QString)));
     m_icon = QIcon(":/media/default_processor.png");
+	m_block = 0;
 }
 
 ProcessorGraphicsBlock::~ProcessorGraphicsBlock()
@@ -97,6 +115,7 @@ void ProcessorGraphicsBlock::layoutItems()
             posY += PORT_MARGIN;
             posX = rectF.left() + portItem->size().width() / 2;
             portItem->setPos(posX, posY);
+			portItem->showTypeImage(PortGraphicsItem::RIGHT);
         }
     }
 
@@ -109,6 +128,7 @@ void ProcessorGraphicsBlock::layoutItems()
             posX = rectF.right() - portItem->size().width() / 2;
             posY += PORT_MARGIN;
             portItem->setPos(posX - portItem->size().width() / 2, posY);
+			portItem->showTypeImage(PortGraphicsItem::LEFT);
         }
     }
 
@@ -161,6 +181,10 @@ void ProcessorGraphicsBlock::initialize()
 {
     createPortItems();
     layoutItems();
+	if (scene())
+	{
+		this->setPos(QPointF(m_pos.m_x, m_pos.m_y));
+	}
 }
 
 bool ProcessorGraphicsBlock::connect(PortGraphicsItem *inputPort, PortGraphicsItem *outputPort)
@@ -245,7 +269,6 @@ void ProcessorGraphicsBlock::dataArrived(Port *port)
     PortGraphicsItem *item = getPortGraphicsItem(port);
     if(item)
         item->updateData();
-	Processor::dataArrived(port);
 }
 
 QVariant ProcessorGraphicsBlock::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
@@ -324,8 +347,8 @@ void ProcessorGraphicsBlock::paint( QPainter* painter, const QStyleOptionGraphic
 
 void ProcessorGraphicsBlock::setTitle( const QString &title )
 {
-	QString strTitle = "<span style=\"font-size:10pt;color:white\"> %1 </span>";
-	m_titleItem->setHtml(strTitle.arg(title));
+	QString strTitle = "<span style=\"font-size:10pt;color:white\"> %1 </span> <span style=\"font-size:7pt; color:white\">ID:%2</span>";
+	m_titleItem->setHtml(strTitle.arg(title).arg(id()));
 }
 
 void ProcessorGraphicsBlock::relayout()
@@ -345,11 +368,13 @@ void ProcessorGraphicsBlock::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
 {
 	m_closeItem->setPos(boundingRect().right() - 16, boundingRect().top());
 	m_closeItem->animateShow(true);
+	QGraphicsItem::hoverEnterEvent(event);
 }
 
 void ProcessorGraphicsBlock::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
 {
 	m_closeItem->animateShow(false);
+	QGraphicsItem::hoverLeaveEvent(event);
 }
 
 void ProcessorGraphicsBlock::mousePressEvent( QGraphicsSceneMouseEvent * event )
@@ -368,6 +393,25 @@ void ProcessorGraphicsBlock::mouseReleaseEvent( QGraphicsSceneMouseEvent *event 
 {
 	update();
 	QGraphicsItem::mouseReleaseEvent(event);
+}
+
+void ProcessorGraphicsBlock::serialize( Utils::XmlSerializer& s ) const
+{
+	Processor::serialize(s);
+	Position p(this->scenePos());
+	s.serialize("Pos", p);
+}
+
+void ProcessorGraphicsBlock::deserialize( Utils::XmlDeserializer& s )
+{
+	Processor::deserialize(s);
+	
+	s.deserialize("Pos", m_pos);
+}
+
+DesignNet::Position ProcessorGraphicsBlock::originalPosition() const
+{
+	return m_pos;
 }
 
 

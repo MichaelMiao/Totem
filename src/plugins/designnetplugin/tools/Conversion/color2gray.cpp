@@ -7,8 +7,8 @@ namespace Conversion{
 
 Color2Gray::Color2Gray(DesignNet::DesignNetSpace *space, QGraphicsItem *parent)
 	: ProcessorGraphicsBlock(space, parent),
-	m_outputPort(new ImageData(this), Port::OUT_PORT),
-	m_inputPort(new ImageData(this),Port::IN_PORT)
+	m_outputPort(new ImageData(ImageData::IMAGE_GRAY, this), Port::OUT_PORT),
+	m_inputPort(new ImageData(ImageData::IMAGE_BGR, this),Port::IN_PORT)
 {
 	m_inputPort.setName("InputColorImage");
 	m_outputPort.setName("grayImage");
@@ -54,7 +54,6 @@ void Color2Gray::dataArrived( Port* port )
 			setDataReady(true);
 		}
 	}
-	ProcessorGraphicsBlock::dataArrived(port);
 }
 
 void Color2Gray::propertyChanged( Property *prop )
@@ -65,6 +64,20 @@ void Color2Gray::propertyChanged( Property *prop )
 Processor* Color2Gray::create( DesignNetSpace *space /*= 0*/ ) const
 {
 	return new Color2Gray(space);
+}
+
+bool Color2Gray::connectionTest( DesignNet::Port* src, DesignNet::Port* target )
+{
+	if(target == &m_inputPort)
+	{
+		ImageData *srcData = qobject_cast<ImageData*>(src->data());
+		if (!srcData || srcData->imageType() != ImageData::IMAGE_BGR)
+		{
+			return false;
+		}
+		return true;
+	}
+	return false;
 }
 
 }

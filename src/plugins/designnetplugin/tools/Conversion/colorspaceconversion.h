@@ -19,6 +19,7 @@ public:
 	virtual QString title() const;
 	virtual QString category() const;//!< 种类
 	virtual bool process();     //!< 处理函数
+	bool connectionTest( DesignNet::Port* src, DesignNet::Port* target );
 protected:
 	virtual void dataArrived(DesignNet::Port* port);  //!< 数据到达
 public slots:

@@ -1,18 +1,35 @@
 #include "designnetdocument.h"
 #include "designneteditor.h"
 
-#include <QFileInfo>
 #include "designnetconstants.h"
+#include "designnetspace.h"
+#include "Utils/XML/xmlserializer.h"
+#include "Utils/XML/xmldeserializer.h"
+#include "Utils/XML/xmlserializable.h"
+#include <QFileInfo>
 using namespace Core;
 namespace DesignNet{
 
-struct DesignNetDocumentPrivate
+class DesignNetDocumentPrivate
 {
+public:
+	DesignNetDocumentPrivate(){}
+	~DesignNetDocumentPrivate();
     QString fileName;
     DesignNetEditor *editor;
+	DesignNetSpace	*space;
     QString suffexType;
     bool bModified;
 };
+
+DesignNetDocumentPrivate::~DesignNetDocumentPrivate()
+{
+	if (space)
+	{
+		delete space;
+		space = 0;
+	}
+}
 
 //----------------------------------------------
 DesignNetDocument::DesignNetDocument(DesignNetEditor *parent)
@@ -21,7 +38,9 @@ DesignNetDocument::DesignNetDocument(DesignNetEditor *parent)
 {
     d->editor       = parent;
     d->suffexType   = DesignNet::Constants::NETEDITOR_FILETYPE;
-    d->bModified    = false;
+	d->bModified    = false;
+	d->space		= new DesignNetSpace(0, this);
+	connect(d->space, SIGNAL(modified()), this, SLOT(onModified()));
 }
 
 DesignNetDocument::~DesignNetDocument()
@@ -94,7 +113,27 @@ bool DesignNetDocument::reload(QString *errorString, IDocument::ReloadFlag flag,
 
 bool DesignNetDocument::save(QString *errorString, const QString &fileName, bool autoSave)
 {
+	Utils::XmlSerializer x;
+	x.serialize("DesignNetSpace", *(d->space));
+	x.write(fileName);
     return true;
+}
+
+DesignNetSpace * DesignNetDocument::designNetSpace() const
+{
+	return d->space;
+}
+
+void DesignNetDocument::onModified()
+{
+	setModified(true);
+}
+
+bool DesignNetDocument::open( QString *errorString, const QString &fileName, const QString &realFileName )
+{
+	Utils::XmlDeserializer deserializer(realFileName);
+	deserializer.deserialize("DesignNetSpace", *(d->space));
+	return IDocument::open(errorString, fileName, realFileName);
 }
 
 }//namespace DesignNet

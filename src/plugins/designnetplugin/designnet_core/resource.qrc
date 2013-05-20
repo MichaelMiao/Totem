@@ -10,5 +10,10 @@
         <file>media/untopmost_hover.png</file>
         <file>media/untopmost_normal.png</file>
         <file>media/default_processor.png</file>
+        <file>media/detail48.png</file>
+        <file>media/colorimage.png</file>
+        <file>media/grayimages.jpg</file>
+        <file>media/binaryimage.png</file>
+        <file>media/matrix.jpg</file>
     </qresource>
 </RCC>

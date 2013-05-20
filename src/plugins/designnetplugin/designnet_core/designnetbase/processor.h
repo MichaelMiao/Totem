@@ -62,6 +62,11 @@ public:
 	virtual bool isDataReady() const;				//!< 数据是否已经准备好了
 	void setDataReady(const bool &bReady = true);	//!< 设置数据是否准备好了
 	void setRepickData(const bool &repick = true);	//!< 下次执行是否重新去数据
+
+	virtual void serialize(Utils::XmlSerializer& s) const;
+	virtual void deserialize(Utils::XmlDeserializer& s) ;
+	virtual QString serializableType() const;
+	virtual Utils::XmlSerializable* createSerializable() const ;
 signals:
 	void logout(QString log);
 public slots:
@@ -74,6 +79,9 @@ protected:
 
     virtual void stateChanged(Port* port);  //!< 端口状态改变
     virtual void dataArrived(Port* port);  //!< 数据到达
+	virtual bool connectionTest(Port* src, Port* target);
+
+
     QList<Port*>	m_inputPorts;         //!< 输入端口列表
     QList<Port*>	m_outputPorts;        //!< 输出端口列表
     QString			m_title;              //!< 种类title

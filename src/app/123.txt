@@ -1,0 +1,16 @@
+<XML XMLVersion="0.0.1">
+    <DesignNetSpace Name="DesignNetSpace" type="DesignNetSpace" ID="0">
+        <Processors>
+            <Processor Name="Image File" type="Loader/Image File" ID="1">
+                <Property typeID="PropertyType/PathDialog" Name="PathDialogProperty" type="PropertyType/PathDialog" ID="OpenFile"/>
+                <Pos X="-352" Y="-66" type="Position"/>
+            </Processor>
+            <Processor Name="Color Feature HSV" type="Flowers/Feature/Color Feature HSV" ID="0">
+                <Pos X="-245" Y="74" type="Position"/>
+            </Processor>
+        </Processors>
+        <Connections>
+            <Connection src_processor="1" target_processor="0" target_port="" src_port="ImageData"/>
+        </Connections>
+    </DesignNetSpace>
+</XML>

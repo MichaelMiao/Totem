@@ -4,10 +4,42 @@
 #include "coreplugin/icore.h"
 #include "coreplugin/messagemanager.h"
 
-#include <QDebug>
+#include "Utils/XML/xmlserializer.h"
+#include "Utils/XML/xmldeserializer.h"
 #include "utils/runextensions.h"
 
+#include <QDebug>
+using namespace Utils;
 namespace DesignNet{
+
+void Connection::serialize( XmlSerializer& s ) const
+{
+	if (m_srcProcessor == -1 || -1 == m_targetProcessor)
+	{
+		return;
+	}
+	s.serialize("src_processor", m_srcProcessor);
+	s.serialize("src_port", m_srcPort);
+	s.serialize("target_processor", m_targetProcessor);
+	s.serialize("target_port", m_targetPort);
+}
+
+void Connection::deserialize( XmlDeserializer& s )
+{
+	s.deserialize("src_processor", m_srcProcessor);
+	s.deserialize("src_port", m_srcPort);
+	s.deserialize("target_processor", m_targetProcessor);
+	s.deserialize("target_port", m_targetPort);
+}
+
+Connection::Connection( const Connection &c )
+{
+	m_srcPort		= c.m_srcPort;
+	m_srcProcessor	= c.m_srcProcessor;
+	m_targetPort	= c.m_targetPort;
+	m_targetProcessor	= c.m_targetProcessor;
+}
+
 
 DesignNetSpace::DesignNetSpace(DesignNetSpace *space, QObject *parent) :
     Processor(space),
@@ -26,10 +58,14 @@ void DesignNetSpace::addProcessor(Processor *processor)
         LOGOUT(tr("can't add the exist processor to the space"));
         return;
     }
-    int iUID = generateUID();
-    processor->setID(iUID);
+	if (processor->id() == -1)
+	{
+		int iUID = generateUID();
+		processor->setID(iUID);
+	}
     m_processors.push_back(processor);
     emit processorAdded(processor);
+	emit modified();
 }
 
 
@@ -128,15 +164,13 @@ bool DesignNetSpace::process()
 	}
 	foreach(Processor* processor, exclusions)
 	{
-		if(processor->indegree() == 0)
-		{
-			processor->waitForFinish();
-		}
+		processor->waitForFinish();
 	}
 	QString log = tr("The designnet space has been processed.");
     
 	emit logout(log);
 	m_bProcessing = false;
+	waitForFinish();
 	return true;
 }
 
@@ -170,6 +204,93 @@ void DesignNetSpace::propertyChanged( Property *prop )
 void DesignNetSpace::propertyAdded( Property* prop )
 {
 	QObject::connect(prop, SIGNAL(changed()), this, SLOT(onPropertyChanged_internal()));	
+}
+
+void DesignNetSpace::serialize( Utils::XmlSerializer& s ) const
+{
+	Processor::serialize(s);
+	QList<Connection> connections;
+	foreach(Processor *processor, m_processors)
+	{
+		foreach(Port* outputport, processor->getOutputPorts())
+		{
+			foreach (Port* inputport, outputport->connectedPorts())
+			{
+				Connection c;
+				c.m_srcPort			= outputport->name();
+				c.m_srcProcessor	= outputport->processor()->id();
+				c.m_targetPort		= inputport->name();
+				c.m_targetProcessor = inputport->processor()->id();
+				connections.push_back(c);
+			}
+		}
+	}
+	s.serialize("Processors", m_processors, "Processor");
+	s.serialize("Connections", connections, "Connection");
+}
+
+void DesignNetSpace::deserialize( Utils::XmlDeserializer& s )
+{
+	Processor::deserialize(s);
+	QList<Processor*> processors;
+	s.deserializeCollection("Processors", processors, "Processor");
+	foreach(Processor* p, processors)
+	{
+		addProcessor(p);
+	}
+	QList<Connection> connections;
+	s.deserializeCollection("Connections", connections, "Connection");
+	foreach(Connection c, connections)
+	{
+		Processor *srcProcessor = findProcessor(c.m_srcProcessor);
+		Processor *targetProcessor = findProcessor(c.m_targetProcessor);
+		if (!srcProcessor || !targetProcessor)
+		{
+			emit logout(tr("Cannot add the connection from processor %1 to processor %2").arg(c.m_srcProcessor).arg(c.m_targetProcessor));
+			continue;
+		}
+		else
+		{
+			Port *srcPort = srcProcessor->getPort(c.m_srcPort);
+			Port *targetPort = targetProcessor->getPort(c.m_targetPort);
+			if (!srcPort)
+			{
+				emit logout(tr("Cannot add the connection from port %1 to port %2 because source port is empty.")
+					.arg(c.m_srcPort).arg(c.m_targetPort));
+				continue;
+			}
+			if (!targetPort)
+			{
+				emit logout(tr("Cannot add the connection from port %1 to port %2  because target port is empty")
+					.arg(c.m_srcPort).arg(c.m_targetPort));
+				continue;
+			}
+			if(!connectPort(targetPort, srcPort))
+			{
+				emit logout(tr("Cannot add the connection from port %1 to port %2 ")
+					.arg(c.m_srcPort).arg(c.m_targetPort));
+				continue;
+			}
+		}
+	}
+}
+
+QList<Processor*> DesignNetSpace::processors()
+{
+	return m_processors;
+}
+
+Processor* DesignNetSpace::findProcessor( const int &id )
+{
+	QList<Processor*> processorList = processors();
+	foreach(Processor* p, processorList)
+	{
+		if(p->id() == id)
+		{
+			return p;
+		}
+	}
+	return 0;
 }
 
 }

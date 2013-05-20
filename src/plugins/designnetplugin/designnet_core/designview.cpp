@@ -25,12 +25,15 @@
 #include <QGraphicsTextItem>
 #include <QMimeData>
 #include <QDebug>
+#include <QMessageBox>
 
 namespace DesignNet{
 
 DesignView::DesignView(DesignNetSpace *space, QWidget *parent) :
     QGraphicsView(parent),
-    m_designnetSpace(space)
+    m_designnetSpace(space),
+	m_currentArrowLinkItem(0),
+	m_pressedPort(0)
 {
     setObjectName(QLatin1String("DesignView"));
     setCacheMode(CacheBackground);
@@ -45,10 +48,16 @@ DesignView::DesignView(DesignNetSpace *space, QWidget *parent) :
     setAcceptDrops(true);
     setMinimumSize(QSize(200, 200));
     setSceneRect(-500, -500, 1000, 1000);
-    connect(m_designnetSpace, SIGNAL(connectionAdded(Port*,Port*)),
-            this, SLOT(onConnectionAdded(Port*,Port*)));
-    connect(m_designnetSpace, SIGNAL(connectionRemoved(Port*,Port*)),
-            this, SLOT(onConnectionRemoved(Port*,Port*)));
+	if (m_designnetSpace)
+	{
+		connect(m_designnetSpace, SIGNAL(connectionAdded(Port*,Port*)),
+			this, SLOT(onConnectionAdded(Port*,Port*)));
+		connect(m_designnetSpace, SIGNAL(connectionRemoved(Port*,Port*)),
+			this, SLOT(onConnectionRemoved(Port*,Port*)));
+		connect(m_designnetSpace, SIGNAL(processorAdded(Processor*)), this, SLOT(onProcessorAdded(Processor*)));
+		connect(m_designnetSpace, SIGNAL(loadFinished()), this, SLOT(reloadSpace()));
+
+	}
 }
 
 void DesignView::dragEnterEvent(QDragEnterEvent *event)
@@ -96,10 +105,7 @@ void DesignView::dropEvent(QDropEvent *event)
     QString processorName = QString::fromAscii(event->mimeData()->data(Constants::MIME_TYPE_TOOLITEM).data());
     Processor *processor = ProcessorFactory::instance()->create(m_designnetSpace, processorName);
 
-    ProcessorGraphicsBlock *pBlock = (ProcessorGraphicsBlock *)processor;
-    scene()->addItem(pBlock);
-    pBlock->initialize();
-    connect(pBlock, SIGNAL(closed()), this, SLOT(processorClosed()));
+	ProcessorGraphicsBlock *pBlock = (ProcessorGraphicsBlock *)processor;
     m_designnetSpace->addProcessor(processor);
     QPointF point = mapToScene(event->pos());
 
@@ -111,22 +117,67 @@ void DesignView::dropEvent(QDropEvent *event)
 
 void DesignView::mouseMoveEvent(QMouseEvent *event)
 {
+	if (m_pressedPort)
+	{
+		if(QLineF(mapToScene(event->pos()), m_pressedPort->scenePos())
+			.length() < QApplication::startDragDistance())
+			QGraphicsView::mouseMoveEvent(event);
+		else
+		{
+			if (!m_currentArrowLinkItem)
+			{
+				m_currentArrowLinkItem = new PortArrowLinkItem(m_pressedPort, 0);
+				m_currentArrowLinkItem->blockSignals(true);
+				m_currentArrowLinkItem->setEndPoint(mapToScene(event->pos()));
+				scene()->addItem(m_currentArrowLinkItem);
+				m_currentArrowLinkItem->blockSignals(false);
+			}
+			else
+			{
+				m_currentArrowLinkItem->blockSignals(true);
+				m_currentArrowLinkItem->setEndPoint(mapToScene(event->pos()));
+				m_currentArrowLinkItem->blockSignals(false);
+			}
+		}
+		return ;
+	}
     QGraphicsView::mouseMoveEvent(event);
 }
 
 void DesignView::mousePressEvent(QMouseEvent *event)
 {
+	QGraphicsItem *item = scene()->itemAt(mapToScene(event->pos()));
+	PortGraphicsItem *port = qgraphicsitem_cast<PortGraphicsItem*>(item);
+	if (port)
+	{
+		m_pressedPort = port;
+	}
     QGraphicsView::mousePressEvent(event);
 }
 
 void DesignView::mouseReleaseEvent(QMouseEvent *event)
 {
-    QGraphicsView::mouseReleaseEvent(event);
+	if (m_pressedPort)
+	{
+		if (m_currentArrowLinkItem)
+		{
+			delete m_currentArrowLinkItem;
+			m_currentArrowLinkItem = 0;
+			QGraphicsItem *item = scene()->itemAt(mapToScene(event->pos()));
+			PortGraphicsItem *target = qgraphicsitem_cast<PortGraphicsItem*>(item);
+
+			if (target)
+			{
+				m_designnetSpace->connectPort(target->getPort(), m_pressedPort->getPort());
+			}
+		}
+		m_pressedPort = 0;
+	}
     if(event->button() == Qt::LeftButton)
     {
         updatedSelectedItems();
     }
-
+	QGraphicsView::mouseReleaseEvent(event);
 }
 
 void DesignView::wheelEvent(QWheelEvent *event)
@@ -152,28 +203,33 @@ DesignNetSpace *DesignView::getSpace() const
 
 void DesignView::removeItems(QList<QGraphicsItem *> items)
 {
+	scene()->blockSignals(true);
     /*!
       \todo 在某些情况下是不允许删除的
     */
     foreach(QGraphicsItem *item, items)
     {
-        switch(item->type()){
-        case PortArrowLinkItem::Type:{
+        if(item->type() == PortArrowLinkItem::Type)
+		{
             PortArrowLinkItem *portItem = qgraphicsitem_cast<PortArrowLinkItem*>(item);
             if(portItem)
                 removeArrow(portItem);
-            break;
-        }
-        case ProcessorGraphicsBlock::Type:{
-            ProcessorGraphicsBlock *block = qgraphicsitem_cast<ProcessorGraphicsBlock*>(item);
-            if(block)
-            {
-                m_designnetSpace->removeProcessor(block->processor());
-            }
-            break;
-        }
+			items.removeAll(item);
         }
     }
+	foreach(QGraphicsItem *item, items)
+    {
+        if(item->type() == ProcessorGraphicsBlock::Type)
+		{
+            ProcessorGraphicsBlock *portItem = qgraphicsitem_cast<ProcessorGraphicsBlock*>(item);
+            if(portItem)
+			{
+				removeProcessor(portItem);
+			}
+			items.removeAll(item);
+        }
+    }
+	scene()->blockSignals(false);
 }
 
 void DesignView::contextMenuEvent(QContextMenuEvent *event)
@@ -231,10 +287,11 @@ void DesignView::onConnectionAdded(Port *inputPort, Port *outputPort)
     PortGraphicsItem *inputPortItem = getPortGraphicsItem(inputPort);
     PortGraphicsItem *outputPortItem = getPortGraphicsItem(outputPort);
     PortArrowLinkItem *linkItem = new PortArrowLinkItem(outputPortItem);
+	scene()->addItem(linkItem);
 	linkItem->blockSignals(true);
     linkItem->setTargetPort(inputPortItem);
 	linkItem->blockSignals(false);
-    scene()->addItem(linkItem);
+    
     m_arrowLinkItems.insert(outputPort, linkItem);
 }
 
@@ -259,9 +316,47 @@ DesignView::~DesignView()
 {
 	foreach(DesignNet::PortArrowLinkItem *item, m_arrowLinkItems.values())
 	{
-		removeArrow(item);
+		delete item;
 	}
 	m_arrowLinkItems.clear();
+}
+
+void DesignView::onProcessorAdded( Processor *processor )
+{
+	ProcessorGraphicsBlock *pBlock = (ProcessorGraphicsBlock *)processor;
+	scene()->addItem(pBlock);
+	pBlock->initialize();
+	connect(pBlock, SIGNAL(closed()), this, SLOT(processorClosed()));
+	emit processorAdded(processor);
+}
+
+void DesignView::setDesignNetSpace( DesignNetSpace *space )
+{
+	m_designnetSpace = space;
+	if (m_designnetSpace)
+	{
+		connect(m_designnetSpace, SIGNAL(connectionAdded(Port*,Port*)),
+			this, SLOT(onConnectionAdded(Port*,Port*)));
+		connect(m_designnetSpace, SIGNAL(connectionRemoved(Port*,Port*)),
+			this, SLOT(onConnectionRemoved(Port*,Port*)));
+		connect(m_designnetSpace, SIGNAL(processorAdded(Processor*)), this, SLOT(onProcessorAdded(Processor*)));
+		connect(m_designnetSpace, SIGNAL(loadFinished()), this, SLOT(reloadSpace()));
+
+	}
+}
+
+void DesignView::reloadSpace()
+{
+	QGraphicsScene *mainScene = scene();
+	scene()->clear();
+	foreach(Processor *processor, m_designnetSpace->processors())
+	{
+		ProcessorGraphicsBlock *block = dynamic_cast<ProcessorGraphicsBlock*>(processor);
+		mainScene->addItem(block);
+ 		block->initialize();
+		Position pos = block->originalPosition();
+		block->setPos(QPointF(pos.m_x, pos.m_y));
+	}
 }
 
 }

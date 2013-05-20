@@ -18,13 +18,13 @@ public:
 
 ColorSpaceConversionPrivate::ColorSpaceConversionPrivate( ColorSpaceConversion * parent )
 	: m_conversion(parent),
-	m_inputPort(new ImageData(parent), Port::IN_PORT),
-	m_outputPort(new ImageData(parent), Port::OUT_PORT)
+	m_inputPort(new ImageData(ImageData::IMAGE_BGR, parent), Port::IN_PORT),
+	m_outputPort(new ImageData(ImageData::IMAGE_BGR, parent), Port::OUT_PORT)
 {
 	m_property = new OptionProperty("ConversionOption", QLatin1String("ConversionOption"), parent);
 	m_inputPort.setName(QLatin1String("InputImage"));
 	m_outputPort.setName(QLatin1String("OutputImage"));
-	m_imageData = new ImageData(parent);
+	m_imageData = new ImageData(ImageData::IMAGE_BGR, parent);
 }
 
 ColorSpaceConversion::ColorSpaceConversion( DesignNetSpace *space, QGraphicsItem *parent /*= 0*/ )
@@ -42,6 +42,7 @@ ColorSpaceConversion::ColorSpaceConversion( DesignNetSpace *space, QGraphicsItem
 	d->m_property->addOption(tr("Lab 2 BGR"), cv::COLOR_Lab2BGR);
 	d->m_property->addOption(tr("Luv 2 BGR"), cv::COLOR_Luv2BGR);
 	d->m_property->setName(tr("Conversion"));
+	d->m_property->select(tr("BGR 2 HSV"));
 	addProperty(d->m_property);
 	//!< Ìí¼Ó¶Ë¿Ú
 	addPort(&d->m_inputPort);
@@ -99,6 +100,20 @@ void ColorSpaceConversion::dataArrived( DesignNet::Port* port )
 void ColorSpaceConversion::propertyChanged( Property *prop )
 {
 
+}
+
+bool ColorSpaceConversion::connectionTest( DesignNet::Port* src, DesignNet::Port* target )
+{
+	if(target == &d->m_inputPort)
+	{
+		ImageData *srcData = qobject_cast<ImageData*>(src->data());
+		if (!srcData || srcData->imageType() != ImageData::IMAGE_BGR)
+		{
+			return false;
+		}
+		return true;
+	}
+	return false;
 }
 
 }

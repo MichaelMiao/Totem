@@ -6,7 +6,9 @@
 #include "../designnetconstants.h"
 #include <QGraphicsObject>
 #include <QList>
-
+namespace GraphicsUI{
+class GraphicsAutoShowHideItem;
+}
 namespace DesignNet{
 class Port;
 class PortArrowLinkItem;
@@ -19,8 +21,15 @@ class DESIGNNET_CORE_EXPORT PortGraphicsItem : public QGraphicsObject
     Q_OBJECT
     friend class PortArrowLinkItem;
 public:
-    enum{DEFAULT_WIDTH = 16,
-        DEFAULT_HEIGHT = 16};
+    enum{
+		DEFAULT_PORT_WIDTH		= 16,
+        DEFAULT_PORT_HEIGHT		= 16,
+		DEFAULT_SPACING			= 5
+	};
+	enum TypeImageDirection{
+		LEFT,
+		RIGHT
+	};
     enum { Type = UserType + PortGraphicsItemType };
     int type() const;
     explicit PortGraphicsItem(Port*port, QGraphicsItem *parent = 0);
@@ -36,30 +45,32 @@ public:
      */
     Port* getPort() const   {return m_port;}
     void setPort(Port* port){m_port = port;}
-
-    void setSize(const QSize &size){m_size = size;}
-    QSize size() const{return m_size;}
-    void setMovingArrow(PortArrowLinkItem* item);
+	void setSize(const QSizeF &size){m_size = size;}
+	QSizeF size() const{return m_size;}
     ProcessorGraphicsBlock *processor();
     void removeAllConnection();//!< 断开连接
 
     DesignNetSpace* designNetSpace() const;
     void updateData();
+
+	void showTypeImage(TypeImageDirection direction);
+	void setTypeImageVisible(bool bVisible = true);
 protected slots:
     void processorSelectionChanged(bool value);
 protected:
     virtual void	hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
     virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
+	void dragEnterEvent ( QGraphicsSceneDragDropEvent * event );
     void mousePressEvent ( QGraphicsSceneMouseEvent * event );
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     QPixmap m_imageConnected;
     QPixmap m_imageNotConnected;
     bool    m_bPressed;
-    QSize   m_size;
-    Port*   m_port;
-    PortArrowLinkItem*      m_movingArrow;
-    ToolTipGraphicsItem*    m_toolTipItem;
+	Port*   m_port;
+    ToolTipGraphicsItem*		m_toolTipItem;
+	GraphicsUI::GraphicsAutoShowHideItem*	m_typeImageItem;//!< 显示类型图像
+	QSizeF  m_size;
 };
 }
 

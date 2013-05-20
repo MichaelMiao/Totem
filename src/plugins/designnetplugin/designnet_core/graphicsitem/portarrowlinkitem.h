@@ -24,11 +24,12 @@ public:
     virtual QPainterPath shape() const;
     bool detachFromSource();
     bool detachFromTarget();
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 signals:
     void arrowConnected(PortGraphicsItem* input, PortGraphicsItem* output);
     void portDetached();
 protected:
-
+	bool sceneEventFilter(QGraphicsItem *watched, QEvent *event);
     void mousePressEvent ( QGraphicsSceneMouseEvent * event );
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     PortGraphicsItem* m_sourcePort;

@@ -11,7 +11,8 @@
 #include "data/normaldatafactory.h"
 #include "normalpropertywidgetfactory.h"
 #include "toolmodel.h"
-
+#include "widgets/datadetailwidget.h"
+#include "designnetsolutionwizard.h"
 #include <QAction>
 #include <QtPlugin>
 #include <QToolBar>
@@ -57,6 +58,13 @@ bool DesignNetCorePlugin::initialize(const QStringList &arguments, QString *erro
     addAutoReleasedObject(normalPropertyWidgetFactory);
     addAutoReleasedObject(m_designNetMode);
     addAutoReleasedObject(normalDataFactory);
+	Core::BaseFileWizardParameters param;
+	param.setIcon(QIcon(":/media/DesignNet.png"));
+	param.setCategory(tr("DesignNet"));
+	param.setDescription(tr("asdf"));
+	param.setDisplayCategory(tr("nimeia"));
+	param.setDisplayName(tr("miao"));
+	addAutoReleasedObject(new DesignNetSolutionWizard(param, this));
     return true;
 }
 
@@ -64,7 +72,6 @@ void DesignNetCorePlugin::extensionsInitialized()
 {
     DesignNetFactory *factory = new DesignNetFactory(this);
     addAutoReleasedObject(factory);
-
     m_designNetFormMgr->readSettings();
     m_designNetFormMgr->startInit();
     return;

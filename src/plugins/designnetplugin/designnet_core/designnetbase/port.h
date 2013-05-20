@@ -21,8 +21,8 @@ public:
         OUT_PORT    //!< 输出端口
     };
 
-    explicit Port(IData *data, PortType portType);
-
+    explicit Port(IData *data, PortType portType, const QString &name = "");
+	virtual ~Port();
     PortType portType() const{return m_portType;}
     void setPortType(const PortType &portType){m_portType = portType;}
 
@@ -76,6 +76,7 @@ public:
     ///
     void addData(IData* data);  //!< 向端口添加数据
     IData* data() const;        //!< 端口中存放的数据
+	void waitForReadyToWrite() const;	//!< 等待端口可写 
 protected:
     bool        m_bMultiInput;  //!< 是否支持多份输入
     PortType    m_portType;     //!< 端口类型

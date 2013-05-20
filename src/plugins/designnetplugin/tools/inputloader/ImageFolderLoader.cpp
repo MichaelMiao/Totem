@@ -11,7 +11,7 @@ namespace InputLoader{
 const char ImageFolderIcon[] = ":/InputLoader/images/add_folder.png";
 ImageFolderLoader::ImageFolderLoader( DesignNet::DesignNetSpace *space, QGraphicsItem *parent /*= 0*/ )
 	: ProcessorGraphicsBlock(space, parent),
-	m_outPort(new ImageData(this), Port::OUT_PORT)
+	m_outPort(new ImageData(ImageData::IMAGE_BGR, this), Port::OUT_PORT)
 {
 	m_outPort.setName("ImageData");
 	addPort(&m_outPort);

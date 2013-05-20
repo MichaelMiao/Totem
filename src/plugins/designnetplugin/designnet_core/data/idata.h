@@ -16,8 +16,12 @@ public:
     virtual Core::Id id() = 0;
 	virtual IData* clone(QObject *parent = 0) = 0;
 	virtual bool copy(IData* data) = 0;
+	virtual bool isValid() const = 0;
+	virtual QImage image() = 0;
 signals:
     void dataChanged();
+protected:
+	QImage m_image;//!< ÀàÐÍÍ¼Æ¬
 };
 }
 

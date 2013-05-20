@@ -5,29 +5,37 @@
 #include "processorgraphicsblock.h"
 #include "tooltipgraphicsitem.h"
 #include "designnetspace.h"
+#include "GraphicsUI/graphicsautoshowhideitem.h"
 
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QApplication>
+#include <QMessageBox>
 #include <QEvent>
+#include <QDrag>
+using namespace GraphicsUI;
 namespace DesignNet{
 
 PortGraphicsItem::PortGraphicsItem(Port *port, QGraphicsItem *parent) :
     QGraphicsObject(parent),
-    m_size(DEFAULT_WIDTH, DEFAULT_HEIGHT),
     m_port(port),
-    m_movingArrow(0)
+	m_size(DEFAULT_PORT_WIDTH, DEFAULT_PORT_HEIGHT)
 {
     m_bPressed = false;
     setFlag(ItemSendsGeometryChanges);
     setAcceptHoverEvents(true);
+	setAcceptDrops(true);
+	setCacheMode(QGraphicsItem::ItemCoordinateCache);
     m_imageConnected.load(Constants::ITEM_IMAGE_PORT_CONNECTED);
     m_imageNotConnected.load(Constants::ITEM_IMAGE_PORT_NOTCONNECTED);
     m_toolTipItem = new ToolTipGraphicsItem(this);
-    m_toolTipItem->setText("miao");
     m_toolTipItem->hide();
+	m_typeImageItem = new GraphicsAutoShowHideItem(this);
+	m_typeImageItem->setPixmap(QPixmap::fromImage(port->data()->image()));
+	m_typeImageItem->setSize(QSize(16, 16));
+	m_typeImageItem->animateShow(false);
 }
 
 PortGraphicsItem::~PortGraphicsItem()
@@ -37,8 +45,9 @@ PortGraphicsItem::~PortGraphicsItem()
 
 QRectF PortGraphicsItem::boundingRect() const
 {
-    return QRectF(-m_size.width() *1.0/2, -m_size.height()*1.0/2,
-                  m_size.width(), m_size.width());
+	float fWidth = DEFAULT_PORT_WIDTH ;
+	float fHeight = DEFAULT_PORT_HEIGHT;
+	return QRectF(-fWidth/2, -fHeight/2, fWidth, fHeight);
 }
 
 void PortGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
@@ -58,17 +67,12 @@ void PortGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
 
     if(m_port->isConnected())
     {
-        painter->drawPixmap(rect, m_imageConnected, m_imageConnected.rect());
+        painter->drawPixmap(QRectF(rect.left(), rect.top(), DEFAULT_PORT_WIDTH, DEFAULT_PORT_HEIGHT), m_imageConnected, m_imageConnected.rect());
     }
     else
     {
-        painter->drawPixmap(rect, m_imageNotConnected, m_imageNotConnected.rect());
-    }
-}
-
-void PortGraphicsItem::setMovingArrow(PortArrowLinkItem *item)
-{
-    m_movingArrow = item;
+        painter->drawPixmap(QRectF(rect.left(), rect.top(), DEFAULT_PORT_WIDTH, DEFAULT_PORT_HEIGHT), m_imageNotConnected, m_imageNotConnected.rect());
+    }	
 }
 
 ProcessorGraphicsBlock *PortGraphicsItem::processor()
@@ -105,6 +109,16 @@ void PortGraphicsItem::updateData()
 
 void PortGraphicsItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
+	QString toolTip;
+	toolTip = tr("<p><b>PortName:</b> <span style=\"color: red; font-size: small\">%2</span></p>").arg(m_port->name());
+	if (this->m_port->portType() == Port::IN_PORT)
+	{
+		toolTip += tr("<b>PortType:</b> <span style=\"color: red; font-size: small\">IN_PORT</span>");	
+	}
+	else
+		toolTip += tr("<b>PortType:</b> <span style=\"color: red; font-size: small\">OUT_PORT</span>");
+
+	setToolTip(toolTip);
     update();
     QGraphicsItem::hoverEnterEvent(event);
 }
@@ -117,9 +131,12 @@ void PortGraphicsItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 void PortGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    m_bPressed = true;
-    this->translate(1, 1);
-    event->accept();
+	if(event->button() == Qt::LeftButton)
+	{
+		m_bPressed = true;
+		this->translate(1, 1);
+		event->accept();
+	}
 }
 
 void PortGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -128,24 +145,10 @@ void PortGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             QLineF(event->screenPos(), event->buttonDownScreenPos(Qt::LeftButton))
             .length() < QApplication::startDragDistance())
     {
+		event->accept();
         return;
     }
-    else if(m_bPressed)
-    {
-        if(m_port->portType() == Port::OUT_PORT && m_movingArrow == 0)
-        {
-            m_movingArrow = new PortArrowLinkItem(this);
-            m_movingArrow->setSourcePort(this);
-            scene()->addItem(m_movingArrow);
-            return ;
-        }
-    }
-    if(m_movingArrow)
-    {
-        m_movingArrow->setEndPoint(event->scenePos());
-        event->accept();
-    }
-    QGraphicsItem::mouseMoveEvent(event);
+	event->accept();
 }
 
 void PortGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
@@ -154,11 +157,6 @@ void PortGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
         m_bPressed = false;
         this->translate(-1, -1);
-    }
-    if(m_movingArrow)
-    {
-        delete m_movingArrow;
-        m_movingArrow = 0;
     }
     processor()->setSelected(true);
     if(event->button() == Qt::RightButton)
@@ -193,6 +191,34 @@ void PortGraphicsItem::processorSelectionChanged(bool value)
     {
         m_toolTipItem->setVisible(false);
     }
+}
+
+void PortGraphicsItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
+{
+	event->setAccepted(true);
+	QMessageBox box;
+	box.exec();
+}
+
+void PortGraphicsItem::showTypeImage( TypeImageDirection direction )
+{
+	if(direction == LEFT)
+	{
+		m_typeImageItem->setPos(boundingRect().left() - m_typeImageItem->boundingRect().width() - DEFAULT_SPACING,
+			boundingRect().top());
+		m_typeImageItem->animateShow(true);
+	}
+	else if (direction == RIGHT)
+	{
+		m_typeImageItem->setPos(boundingRect().right() + DEFAULT_SPACING,
+			boundingRect().top());
+		m_typeImageItem->animateShow(true);
+	}
+}
+
+void PortGraphicsItem::setTypeImageVisible( bool bVisible /*= true*/ )
+{
+	m_typeImageItem->animateShow(bVisible);
 }
 
 }

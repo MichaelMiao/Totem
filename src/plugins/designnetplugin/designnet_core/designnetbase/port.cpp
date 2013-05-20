@@ -4,11 +4,12 @@
 #include "coreplugin/messagemanager.h"
 namespace DesignNet{
 
-Port::Port(IData *data, PortType portType) :
+Port::Port(IData *data, PortType portType,const QString &name) :
     m_bMultiInput(false),
     m_portType(portType),
     m_processor(0),
-    m_data(data)
+    m_data(data),
+	m_name(name)
 {
 }
 /*!
@@ -25,7 +26,7 @@ bool Port::connect(Port *port)
     TOTEM_ASSERT(port != 0, return false);
     if(port == this)
         return false;
-    if(!canConnectTo(port) && !port->canConnectTo(this))
+    if(!canConnectTo(port))
         return false;
     m_portsConnected.push_back(port);
     port->addConnectedPort(this);/// 直接将自己放到inputPort的列表中
@@ -88,7 +89,7 @@ bool Port::canConnectTo(Port *inputPort)
     {
         return false;
     }
-    return true;
+	return inputPort->processor()->connectionTest(this, inputPort);
 }
 
 bool Port::isConnectedTo(const Port *port) const
@@ -176,10 +177,15 @@ void Port::notifyDataArrive()
 
 void Port::addData(IData *data)
 {
-    m_data->copy(data);
-    notifyDataArrive();
+	if (m_portType == IN_PORT)
+	{
+		m_processor->waitForFinish();/// 等待该端口所在的处理器完成任务后，才能写数据
+		m_data->copy(data);
+		notifyDataArrive();
+	}
 	if(m_portType == OUT_PORT)
 	{
+		m_data->copy(data);
 		foreach(Port* port, m_portsConnected)
 		{
 			port->addData(data);
@@ -191,4 +197,14 @@ IData *Port::data() const
 {
     return m_data;
 }
+
+Port::~Port()
+{
+	if (m_data)
+	{
+		delete m_data;
+		m_data = 0;
+	}
+}
+
 }

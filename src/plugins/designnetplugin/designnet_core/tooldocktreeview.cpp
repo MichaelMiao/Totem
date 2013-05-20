@@ -14,6 +14,7 @@ ToolDockTreeView::ToolDockTreeView(QWidget *parent) :
     setMinimumSize(minimumSizeHint());
     setDragEnabled(true);
     setDragDropMode(QAbstractItemView::DragOnly);
+	resizeColumnToContents(0);
 }
 
 void ToolDockTreeView::startDrag(Qt::DropActions /*supportedActions*/)

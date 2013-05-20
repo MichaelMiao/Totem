@@ -1,6 +1,10 @@
 ﻿#include "pathdialogproperty.h"
 #include "designnetconstants.h"
+#include "Utils/XML/xmlserializer.h"
+#include "Utils/XML/xmlserializable.h"
+#include "Utils/XML/xmldeserializer.h"
 #include <QFileInfo>
+
 using namespace Utils;
 namespace DesignNet{
 
@@ -70,6 +74,21 @@ Core::Id PathDialogProperty::typeID() const
 QDir::Filters PathDialogProperty::filters() const
 {
     return m_filters;
+}
+
+void PathDialogProperty::serialize( Utils::XmlSerializer& s ) const
+{
+	Property::serialize(s);
+	QList<Utils::Path> pathList = paths();
+	foreach(Utils::Path path, pathList)
+	{
+		s.serialize("Path", path);
+	}
+}
+
+void PathDialogProperty::deserialize( Utils::XmlDeserializer& s )const
+{
+
 }
 
 }

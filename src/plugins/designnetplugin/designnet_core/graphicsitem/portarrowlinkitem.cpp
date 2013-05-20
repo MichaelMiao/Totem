@@ -2,7 +2,7 @@
 #include "portgraphicsitem.h"
 #include "GraphicsUI/arrowlinkcontrolitem.h"
 #include <QGraphicsSceneMouseEvent>
-#include <QApplication>
+#include <QMoveEvent>
 #include <QGraphicsScene>
 namespace DesignNet{
 
@@ -20,12 +20,16 @@ PortArrowLinkItem::~PortArrowLinkItem()
 {
 	if (m_controlPoint_1)
 	{
+		m_controlPoint_1->blockSignals(true);
 		m_controlPoint_1->setParent(0);
+		m_controlPoint_1->blockSignals(false);
 		delete m_controlPoint_1;
 	}
 	if (m_controlPoint_2)
 	{
+		m_controlPoint_2->blockSignals(true);
 		m_controlPoint_2->setParent(0);
+		m_controlPoint_2->blockSignals(false);
 		delete m_controlPoint_2;
 	}
 }
@@ -53,6 +57,8 @@ void PortArrowLinkItem::setTargetPort(PortGraphicsItem *targetPort)
     if(m_sourcePort && m_targetPort)
     {
         emit arrowConnected(m_sourcePort, m_targetPort);
+		m_sourcePort->installSceneEventFilter(this);
+		m_targetPort->installSceneEventFilter(this);
     }
 }
 
@@ -102,11 +108,31 @@ void PortArrowLinkItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     this->setEndPoint(event->pos());
     update();
     m_bBeginDrag = true;
+	event->ignore();
+	ArrowLinkItem::mouseMoveEvent(event);
 }
 
 int PortArrowLinkItem::type() const
 {
     return UserType + PortArrowLinkItemType;
+}
+
+bool PortArrowLinkItem::sceneEventFilter( QGraphicsItem *watched, QEvent *event )
+{
+	qDebug() << "s";
+	QMoveEvent * mevent = dynamic_cast<QMoveEvent *>(event);
+	if(mevent)
+	{
+		qDebug() << "m";
+		updateGeometory();
+	}
+	
+	return false;
+}
+
+void PortArrowLinkItem::paint( QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget )
+{
+	ArrowLinkItem::paint(painter, option, widget);
 }
 
 }

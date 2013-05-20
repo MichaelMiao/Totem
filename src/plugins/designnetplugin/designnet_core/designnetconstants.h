@@ -26,20 +26,31 @@ const char DESIGN_DOCKNAME_PROPERTY[]   = "DockName.Properties";
 const char ITEM_IMAGE_PORT_CONNECTED[]        = ":/media/port_connected.png";
 const char ITEM_IMAGE_PORT_NOTCONNECTED[]     = ":/media/port_notconnected.png";
 
+/// Data Type Image
+const char DATA_IMAGE_COLOR_IMAGE[]			= ":/media/colorimage.png";
+const char DATA_IMAGE_GRAY_IMAGE[]			= ":/media/grayimages.jpg";
+const char DATA_IMAGE_BINARY_IMAGE[]		= ":/media/binaryimage.png";
+const char DATA_IMAGE_MATRIX[]				= ":/media/matrix.jpg";
 //MIME Type
 const char MIME_TYPE_TOOLITEM[] = "DesignNet/ToolItem";
 
 /// Normal Property Type
-const char PROPERTY_TYPE_PATHDIALOG[]	= "PropertyType/PathDialog";
-const char PROPERTY_TYPE_OPTION[]		= "PropertyType/Option";
+const char PROPERTY_TYPE_PATHDIALOG[]		= "PropertyType/PathDialog";
+const char PROPERTY_TYPE_OPTION[]			= "PropertyType/Option";
+const char PROPERTY_TYPE_DOUBLERANGE[]		= "PropertyType/DoubleRange";
+const char PROPERTY_TYPE_BOOL[]				= "PropertyType/Bool";
 /// Data Type
 const char DATA_TYPE_IMAGE[] = "DataType/Image";
 const char DATA_TYPE_LABEL[] = "DataType/Label";
+const char DATA_TYPE_HISTOGRAM[] = "DataType/Histogram";
+const char DATA_TYPE_MATRIX[] = "DataType/Matrix";
 /// Data Widget Factory ID
 const char DATA_WIDGET_FACTORY_NORMAL[] = "DataWidgetFactory/Normal";
 
-const float ZValue_GraphicsBlock_Normal     = 3.0f;
+
+const float ZValue_GraphicsBlock_Normal     = 20.0f;
 const float ZValue_GraphicsBlock_Emphasize  = 30.0f;
+const float ZValue_ArrowLink				= 20.0f;
 const float ZValue_Tooltip = 40.0f;
 }
 

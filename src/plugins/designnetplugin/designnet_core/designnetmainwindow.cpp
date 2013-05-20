@@ -190,8 +190,8 @@ void DesignNetMainWindow::addEditor(IEditor *pEditor)
         d->m_stackedWidget->addWidget(view);
         connect(view, SIGNAL(processorSelected(QList<Processor*>)),
                 d->m_propertyListWidget, SLOT(processorSelected(QList<Processor*>)));
-        connect(view->getSpace(), SIGNAL(processorAdded(Processor*)),
-                d->m_propertyListWidget, SLOT(processorAdded(Processor*)));
+		connect(view, SIGNAL(processorAdded(Processor*)),
+			d->m_propertyListWidget, SLOT(processorAdded(Processor*)));
         d->m_editors.append(pEditor);
     }
 }

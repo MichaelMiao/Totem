@@ -171,6 +171,7 @@ void ArrowLinkItem::updateGeometory()
     QPointF startPoint = getStartPoint();
     QPointF endPoint = getEndPoint();
 	int controlDeltaWidth = qAbs(startPoint.x() - endPoint.x()) / 2;
+	controlDeltaWidth = qMax(controlDeltaWidth, 50);
 	c1.setY(startPoint.y());
 	c2.setY(endPoint.y());
 

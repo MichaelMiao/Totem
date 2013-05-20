@@ -4,7 +4,7 @@
 namespace DesignNet{
 
 class DesignNetEditor;
-
+class DesignNetSpace;
 class DesignNetDocumentPrivate;
 /**
  * @brief The DesignNetDocument class
@@ -14,7 +14,7 @@ class DesignNetDocument : public Core::IDocument
 {
     Q_OBJECT
 public:
-    DesignNetDocument(DesignNetEditor *parent = 0);
+    DesignNetDocument( DesignNetEditor *parent = 0);
     ~DesignNetDocument();
 
     QString defaultPath() const;
@@ -31,7 +31,10 @@ public:
 
     bool reload(QString *errorString, ReloadFlag flag, ChangeType type);
     bool save(QString *errorString, const QString &fileName = QString(), bool autoSave = false);
-
+	DesignNetSpace *designNetSpace() const;
+	virtual bool open(QString *errorString, const QString &fileName, const QString &realFileName);
+public slots:
+	void onModified();
 private:
     DesignNetDocumentPrivate *d;
 };

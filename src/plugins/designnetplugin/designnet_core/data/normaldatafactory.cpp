@@ -2,7 +2,7 @@
 #include "designnetconstants.h"
 #include "idata.h"
 #include "imagedatawidget.h"
-
+#include "matrixdatawidget.h"
 namespace DesignNet{
 
 NormalDataFactory::NormalDataFactory(QObject *parent)
@@ -12,12 +12,17 @@ NormalDataFactory::NormalDataFactory(QObject *parent)
 
 IDataWidget *NormalDataFactory::createWidget(IData *property, QGraphicsItem* parent)
 {
+	IDataWidget* widget = 0;
     if(property->id() == DesignNet::Constants::DATA_TYPE_IMAGE)
     {
-        ImageDataWidget *widget = new ImageDataWidget(property, parent);
-        return widget;
+        widget = new ImageDataWidget(property, parent);
     }
-    return 0;
+	else if(property->id() == DesignNet::Constants::DATA_TYPE_MATRIX)
+	{
+		widget = new MatrixDataWidget(property, parent);
+	}
+
+    return widget;
 }
 
 Core::Id NormalDataFactory::id() const
@@ -29,6 +34,7 @@ QList<Core::Id> NormalDataFactory::supportedTypes()
 {
     QList<Core::Id> types;
     types << DesignNet::Constants::DATA_TYPE_IMAGE;
+	types << DesignNet::Constants::DATA_TYPE_MATRIX;
     return types;
 }
 

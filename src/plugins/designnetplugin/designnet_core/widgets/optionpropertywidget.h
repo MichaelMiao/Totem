@@ -2,7 +2,6 @@
 #define OPTIONPROPERTYWIDGET_H
 
 #include "ipropertywidget.h"
-#include "../designnet_core_global.h"
 namespace DesignNet{
 class OptionPropertyWidgetPrivate;
 class OptionProperty;

@@ -14,7 +14,7 @@ namespace InputLoader{
 const char NormalImageLoader[] = ":/InputLoader/images/NormalImageLoader.png";
 GraphicsNormalImageLoader::GraphicsNormalImageLoader(DesignNetSpace *space, QGraphicsItem *parent)
     : ProcessorGraphicsBlock(space, parent),
-      m_outPort(new ImageData(this), Port::OUT_PORT)
+      m_outPort(new ImageData(ImageData::IMAGE_BGR, this), Port::OUT_PORT)
 {
     m_name = this->metaObject()->className();
     m_outPort.setName("ImageData");
@@ -28,7 +28,7 @@ GraphicsNormalImageLoader::GraphicsNormalImageLoader(DesignNetSpace *space, QGra
                                          QDir::Files, true, this);
     m_imageFile->setObjectName(tr("Image File"));
     addProperty(m_imageFile);
-    m_imageData = new ImageData(this);
+    m_imageData = new ImageData(ImageData::IMAGE_BGR, this);
     setName(tr("Image File"));
     setIcon(QIcon(QLatin1String(NormalImageLoader)));
 }

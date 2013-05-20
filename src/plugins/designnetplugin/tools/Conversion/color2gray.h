@@ -21,6 +21,7 @@ public:
 protected:
 	virtual void dataArrived(DesignNet::Port* port);  //!< 数据到达
 	virtual void propertyChanged(DesignNet::Property *prop);
+	virtual bool connectionTest(DesignNet::Port* src, DesignNet::Port* target);
 private:
 	DesignNet::Port m_outputPort;	//!< 输出端口
 	DesignNet::Port m_inputPort;	//!< 输入端口

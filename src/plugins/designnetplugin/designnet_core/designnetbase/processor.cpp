@@ -3,10 +3,14 @@
 #include "../data/idata.h"
 #include "utils/totemassert.h"
 #include "designnetspace.h"
+#include "Utils/XML/xmlserializer.h"
+#include "Utils/XML/xmldeserializer.h"
+
 #include <QMutexLocker>
 #include <QDebug>
 #include <QThread>
 namespace DesignNet{
+
 
 ProcessorWorker::ProcessorWorker( Processor *processor )
 	: m_processor(processor)
@@ -24,6 +28,7 @@ Processor::Processor(DesignNetSpace *space, QObject* parent)
 {
     m_name = "";
 	m_bReady = false;
+	m_id = 0;
 	m_thread = new QThread(this);
 	m_worker.moveToThread(m_thread);
 	QObject::connect(m_thread, SIGNAL(started()), &m_worker, SLOT(run()));
@@ -130,17 +135,6 @@ void Processor::stateChanged(Port *port)
 
 void Processor::dataArrived(Port *port)
 {
-	if(port->portType() == Port::OUT_PORT)
-	{
-		return;
-	}
-	if(m_thread->isRunning())
-	{
-		qDebug() << tr("Waiting %1 for finish").arg(this->name());
-		m_thread->quit();
-		m_thread->wait();
-		qDebug() << tr("%1 finished").arg(this->name());
-	}
 }
 
 bool Processor::beforeProcess()
@@ -149,14 +143,15 @@ bool Processor::beforeProcess()
 	if(!m_bReady)
 	{
 		emit logout(tr("Data has not been ready!"));
+		return false;
 	}
-	
+	emit logout(tr("%1 id: %2 start processing...").arg(name()).arg(id()));
 	return m_bReady;
 }
 
 void Processor::afterProcess(bool status)
 {
-	setDataReady(false);
+	emit logout(tr("%1 id: %2 processing finished.").arg(name()).arg(id()));
 }
 
 void Processor::run()
@@ -207,8 +202,41 @@ void Processor::setRepickData( const bool &repick /*= true*/ )
 
 void Processor::waitForFinish()
 {
-	m_thread->quit();
-	m_thread->wait();
+	if(m_thread->isRunning())
+	{
+		qDebug() << tr("Waiting %1 for finish").arg(this->name());
+		m_thread->quit();
+		m_thread->wait();
+		qDebug() << tr("%1 finished").arg(this->name());
+	}
+}
+
+bool Processor::connectionTest( Port* src, Port* target )
+{
+	return false;
+}
+
+void Processor::serialize( Utils::XmlSerializer& s ) const
+{
+	s.serialize("Name", name());
+	s.serialize("ID", id());
+	PropertyOwner::serialize(s);
+}
+
+void Processor::deserialize( Utils::XmlDeserializer& s )
+{
+	s.deserialize("Name", m_name);
+	s.deserialize("ID", m_id);
+}
+
+QString Processor::serializableType() const
+{
+	return typeID().toString();
+}
+
+Utils::XmlSerializable* Processor::createSerializable() const
+{
+	return (Utils::XmlSerializable*)create();
 }
 
 

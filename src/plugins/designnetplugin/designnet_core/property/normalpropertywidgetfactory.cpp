@@ -4,6 +4,10 @@
 #include "ipropertywidget.h"
 #include "optionpropertywidget.h"
 #include "optionproperty.h"
+#include "doublerangeproperty.h"
+#include "doublerangepropertywidget.h"
+#include "boolproperty.h"
+#include "boolpropertywidget.h"
 namespace DesignNet{
 
 NormalPropertyWidgetFactory::NormalPropertyWidgetFactory(QObject *parent) :
@@ -25,6 +29,16 @@ IPropertyWidget *NormalPropertyWidgetFactory::createWidget(Property *property,
 		OptionProperty *optionProperty = qobject_cast<OptionProperty*>(property);
 		if(optionProperty)
 			return new OptionPropertyWidget(optionProperty, parent);
+	}
+	else if(property->typeID() == DesignNet::Constants::PROPERTY_TYPE_DOUBLERANGE)
+	{
+		DoubleRangeProperty *doubleRangeProperty = qobject_cast<DoubleRangeProperty*>(property);
+		return new DoubleRangePropertyWidget(doubleRangeProperty, parent);
+	}
+	else if(property->typeID() == DesignNet::Constants::PROPERTY_TYPE_BOOL)
+	{
+		BoolProperty *boolProperty = qobject_cast<BoolProperty*>(property);
+		return new BoolPropertyWidget(boolProperty, parent);
 	}
 	return 0;
 }

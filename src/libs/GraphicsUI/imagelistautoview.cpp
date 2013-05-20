@@ -129,6 +129,7 @@ void ImageListAutoView::bringToFront(QGraphicsItem *pItem)
             if (item->zValue() >= zValue)
                 zValue = item->zValue() + 0.1;
         }
+		
         pItem->setZValue(zValue);
         fitInView(pItem);
     }

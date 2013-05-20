@@ -25,8 +25,10 @@ class DesignView : public QGraphicsView
 {
     Q_OBJECT
 public:
-    explicit DesignView(DesignNetSpace *space, QWidget *parent = 0);
+    explicit DesignView(DesignNetSpace *space = 0, QWidget *parent = 0);
+	
 	virtual ~DesignView();
+	void setDesignNetSpace(DesignNetSpace *space);
     DesignNetSpace* getSpace() const;//!< 返回相应的Space
     void removeItems(QList<QGraphicsItem*> items);//!< 删除Item
     virtual void contextMenuEvent ( QContextMenuEvent * event );
@@ -51,16 +53,19 @@ protected:
     void removeProcessor(ProcessorGraphicsBlock *processor);
 signals:
     void processorSelected(QList<Processor*> processors);
-
+	void processorAdded(Processor* processor);
 public slots:
     void processorClosed();
-
+	void onProcessorAdded(Processor *processor);
     void onConnectionAdded(Port* inputPort, Port* outputPort);
     void onConnectionRemoved(Port* inputPort, Port* outputPort);
+	void reloadSpace();
 private:
     QMultiHash<Port*, PortArrowLinkItem*> m_arrowLinkItems;
     DesignNetSpace* m_designnetSpace;
     ProcessorGraphicsBlock* m_pMousePressedItem;
+	PortArrowLinkItem*			m_currentArrowLinkItem;
+	PortGraphicsItem*			m_pressedPort;//!< 鼠标在该Port上按下
 };
 }
 

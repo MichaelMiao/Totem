@@ -3,9 +3,28 @@
 #include "Utils/totemassert.h"
 namespace DesignNet{
 
-ImageData::ImageData(QObject *parent) :
-    IData(parent)
+ImageData::ImageData(int type, QObject *parent) :
+    IData(parent),
+	m_type(type)
 {
+	switch (m_type){
+	case IMAGE_BGR:
+		{
+			m_image.load(QLatin1String(Constants::DATA_IMAGE_COLOR_IMAGE));
+			break;
+		}
+	case IMAGE_GRAY:
+		{
+			m_image.load(QLatin1String(Constants::DATA_IMAGE_GRAY_IMAGE));
+			break;
+		}
+	case IMAGE_BINARY:
+		{
+			m_image.load(QLatin1String(Constants::DATA_IMAGE_BINARY_IMAGE));
+			break;
+		}
+	}
+	
 }
 
 Core::Id ImageData::id()
@@ -26,7 +45,7 @@ cv::Mat ImageData::imageData() const
 
 IData* ImageData::clone( QObject *parent /*= 0 */ )
 {
-	ImageData *imageData = new ImageData(parent);
+	ImageData *imageData = new ImageData(this->imageType(), parent);
 	imageData->setImageData(this->imageData().clone());
 	return imageData;
 }
@@ -39,10 +58,24 @@ bool ImageData::copy( IData* data )
 	{
 		return false;
 	}
-	m_imageMat = imageData->imageData().clone();
+	imageData->imageData().copyTo(m_imageMat);
 	emit dataChanged();
 	return true;
 
+}
+
+bool ImageData::isValid() const
+{
+	if (m_imageMat.empty())
+	{
+		return false;
+	}
+	return true;
+}
+
+QImage ImageData::image()
+{
+	return m_image;
 }
 
 }

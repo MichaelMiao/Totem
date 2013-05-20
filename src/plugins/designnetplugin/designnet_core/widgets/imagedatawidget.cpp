@@ -7,7 +7,7 @@
 namespace DesignNet{
 
 ImageDataWidget::ImageDataWidget(IData *data, QGraphicsItem *parent, Qt::WindowFlags wFlags)
-    : IDataWidget(data, parent, wFlags)
+    : IDataWidget(data, false, parent, wFlags)
 {
     onUpdate();
 }
@@ -52,6 +52,12 @@ void ImageDataWidget::onUpdate()
         QImage img;
         m_image = img;
     }
-    update();
+    updateGeometry();
 }
+
+void ImageDataWidget::onShowDetail()
+{
+
+}
+
 }

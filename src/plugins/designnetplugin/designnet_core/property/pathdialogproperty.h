@@ -33,6 +33,9 @@ public:
 
     void setSinglePath(bool single){m_bSinglePath = single;}
     bool isSinglePath() const{return m_bSinglePath;}
+
+	virtual void serialize(Utils::XmlSerializer& s) const;
+	virtual void deserialize(Utils::XmlDeserializer& s) const;
 protected:
     QList<Utils::Path>  m_paths;         //!< 用来存最终的路径
     QString             m_openPath;     //!< 默认打开路径

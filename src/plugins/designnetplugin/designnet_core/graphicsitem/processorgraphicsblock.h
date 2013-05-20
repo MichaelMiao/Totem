@@ -10,7 +10,29 @@
 #include <QList>
 #include <QIcon>
 #include <QGraphicsItem>
+
+#define DECLARE_PROCESSOR_SERIALIZABLE(TNAME) \
+	DECLARE_SERIALIZABLE(TNAME, ProcessorGraphicsBlock)
+namespace Utils{
+class XmlSerializer;
+}
 namespace DesignNet{
+
+
+class DESIGNNET_CORE_EXPORT Position : public Utils::XmlSerializable
+{
+public:
+	DECLARE_SERIALIZABLE(Position, Position)
+	Position(){m_x = 0; m_y = 0;}
+	Position(const float &x, const float &y){m_x = x;m_y = y;}
+	Position(const QPointF &point){m_x = point.x(); m_y = point.y();}
+	
+	virtual void serialize(Utils::XmlSerializer& s)const;
+	virtual void deserialize(Utils::XmlDeserializer& s) ;
+	
+	float m_x;
+	float m_y;
+};
 class Block;
 class PortGraphicsItem;
 class DesignView;
@@ -49,7 +71,8 @@ public:
 
     
     virtual void initialize();  //!< 初始化
-
+// 	void setScenePosition(Position &position);
+// 	Position scenePosition();
     bool connect(PortGraphicsItem *inputPort, PortGraphicsItem *outputPort);
     PortGraphicsItem *getPortGraphicsItem(Port* port);
     
@@ -61,6 +84,10 @@ public:
 
     virtual Core::Id typeID() const;
     virtual QString category() const;
+	virtual void serialize(Utils::XmlSerializer& s) const;
+	virtual void deserialize(Utils::XmlDeserializer& s) ;
+
+	Position originalPosition() const;
 signals:
     void arrowStarted(PortArrowLinkItem* item);
     void selectionChanged(bool bSelected);
@@ -95,6 +122,7 @@ protected:
     QList<PortGraphicsItem*>    m_inputPortItems;
     QList<PortGraphicsItem*>    m_outputPortItems;
     QIcon                       m_icon;
+	Position					m_pos;
 };
 }
 

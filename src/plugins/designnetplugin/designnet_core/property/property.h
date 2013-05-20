@@ -5,10 +5,14 @@
 #include "aggregation/aggregate.h"
 #include "../designnet_core_global.h"
 #include "coreplugin/id.h"
+#include "Utils/XML/xmlserializable.h"
+namespace Utils{
+class XmlSerializer;
+}
 namespace DesignNet{
 
 class PropertyOwner;
-class DESIGNNET_CORE_EXPORT Property : public QObject
+class DESIGNNET_CORE_EXPORT Property : public QObject, public Utils::XmlSerializable
 {
     Q_OBJECT
 public:
@@ -35,6 +39,11 @@ public:
     PropertyOwner *owner() const;
     void setOwner(PropertyOwner *owner);
 	virtual bool isValid() const = 0;
+
+	virtual void serialize(Utils::XmlSerializer& s) const;
+	virtual void deserialize(Utils::XmlDeserializer& s) ;
+	virtual QString serializableType() const;
+	virtual XmlSerializable* createSerializable() const;
 signals:
     void changed();
 public slots:

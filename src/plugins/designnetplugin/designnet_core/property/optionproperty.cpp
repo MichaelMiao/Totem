@@ -1,5 +1,9 @@
 #include "optionproperty.h"
 #include "designnetconstants.h"
+#include "Utils/XML/xmlserializer.h"
+#include "Utils/XML/xmlserializable.h"
+#include "Utils/XML/xmldeserializer.h"
+
 #include <QDebug>
 namespace DesignNet{
 
@@ -49,6 +53,17 @@ QList<QString> OptionProperty::keys()
 QVariant OptionProperty::getValue( const QString &key )
 {
 	return m_options.value(key, QVariant());
+}
+
+void OptionProperty::serialize( Utils::XmlSerializer& s )const
+{
+	Property::serialize(s);
+	s.serialize("value", m_currentKey);
+}
+
+void OptionProperty::deserialize( Utils::XmlDeserializer& s )
+{
+
 }
 
 }

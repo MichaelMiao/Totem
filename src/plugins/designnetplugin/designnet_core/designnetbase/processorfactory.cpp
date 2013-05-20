@@ -3,6 +3,7 @@
 #include "processor.h"
 #include "coreplugin/icore.h"
 #include "coreplugin/messagemanager.h"
+#include "Utils/XML/xmlserializablefactory.h"
 namespace DesignNet{
 
 ProcessorFactory* ProcessorFactory::m_instance = 0;
@@ -44,6 +45,7 @@ void ProcessorFactory::registerProcessor(Processor *processor) const
     if (m_processors.find(name) == m_processors.end())
     {
         m_processors.insert(name, processor);
+		Core::ICore::serializableFactory()->registerSerializable(processor);
     }
     else
     {

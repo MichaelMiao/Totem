@@ -1,6 +1,7 @@
 ﻿#include "fileutils.h"
 #include "totemassert.h"
 #include "savefile.h"
+#include "hostosinfo.h"
 
 #include <QDir>
 #include <QDebug>
@@ -170,7 +171,16 @@ bool FileUtils::isFileNewerThan(const QString &filePath, const QDateTime &timeSt
     }
     return false;
 }
+void Path::serialize(XmlSerializer& s) const
+{
+	s.serialize("value", m_path);
+	s.serialize("recursion", bRecursion);
+}
 
+void Path::deserialize(XmlDeserializer& s) 
+{
+
+}
 //-  FileSaverBase ----------------------------
 
 FileSaverBase::FileSaverBase()
@@ -338,5 +348,174 @@ TempFileSaver::~TempFileSaver()
     m_file = 0;
     if (m_autoRemove)
         QFile::remove(m_fileName);
+}
+
+/*! \class Utils::FileName
+
+    \brief A light-weight convenience class for filenames
+
+    On windows filenames are compared case insensitively.
+*/
+
+FileName::FileName()
+    : QString()
+{
+
+}
+
+/// Constructs a FileName from \a info
+FileName::FileName(const QFileInfo &info)
+    : QString(info.absoluteFilePath())
+{
+}
+
+/// \returns a QFileInfo
+QFileInfo FileName::toFileInfo() const
+{
+    return QFileInfo(*this);
+}
+
+/// \returns a QString for passing on to QString based APIs
+QString FileName::toString() const
+{
+    return QString(*this);
+}
+
+/// \returns a QString to display to the user
+/// Converts the separators to the native format
+QString FileName::toUserOutput() const
+{
+    return QDir::toNativeSeparators(toString());
+}
+
+/// Find the parent directory of a given directory.
+
+/// Returns an empty FileName if the current dirctory is already
+/// a root level directory.
+
+/// \returns \a FileName with the last segment removed.
+FileName FileName::parentDir() const
+{
+    const QString basePath = toString();
+    if (basePath.isEmpty())
+        return FileName();
+
+    const QDir base(basePath);
+    if (base.isRoot())
+        return FileName();
+
+    const QString path = basePath + QLatin1String("/..");
+    const QString parent = QDir::cleanPath(path);
+
+    return FileName::fromString(parent);
+}
+
+/// Constructs a FileName from \a fileName
+/// \a fileName is not checked for validity.
+FileName FileName::fromString(const QString &filename)
+{
+    return FileName(filename);
+}
+
+/// Constructs a FileName from \a fileName
+/// \a fileName is only passed through QDir::cleanPath
+FileName FileName::fromUserInput(const QString &filename)
+{
+    return FileName(QDir::cleanPath(filename));
+}
+
+FileName::FileName(const QString &string)
+    : QString(string)
+{
+
+}
+
+bool FileName::operator==(const FileName &other) const
+{
+    return QString::compare(*this, other, HostOsInfo::fileNameCaseSensitivity()) == 0;
+}
+
+bool FileName::operator!=(const FileName &other) const
+{
+    return !(*this == other);
+}
+
+bool FileName::operator<(const FileName &other) const
+{
+    return QString::compare(*this, other, HostOsInfo::fileNameCaseSensitivity()) < 0;
+}
+
+bool FileName::operator<=(const FileName &other) const
+{
+    return QString::compare(*this, other, HostOsInfo::fileNameCaseSensitivity()) <= 0;
+}
+
+bool FileName::operator>(const FileName &other) const
+{
+    return other < *this;
+}
+
+bool FileName::operator>=(const FileName &other) const
+{
+    return other <= *this;
+}
+
+/// \returns whether FileName is a child of \a s
+bool FileName::isChildOf(const FileName &s) const
+{
+    if (s.isEmpty())
+        return false;
+    if (!QString::startsWith(s, HostOsInfo::fileNameCaseSensitivity()))
+        return false;
+    if (size() <= s.size())
+        return false;
+    // s is root, '/' was already tested in startsWith
+    if (s.QString::endsWith(QLatin1Char('/')))
+        return true;
+    // s is a directory, next character should be '/' (/tmpdir is NOT a child of /tmp)
+    return at(s.size()) == QLatin1Char('/');
+}
+
+/// \overload
+bool FileName::isChildOf(const QDir &dir) const
+{
+    return isChildOf(Utils::FileName::fromString(dir.absolutePath()));
+}
+
+/// \returns whether FileName endsWith \a s
+bool FileName::endsWith(const QString &s) const
+{
+    return QString::endsWith(s, HostOsInfo::fileNameCaseSensitivity());
+}
+
+/// \returns the relativeChildPath of FileName to parent if FileName is a child of parent
+/// \note returns a empty FileName if FileName is not a child of parent
+/// That is, this never returns a path starting with "../"
+FileName FileName::relativeChildPath(const FileName &parent) const
+{
+    if (!isChildOf(parent))
+        return Utils::FileName();
+    return FileName(QString::mid(parent.size() + 1, -1));
+}
+
+/// Appends \a s, ensuring a / between the parts
+FileName &FileName::appendPath(const QString &s)
+{
+    if (!isEmpty() && !QString::endsWith(QLatin1Char('/')))
+        append(QLatin1Char('/'));
+    append(s);
+    return *this;
+}
+
+FileName &FileName::append(const QString &str)
+{
+    QString::append(str);
+    return *this;
+}
+
+FileName &FileName::append(QChar str)
+{
+    QString::append(str);
+    return *this;
 }
 }

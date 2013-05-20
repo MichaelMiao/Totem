@@ -3,9 +3,12 @@
 #include "idatawidget.h"
 #include "data/datamanager.h"
 #include "graphicsitem/portgraphicsitem.h"
+#include "GraphicsUI/graphicsautoshowhideitem.h"
+
 #include "designnetbase/port.h"
 
 #include <QGraphicsLinearLayout>
+#include <QGraphicsSceneMouseEvent>
 #include <QToolButton>
 #include <QGraphicsProxyWidget>
 #include <QPalette>
@@ -67,12 +70,15 @@ ToolTipGraphicsItemPrivate::ToolTipGraphicsItemPrivate(ToolTipGraphicsItem* item
 
 
 ToolTipGraphicsItem::ToolTipGraphicsItem(PortGraphicsItem *parent)
-    : QGraphicsWidget(parent, Qt::ToolTip),
+    : QGraphicsObject(parent),
       d(new ToolTipGraphicsItemPrivate(this))
 {
-    this->resize(255, 255);
     connect(d->m_closeItem, SIGNAL(clicked()), this, SLOT(onClosed()));
+	connect(this, SIGNAL(visibleChanged()), this, SLOT(onVisibleChanged()));
 	setData(parent->getPort()->data());
+	setAcceptHoverEvents(true);
+	setFlags(ItemIsSelectable);
+	setCacheMode(QGraphicsItem::ItemCoordinateCache);
 }
 
 void ToolTipGraphicsItem::setText(const QString &text)
@@ -110,13 +116,6 @@ void ToolTipGraphicsItem::paint(QPainter *painter,
     painter->setBrush(palette.toolTipBase());
     painter->drawRoundedRect(boundingRect(), 2, 2);
     painter->restore();
-    QGraphicsWidget::paint(painter, item, w);
-}
-
-void ToolTipGraphicsItem::resizeEvent(QGraphicsSceneResizeEvent *event)
-{
-    relayout();
-    QGraphicsWidget::resizeEvent(event);
 }
 
 QVariant ToolTipGraphicsItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
@@ -154,7 +153,6 @@ void ToolTipGraphicsItem::setData(IData *data)
     if(d->m_data)
     {
         d->m_customWidget = DataManager::instance()->createWidget(data, this);
-		connect(d->m_customWidget, SIGNAL(geometryChanged()), this, SLOT(relayout()));
         d->m_customWidget->setVisible(true);
     }
     update();
@@ -172,8 +170,10 @@ void ToolTipGraphicsItem::relayout()
     d->m_textItem->setPos(QPointF(rect.left(), TITLE_HEIGHT));
     if(d->m_customWidget)
     {
+
         d->m_customWidget->setPos(QPointF(rect.left() + 5,
                               TITLE_HEIGHT + d->m_textItem->boundingRect().height()));
+		d->m_customWidget->setVisible(true);
     }
 	scene()->update();
 }
@@ -187,11 +187,37 @@ void ToolTipGraphicsItem::onTopMost(bool topmost)
 {
     if(topmost)
     {
-        this->setZValue(0);
+		this->setZValue(DesignNet::Constants::ZValue_Tooltip);
     }
     else
     {
-        this->setZValue(DesignNet::Constants::ZValue_GraphicsBlock_Normal);
+		this->setZValue(DesignNet::Constants::ZValue_GraphicsBlock_Normal);
     }
 }
+
+void ToolTipGraphicsItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
+{
+	event->accept();
+}
+
+void ToolTipGraphicsItem::onVisibleChanged()
+{
+	if(this->isVisible())
+	{
+		if(d->m_customWidget)
+		{
+			connect(d->m_customWidget, SIGNAL(geometryChanged()), this, SLOT(relayout()));
+			d->m_customWidget->setVisible(true);
+		}
+	}
+	else
+	{
+		if(d->m_customWidget)
+		{
+			disconnect(d->m_customWidget, SIGNAL(geometryChanged()), this, SLOT(relayout()));
+			d->m_customWidget->setVisible(false);
+		}
+	}
+}
+
 }

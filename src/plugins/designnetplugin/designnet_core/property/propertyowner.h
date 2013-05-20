@@ -5,12 +5,16 @@
 #include "property.h"
 #include "aggregation/aggregate.h"
 #include "../designnet_core_global.h"
+#include "Utils/XML/xmlserializable.h"
 #include <QString>
 #include <QHash>
 #include <QList>
+namespace Utils{
+class XmlSerializer;
+}
 namespace DesignNet{
 class Property;
-class DESIGNNET_CORE_EXPORT PropertyOwner
+class DESIGNNET_CORE_EXPORT PropertyOwner : public Utils::XmlSerializable
 {
 public:
     PropertyOwner();
@@ -41,6 +45,9 @@ public:
      */
     virtual void propertyRemoved(Property* prop) = 0;
 	virtual void propertyAdded(Property* prop) = 0;
+
+	virtual void serialize(Utils::XmlSerializer& s) const const;
+	virtual void deserialize(Utils::XmlDeserializer& s) ;
 protected:
     Aggregation::Aggregate* m_aggregate; //!< 所有属性为一个整体，不可以删除
     QHash<QString, QString> m_propertyGroupIDLabelMap;//!< group id-->group在gui中的名称

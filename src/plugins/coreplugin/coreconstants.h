@@ -29,7 +29,7 @@ const char G_VIEW[]                = "Totem.Group.View";
 const char G_HELP[]                = "Totem.Group.Help";
 const char G_WINDOW[]              = "Totem.Group.Window";
 const char G_TOOLS[]                = "Totem.Group.Tool";
-
+const char G_FILE_SAVE[]			= "Tote.Group.Save";
 //SubMenuBar IDs
 const char M_FILE[]                = "Totem.Menu.File";
 const char M_VIEW[]                = "Totem.Menu.View";
@@ -71,22 +71,25 @@ const char PASTE[]                 = "Totem.Paste";
 const char CUT[]                   = "Totem.Cut";
 const char SELECTALL[]             = "Totem.SelectAll";
 const char OPTIONS[]               = "Totem.Options";
-
-
+const char CLOSE[]				   = "Totem.CloseDocument";
+const char SAVE[]				   = "Totem.Save";
+const char SAVEAS[]				   = "Totem.SaveAs";
 // Contexts
 const char C_GLOBAL[]              = "Global Context";
 const char C_GENERAL_OUTPUT_PANE[] = "Core.GeneralOutputPane";
 const char C_DESIGN_MODE[]         = "Core.DesignMode";
-
+const char C_EDITORMANAGER[]	   = "Core.EditorManager";
 
 const unsigned int DEFAULT_BASE_COLOR = 0x666666;
 //ICON
-const char ICON_CLEAN_PANE[]       = ":/core/images/edit-clear.png";
-const char ICON_CLOSE_DOCUMENT[]   = ":/core/images/close.png";
-const char ICON_ABOUT_PLUGINS[]    = ":/core/images/stock-plugin-16.png";
-const char ICON_OPTION[]           = ":/core/images/option.png";
-const char ICON_NEW_FILE[]         = ":/core/images/document-new.png";
-const char ICON_OPEN_FILE[]        = ":/core/images/document-open.png";
+const char ICON_CLEAN_PANE[]		= ":/core/images/edit-clear.png";
+const char ICON_CLOSE_DOCUMENT[]	= ":/core/images/close.png";
+const char ICON_ABOUT_PLUGINS[]		= ":/core/images/stock-plugin-16.png";
+const char ICON_OPTION[]			= ":/core/images/option.png";
+const char ICON_NEW_FILE[]			= ":/core/images/document-new.png";
+const char ICON_OPEN_FILE[]			= ":/core/images/document-open.png";
+const char ICON_SAVE_FILE[]			= ":/core/images/save.png";
+const char ICON_SAVEAS_FILE[]		= ":/core/images/saveas.png";
 //IDs
 const char SETTINGS_CATEGORY_CORE[] = "Environment.Core";
 const char SETTINGS_CATEGORY_CORE_ICON[] = ":/core/images/category_core.png";
@@ -98,6 +101,9 @@ const char SETTINGS_ID_MIMETYPES[] = "Environment.MimeTypes";
 
 //ALL_FILES_FILTER
 const char ALL_FILES_FILTER[] = QT_TRANSLATE_NOOP("Core", "All Files (*)");
+
+//Wizard
+const char WIZARD_SEPARATOR = '/';
 }
 }
 

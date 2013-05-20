@@ -18,7 +18,6 @@ public:
     DesignNetEditorPrivate(QWidget *parent);
     QString displayName;
     DesignNetDocument *file;
-    DesignNetSpace* m_space;
     QTextEdit   *   m_textEdit;
     DesignView  *   m_designView;
     QToolBar *      m_toolBar;
@@ -27,17 +26,16 @@ public:
 DesignNetEditorPrivate::DesignNetEditorPrivate(QWidget *parent)
 {
     m_textEdit  = new QTextEdit(parent);
-    m_space     = new DesignNetSpace(0, parent);
-    m_designView = new DesignView(m_space, parent);
+	
 
 }
 
 DesignNetEditor::DesignNetEditor(QWidget *parent)
     : d(new DesignNetEditorPrivate(parent))
 {
-    d->file = new DesignNetDocument(this);
-    setWidget(d->m_textEdit);
-    connect(d->file, SIGNAL(changed()), this, SIGNAL(changed()));
+	setWidget(d->m_textEdit);
+	d->file = new DesignNetDocument(this);
+	d->m_designView = new DesignView(0);
 }
 
 DesignView *DesignNetEditor::designNetWidget()
@@ -53,7 +51,9 @@ bool DesignNetEditor::createNew(const QString &contents)
 
 bool DesignNetEditor::open(QString *errorString, const QString &fileName, const QString &realFileName)
 {
-    return d->file->open(errorString, fileName, realFileName);
+	connect(d->file, SIGNAL(changed()), this, SIGNAL(changed()));
+	d->m_designView->setDesignNetSpace(d->file->designNetSpace());
+	return d->file->open(errorString, fileName, realFileName);
 }
 
 Core::IDocument *DesignNetEditor::document()
@@ -104,7 +104,7 @@ Id DesignNetEditor::preferredModeType() const
 
 DesignNetSpace *DesignNetEditor::designNetSpace() const
 {
-    return d->m_space;
+    return d->file->designNetSpace();
 }
 
 

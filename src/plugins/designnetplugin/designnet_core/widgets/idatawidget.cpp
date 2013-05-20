@@ -1,14 +1,30 @@
 #include "idatawidget.h"
+#include "GraphicsUI/graphicsautoshowhideitem.h"
+#include <QPainter>
+#include <QGraphicsScene>
+#include <QLabel>
 namespace DesignNet {
 
-IDataWidget::IDataWidget(IData *data, QGraphicsItem *parent, Qt::WindowFlags wFlags) :
-    QGraphicsWidget(parent, wFlags),m_data(data)
+const char DETAILICON[] = ":/media/detail48.png";
+IDataWidget::IDataWidget(IData *data, bool bDetailButton, QGraphicsItem *parent, Qt::WindowFlags wFlags) :
+    QGraphicsProxyWidget(parent, wFlags),
+		m_data(data),
+		m_bDetailButton(bDetailButton)
 {
-    connect(data, SIGNAL(dataChanged()), this ,SLOT(updateData()));
+    m_detailButton = new GraphicsUI::GraphicsAutoShowHideItem(this);
+	
+	m_detailButton->animateShow(bDetailButton);
+	m_detailButton->setSize(QSize(32, 32));
+	m_detailButton->setPos(boundingRect().right() - 32, boundingRect().top());
+	m_detailButton->setPixmap(QPixmap(":/media/detail48.png"));
+	connect(m_detailButton, SIGNAL(clicked()), this, SLOT(showDetail()));
+	connect(m_data, SIGNAL(dataChanged()), this ,SLOT(updateData()));
 }
 
 QRectF IDataWidget::boundingRect() const
 {
+	if(m_bDetailButton)
+		return m_detailButton->boundingRect().adjusted(-2, -2, 2, 2);
     return QRectF(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 }
 
@@ -21,7 +37,20 @@ QSizeF IDataWidget::sizeHint(Qt::SizeHint which, const QSizeF &constraint) const
 {
     Q_UNUSED(which)
     Q_UNUSED(constraint)
-    return QSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    return boundingRect().size();
 }
+
+bool IDataWidget::isValid() const
+{
+	if(!m_data || !m_data->isValid())
+		return false;
+	return true;
+}
+
+void IDataWidget::showDetail()
+{
+	onShowDetail();
+}
+
 
 }
