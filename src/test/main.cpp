@@ -4,6 +4,7 @@
 #include "Utils/XML/xmlserializable.h"
 #include "Utils/XML/xmldeserializer.h"
 #include "Utils/XML/xmlserializablefactory.h"
+#include <QTest>
 using namespace Utils;
 class A: public Utils::XmlSerializable
 {
@@ -27,10 +28,16 @@ public:
 	}
 	int m_id;
 };
-
-int main(int argc, char *argv[])
+class MyTest : public QObject
 {
-	QApplication app(argc, argv);
+	Q_OBJECT
+public:
+public slots:
+	void test1();
+};
+
+void MyTest::test1()
+{
 	Utils::XmlSerializer x;
 	x.setFilePath("F:/miao.txt");
 	A a;
@@ -41,12 +48,13 @@ int main(int argc, char *argv[])
 		alist << a;
 	}
 	x.serialize("AList", alist, "A");
-	
+
 	x.write("F:/miao.txt");
 	alist.clear();
 	XmlSerializableFactory *factory = XmlSerializableFactory::instance();
 	factory->registerSerializable(new A(0));
 	XmlDeserializer deserializer("F:/miao.txt");
 	deserializer.deserializeCollection("AList", alist, "A");
-	return 0;
 }
+QTEST_APPLESS_MAIN(MyTest)
+#include "moc_test.cpp"

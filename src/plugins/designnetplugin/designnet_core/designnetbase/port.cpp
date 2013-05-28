@@ -2,9 +2,11 @@
 #include "utils/totemassert.h"
 #include "coreplugin/icore.h"
 #include "coreplugin/messagemanager.h"
+#include <QWriteLocker>
 namespace DesignNet{
 
-Port::Port(IData *data, PortType portType,const QString &name) :
+Port::Port(IData *data, PortType portType,const QString &name, QObject *parent) :
+	QObject(parent),
     m_bMultiInput(false),
     m_portType(portType),
     m_processor(0),
@@ -172,11 +174,13 @@ void Port::notifyStateChanged()
 
 void Port::notifyDataArrive()
 {
+	QWriteLocker locker(&processor()->m_workingLock);
     processor()->dataArrived(this);
 }
 
 void Port::addData(IData *data)
 {
+	QWriteLocker locker(&m_dataLocker);
 	if (m_portType == IN_PORT)
 	{
 		m_processor->waitForFinish();/// 等待该端口所在的处理器完成任务后，才能写数据
@@ -205,6 +209,11 @@ Port::~Port()
 		delete m_data;
 		m_data = 0;
 	}
+}
+
+void Port::setMultiInputSupported( const bool &bSupported /*= true*/ )
+{
+	m_bMultiInput = bSupported;
 }
 
 }

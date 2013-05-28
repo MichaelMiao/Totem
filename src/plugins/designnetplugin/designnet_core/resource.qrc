@@ -15,5 +15,6 @@
         <file>media/grayimages.jpg</file>
         <file>media/binaryimage.png</file>
         <file>media/matrix.jpg</file>
+        <file>media/intdata.png</file>
     </qresource>
 </RCC>

@@ -19,6 +19,7 @@ class DESIGNNET_CORE_EXPORT ToolTipGraphicsItem : public QGraphicsObject
     Q_OBJECT
 public:
     ToolTipGraphicsItem(PortGraphicsItem *parent);
+	virtual ~ToolTipGraphicsItem();
     void setText(const QString& text);
     QRectF boundingRect () const;
     virtual void	paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );

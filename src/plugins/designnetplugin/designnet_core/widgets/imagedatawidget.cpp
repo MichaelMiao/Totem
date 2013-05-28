@@ -34,6 +34,7 @@ QSizeF ImageDataWidget::sizeHint(Qt::SizeHint which, const QSizeF &constraint) c
 
 void ImageDataWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+	onUpdate();
     if(!m_image.isNull())
         painter->drawImage(0, 0, m_image);
 	IDataWidget::paint(painter, option, widget);

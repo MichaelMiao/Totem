@@ -43,7 +43,6 @@ Connection::Connection( const Connection &c )
 
 DesignNetSpace::DesignNetSpace(DesignNetSpace *space, QObject *parent) :
     Processor(space),
-    m_iMaxUID(0),
     m_bProcessing(false)
 {
     connect(this, SIGNAL(logout(QString)), Core::ICore::messageManager(), SLOT(printToOutputPanePopup(QString)));
@@ -58,11 +57,13 @@ void DesignNetSpace::addProcessor(Processor *processor)
         LOGOUT(tr("can't add the exist processor to the space"));
         return;
     }
+	processor->setSpace(this);
 	if (processor->id() == -1)
 	{
 		int iUID = generateUID();
 		processor->setID(iUID);
 	}
+	
     m_processors.push_back(processor);
     emit processorAdded(processor);
 	emit modified();
@@ -107,7 +108,13 @@ bool DesignNetSpace::disconnectPort(Port *inputPort, Port *outputPort)
 
 int DesignNetSpace::generateUID()
 {
-    return ++m_iMaxUID;
+	int maxID = 0;
+	foreach(Processor *processor, m_processors)
+	{
+		maxID = qMax(processor->id(), maxID);
+		maxID++;
+	}
+    return maxID; 
 }
 
 void DesignNetSpace::propertyRemoving(Property *prop)
@@ -236,6 +243,7 @@ void DesignNetSpace::deserialize( Utils::XmlDeserializer& s )
 	s.deserializeCollection("Processors", processors, "Processor");
 	foreach(Processor* p, processors)
 	{
+		p->init();
 		addProcessor(p);
 	}
 	QList<Connection> connections;
@@ -291,6 +299,14 @@ Processor* DesignNetSpace::findProcessor( const int &id )
 		}
 	}
 	return 0;
+}
+
+void DesignNetSpace::detachProcessor( Processor* processor )
+{
+	QList<Processor*>::const_iterator itr = (qFind(m_processors, processor));
+	TOTEM_ASSERT(itr != m_processors.end(), qDebug()<< "can't not remove the processor");
+	m_processors.removeOne(processor);
+	emit processorRemoved(processor);
 }
 
 }

@@ -20,7 +20,8 @@ public:
 signals:
 protected:
 	virtual void dataArrived(DesignNet::Port* port);  //!< 数据到达
-	DesignNet::Port m_outPort;
+	DesignNet::Port m_outPort;	//!< 输出Image数据
+	DesignNet::Port m_outImageCountPort;  //!< 输出整个Image个数
 	DesignNet::PathDialogProperty *m_pathProperty;
 };
 

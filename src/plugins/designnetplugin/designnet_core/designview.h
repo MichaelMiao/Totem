@@ -3,7 +3,9 @@
 
 #include <QGraphicsView>
 #include <QMultiHash>
-
+QT_BEGIN_NAMESPACE
+class QMenu;
+QT_END_NAMESPACE
 namespace DesignNet{
 
 class GraphicsBlockScene;
@@ -60,6 +62,8 @@ public slots:
     void onConnectionAdded(Port* inputPort, Port* outputPort);
     void onConnectionRemoved(Port* inputPort, Port* outputPort);
 	void reloadSpace();
+protected:
+	QMenu* createPopupMenu();
 private:
     QMultiHash<Port*, PortArrowLinkItem*> m_arrowLinkItems;
     DesignNetSpace* m_designnetSpace;

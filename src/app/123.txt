@@ -1,16 +1,39 @@
 <XML XMLVersion="0.0.1">
     <DesignNetSpace Name="DesignNetSpace" type="DesignNetSpace" ID="0">
         <Processors>
-            <Processor Name="Image File" type="Loader/Image File" ID="1">
-                <Property typeID="PropertyType/PathDialog" Name="PathDialogProperty" type="PropertyType/PathDialog" ID="OpenFile"/>
-                <Pos X="-352" Y="-66" type="Position"/>
-            </Processor>
             <Processor Name="Color Feature HSV" type="Flowers/Feature/Color Feature HSV" ID="0">
-                <Pos X="-245" Y="74" type="Position"/>
+                <Pos X="-132" Y="66" type="Position"/>
+            </Processor>
+            <Processor Name="Join" type="Operations/Join" ID="3">
+                <Pos X="200" Y="-34" type="Position"/>
+            </Processor>
+            <Processor Name="Polor GLCM" type="Flowers/Feature/Polor GLCM" ID="4">
+                <Property typeID="PropertyType/DoubleRange" Name="Threshold" value="0" type="PropertyType/DoubleRange" ID="threshold"/>
+                <Property typeID="PropertyType/DoubleRange" Name="Bins" value="8" type="PropertyType/DoubleRange" ID="binCount"/>
+                <Pos X="34" Y="-99" type="Position"/>
+            </Processor>
+            <Processor Name="Color 2 Gray" type="Conversion/Color 2 Gray" ID="5">
+                <Pos X="-153" Y="-144" type="Position"/>
+            </Processor>
+            <Processor Name="Buffer" type="Operations/Buffer" ID="6">
+                <Property typeID="PropertyType/DoubleRange" Name="BufferSize" value="17" type="PropertyType/DoubleRange" ID="BufferSize"/>
+                <Pos X="370" Y="29" type="Position"/>
+            </Processor>
+            <Processor Name="Image Folder Loader" type="Loader/Image Folder Loader" ID="7">
+                <Property typeID="PropertyType/PathDialog" Name="PathDialogProperty" type="PropertyType/PathDialog" ID="OpenDirectory">
+                    <Path value="F:\others' works\peiyong\train-46to50\46" type="Path" recursion="0"/>
+                </Property>
+                <Pos X="-388" Y="-32" type="Position"/>
             </Processor>
         </Processors>
         <Connections>
-            <Connection src_processor="1" target_processor="0" target_port="" src_port="ImageData"/>
+            <Connection src_processor="0" target_processor="3" target_port="Port 1" src_port="OutFeature"/>
+            <Connection src_processor="3" target_processor="6" target_port="InputBuffer" src_port="OutputMatrix"/>
+            <Connection src_processor="4" target_processor="3" target_port="Port 0" src_port="OutputFeature"/>
+            <Connection src_processor="5" target_processor="4" target_port="InputGrayImage" src_port="grayImage"/>
+            <Connection src_processor="7" target_processor="5" target_port="InputColorImage" src_port="ImageData"/>
+            <Connection src_processor="7" target_processor="0" target_port="" src_port="ImageData"/>
+            <Connection src_processor="7" target_processor="6" target_port="BufferSize" src_port="outimagecount"/>
         </Connections>
     </DesignNetSpace>
 </XML>

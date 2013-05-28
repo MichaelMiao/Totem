@@ -57,6 +57,7 @@ public:
 	void setTypeImageVisible(bool bVisible = true);
 protected slots:
     void processorSelectionChanged(bool value);
+	
 protected:
     virtual void	hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
     virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );

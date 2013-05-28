@@ -4,6 +4,7 @@
 #include "coreplugin/id.h"
 #include "../designnet_core_global.h"
 #include <QObject>
+#include <QImage>
 namespace DesignNet{
 class Processor;
 class DESIGNNET_CORE_EXPORT IData : public QObject

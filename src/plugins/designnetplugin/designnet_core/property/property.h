@@ -23,6 +23,7 @@ public:
      * \param[in] parent
      */
     explicit Property(const QString &id, const QString &name, QObject *parent = 0);
+	virtual ~Property();
     /*!
      * \brief typeID 返回该属性的类型ID
      * \note 属性的typeID与id不同，id是该属性在它所属的Owner中的唯一标识，

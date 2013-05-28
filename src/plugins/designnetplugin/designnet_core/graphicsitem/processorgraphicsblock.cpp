@@ -2,6 +2,9 @@
 #include "../designnetbase/block.h"
 #include "../designview.h"
 #include "../designnetbase/designnetspace.h"
+#include "../data/matrixdata.h"
+
+
 #include "processorgraphicsblock.h"
 #include "portgraphicsitem.h"
 #include "port.h"
@@ -11,6 +14,8 @@
 #include "coreplugin/messagemanager.h"
 
 #include "GraphicsUI/graphicsautoshowhideitem.h"
+#include "GraphicsUI/graphicstoolbutton.h"
+#include "GraphicsUI/textanimationblock.h"
 #include "designnetconstants.h"
 #include "graphicsitem/blocktextitem.h"
 #include "Utils/XML/xmlserializable.h"
@@ -25,7 +30,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
 #include <QDebug>
-
+#include <QMenu>
 #include <QFont>
 #include <QTimer>
 using namespace GraphicsUI;
@@ -52,6 +57,10 @@ ProcessorGraphicsBlock::ProcessorGraphicsBlock(DesignNetSpace *space, QGraphicsI
 	setFlag(ItemSendsGeometryChanges);
 	setAcceptHoverEvents(true);
 	setCacheMode(DeviceCoordinateCache);
+	m_addInputPortItem = new GraphicsUI::GraphicsToolButton(this);
+	m_addInputPortItem->setPixmap(QPixmap(Core::ICore::resourcePath() + "/" + QLatin1String(DesignNet::Constants::ICON_LIST_ADD)));
+	m_addInputPortItem->setVisible(false);
+	QObject::connect(m_addInputPortItem, SIGNAL(clicked()), this, SLOT(onAddPort()));
 	///
 	/// title
 	m_titleItem = new BlockTextItem(this);
@@ -59,17 +68,20 @@ ProcessorGraphicsBlock::ProcessorGraphicsBlock(DesignNetSpace *space, QGraphicsI
 	/// close按钮
 	m_closeItem = new GraphicsAutoShowHideItem(this);
 	m_closeItem->setSize(QSize(16, 16));
-	m_closeItem->setPos(boundingRect().right() - 16, boundingRect().top());
 	m_closeItem->setPixmap(QPixmap(":/media/item-close.png"));
+	m_statusBlock = new TextAnimationBlock(this);
+	m_statusBlock->setSizeF(QSizeF(STATUSBAR_HEIGHT, DEFAULT_WIDTH));
 	QObject::connect(m_closeItem, SIGNAL(clicked()), this, SIGNAL(closed()));
-	
+
 	QTimer::singleShot(0, this, SLOT(relayout()));
 
-    QObject::connect(this, SIGNAL(logout(QString)),
-            Core::ICore::messageManager(),
-            SLOT(printToOutputPanePopup(QString)));
-    m_icon = QIcon(":/media/default_processor.png");
+	QObject::connect(this, SIGNAL(logout(QString)),
+		Core::ICore::messageManager(),
+		SLOT(printToOutputPanePopup(QString)));
+	m_icon = QIcon(":/media/default_processor.png");
 	m_block = 0;
+	m_layoutDirty = true;
+	setPortCountResizable(false);
 }
 
 ProcessorGraphicsBlock::~ProcessorGraphicsBlock()
@@ -79,22 +91,11 @@ ProcessorGraphicsBlock::~ProcessorGraphicsBlock()
 
 QRectF ProcessorGraphicsBlock::boundingRect() const
 {
-    int inputPortCount = m_inputPortItems.count();
-    int outputPortCount = m_outputPortItems.count();
-    int maxCount = qMax(inputPortCount, outputPortCount);
-
-    float fHeight = 0;
-    float fWidth = m_titleItem->boundingRect().width() + ITEMSPACING * 2;
-    if(maxCount > 0)
-    {
-        fHeight = PORT_MARGIN + maxCount * PORT_MARGIN;
-    }
-    else
-        fHeight = 2*PORT_MARGIN;
-    QSizeF miniSize = minimumSizeHint();
-    fHeight = qMax(fHeight,(float) miniSize.height()) + ITEMSPACING * 2;
-    fWidth = qMax(fWidth, (float)miniSize.width()) + m_closeItem->boundingRect().width() * 2;
-    return QRectF(-fWidth/2, -fHeight/2, fWidth, fHeight);
+    QRectF mainAreaRect = mainRect();
+	QRectF rectF = mainAreaRect;
+	rectF.setTop(rectF.top() - TITLE_HEIGHT - 1);
+	rectF.setBottom(rectF.bottom() + STATUSBAR_HEIGHT + 1);
+	return rectF;
 }
 
 QSizeF ProcessorGraphicsBlock::minimumSizeHint() const
@@ -105,33 +106,39 @@ QSizeF ProcessorGraphicsBlock::minimumSizeHint() const
 void ProcessorGraphicsBlock::layoutItems()
 {
     prepareGeometryChange();
+	m_closeItem->setPos(boundingRect().right() - m_closeItem->boundingRect().width() - ITEMSPACING, boundingRect().top());
     QRectF rectF = mainRect();
-    float posX = rectF.left();
-    float posY = rectF.top();
+    float posX = rectF.left() + PortGraphicsItem::DEFAULT_PORT_HEIGHT / 2;
+    float posY = rectF.top() + PortGraphicsItem::DEFAULT_PORT_HEIGHT / 2 + ITEMSPACING;
     if(m_inputPortItems.count() != 0)
     {
         foreach(PortGraphicsItem *portItem, m_inputPortItems)
         {
-            posY += PORT_MARGIN;
-            posX = rectF.left() + portItem->size().width() / 2;
             portItem->setPos(posX, posY);
+			posY += PortGraphicsItem::DEFAULT_PORT_HEIGHT + ITEMSPACING;
 			portItem->showTypeImage(PortGraphicsItem::RIGHT);
         }
+		
     }
+	if (m_addInputPortItem->isVisible())
+	{
+		m_addInputPortItem->setPos(posX, posY);
+	}
 
-
-    posY = rectF.top();
+	posX = rectF.right() - PortGraphicsItem::DEFAULT_PORT_HEIGHT / 2;
+	posY = rectF.top() + PortGraphicsItem::DEFAULT_PORT_HEIGHT /2 + ITEMSPACING;
     if(m_outputPortItems.count() != 0)
     {
         foreach(PortGraphicsItem *portItem, m_outputPortItems)
         {
-            posX = rectF.right() - portItem->size().width() / 2;
-            posY += PORT_MARGIN;
-            portItem->setPos(posX - portItem->size().width() / 2, posY);
+            portItem->setPos(posX, posY);
+			posY += PortGraphicsItem::DEFAULT_PORT_HEIGHT + ITEMSPACING;
 			portItem->showTypeImage(PortGraphicsItem::LEFT);
         }
     }
-
+	m_statusBlock->setTextColor(Qt::white);
+	m_statusBlock->setPos(rectF.left(), rectF.bottom() + 1);
+	m_statusBlock->setSizeF(QSizeF(rectF.width(), STATUSBAR_HEIGHT));
 }
 
 QString ProcessorGraphicsBlock::title() const
@@ -157,9 +164,15 @@ void ProcessorGraphicsBlock::createPortItems()
 {
     foreach(Port* port, getInputPorts())
     {
-        PortGraphicsItem *pItem = new PortGraphicsItem(port, this);
-        QObject::connect(this, SIGNAL(selectionChanged(bool)),
+        PortGraphicsItem *pItem = new PortGraphicsItem(port,this);
+        if (m_portCountResizable)
+        {
+			pItem->setFlag(ItemIsMovable);
+        }
+		
+		QObject::connect(this, SIGNAL(selectionChanged(bool)),
                 pItem, SLOT(processorSelectionChanged(bool)));
+
         m_inputPortItems.append(pItem);
     }
     foreach(Port* port, getOutputPorts())
@@ -177,7 +190,7 @@ bool ProcessorGraphicsBlock::process()
     return true;
 }
 
-void ProcessorGraphicsBlock::initialize()
+void ProcessorGraphicsBlock::init()
 {
     createPortItems();
     layoutItems();
@@ -185,6 +198,7 @@ void ProcessorGraphicsBlock::initialize()
 	{
 		this->setPos(QPointF(m_pos.m_x, m_pos.m_y));
 	}
+	setTitle(title());
 }
 
 bool ProcessorGraphicsBlock::connect(PortGraphicsItem *inputPort, PortGraphicsItem *outputPort)
@@ -307,11 +321,10 @@ void ProcessorGraphicsBlock::propertyChanged( Property *prop )
 
 void ProcessorGraphicsBlock::paint( QPainter* painter, const QStyleOptionGraphicsItem *option, QWidget* widget /*= 0 */ )
 {
-	layoutItems();
+	prepareGeometryChange();
 	setTitle(title());
 	m_titleItem->setPos(boundingRect().left() + ITEMSPACING, boundingRect().top() + ITEMSPACING);
 	QRectF rectF = boundingRect();
-	rectF.adjust(2, 2, -2, -2);
 
 	painter->setPen(Qt::NoPen);
 	QRectF rectShadow = rectF;
@@ -339,8 +352,8 @@ void ProcessorGraphicsBlock::paint( QPainter* painter, const QStyleOptionGraphic
 	}
 	painter->save();
 	painter->setPen(QPen(Qt::white, 1));
-	painter->drawLine(rectF.left(), rectF.top() + TITLE_HEIGHT,
-		rectF.right(), rectF.top() + TITLE_HEIGHT);
+	painter->drawLine(mainRect().topLeft(), mainRect().topRight());
+	painter->drawLine(mainRect().bottomLeft(), mainRect().bottomRight());
 	painter->setRenderHints(QPainter::Antialiasing);
 	painter->restore();
 }
@@ -349,6 +362,7 @@ void ProcessorGraphicsBlock::setTitle( const QString &title )
 {
 	QString strTitle = "<span style=\"font-size:10pt;color:white\"> %1 </span> <span style=\"font-size:7pt; color:white\">ID:%2</span>";
 	m_titleItem->setHtml(strTitle.arg(title).arg(id()));
+	setLayoutDirty(true);
 }
 
 void ProcessorGraphicsBlock::relayout()
@@ -359,14 +373,12 @@ void ProcessorGraphicsBlock::relayout()
 
 QRectF ProcessorGraphicsBlock::mainRect() const
 {
-	QRectF rectF = boundingRect();
-	return QRectF(rectF.left(), rectF.top() + TITLE_HEIGHT + 1,
-		rectF.width(), rectF.height() - TITLE_HEIGHT - 1);
+	QSizeF size = mainSize();
+	return QRectF(-size.width()/ 2, -size.height()/2, size.width(), size.height());
 }
 
 void ProcessorGraphicsBlock::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
 {
-	m_closeItem->setPos(boundingRect().right() - 16, boundingRect().top());
 	m_closeItem->animateShow(true);
 	QGraphicsItem::hoverEnterEvent(event);
 }
@@ -391,7 +403,6 @@ void ProcessorGraphicsBlock::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void ProcessorGraphicsBlock::mouseReleaseEvent( QGraphicsSceneMouseEvent *event )
 {
-	update();
 	QGraphicsItem::mouseReleaseEvent(event);
 }
 
@@ -412,6 +423,117 @@ void ProcessorGraphicsBlock::deserialize( Utils::XmlDeserializer& s )
 DesignNet::Position ProcessorGraphicsBlock::originalPosition() const
 {
 	return m_pos;
+}
+
+void ProcessorGraphicsBlock::createContextMenu( QMenu *parentMenu )
+{
+
+}
+
+float ProcessorGraphicsBlock::statusBarHeight()
+{
+	return (float)STATUSBAR_HEIGHT;
+}
+
+QSizeF ProcessorGraphicsBlock::mainSize() const
+{
+	if (!m_layoutDirty)
+	{
+		return m_mainSize;
+	}
+	int inputPortCount = m_inputPortItems.count(); /// 输入端口个数
+	if (m_addInputPortItem->isVisible())
+	{
+		inputPortCount++;
+	}
+	int outputPortCount = m_outputPortItems.count();  /// 输出端口个数
+	int maxCount = qMax(inputPortCount, outputPortCount); 
+
+	float fHeight = 0;
+	/// 计算高度
+	if(maxCount > 0)
+	{
+		fHeight = maxCount * (PortGraphicsItem::DEFAULT_PORT_HEIGHT + ITEMSPACING + 1) + ITEMSPACING ;
+	}
+	else
+		fHeight = PortGraphicsItem::DEFAULT_PORT_HEIGHT + ITEMSPACING << 1;
+	/// 计算宽度
+	float fWidth = m_titleItem->boundingRect().width() + (ITEMSPACING << 1);
+	fWidth += m_closeItem->boundingRect().width() * 2;
+	m_mainSize.setWidth(fWidth);
+	m_mainSize.setHeight(fHeight);
+	m_layoutDirty = false;
+	return m_mainSize;
+}
+
+void ProcessorGraphicsBlock::setLayoutDirty( const bool &dirty /*= true*/ )
+{
+	m_layoutDirty = dirty;
+}
+
+void ProcessorGraphicsBlock::setPortCountResizable( const bool &bResizable /*= true*/ )
+{
+	m_portCountResizable = bResizable;
+	m_addInputPortItem->animateShow(bResizable);
+	m_addInputPortItem->setVisible(bResizable);
+	
+}
+
+void ProcessorGraphicsBlock::onRemovePort()
+{
+	PortGraphicsItem *item = qobject_cast<PortGraphicsItem*>(sender());
+	if (item)
+	{
+		m_inputPortItems.removeOne(item);
+	}
+}
+
+void ProcessorGraphicsBlock::removePort( PortGraphicsItem* port )
+{
+	port->removeAllConnection();
+	m_inputPortItems.removeAll(port);
+	m_inputPorts.removeOne(port->getPort());
+	delete port;
+	setLayoutDirty(true);
+	relayout();
+}
+
+void ProcessorGraphicsBlock::onAddPort()
+{
+	blockSignals(true);
+	QString portName = "Port %1";
+	Port *port = new Port(new MatrixData(0), Port::IN_PORT, portName.arg(m_inputPorts.count()), this);
+	addPort(port);
+	PortGraphicsItem *pItem = new PortGraphicsItem(port,this);
+	if (m_portCountResizable)
+	{
+		pItem->setFlag(ItemIsMovable);
+	}
+
+	QObject::connect(this, SIGNAL(selectionChanged(bool)),
+		pItem, SLOT(processorSelectionChanged(bool)));
+
+	m_inputPortItems.append(pItem);
+	blockSignals(false);
+	setLayoutDirty(true);
+	relayout();
+}
+
+void ProcessorGraphicsBlock::showStatus( const QString &msg )
+{
+	m_statusBlock->showText(msg);
+}
+
+bool ProcessorGraphicsBlock::beforeProcess()
+{
+//	m_statusBlock->showText("beforeProcess");
+	return Processor::beforeProcess();
+}
+
+void ProcessorGraphicsBlock::afterProcess( bool status /*= true*/ )
+{
+//	m_statusBlock->showText("afterProcess");
+	Processor::afterProcess();
 }
 
 

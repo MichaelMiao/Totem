@@ -31,6 +31,7 @@ const char DATA_IMAGE_COLOR_IMAGE[]			= ":/media/colorimage.png";
 const char DATA_IMAGE_GRAY_IMAGE[]			= ":/media/grayimages.jpg";
 const char DATA_IMAGE_BINARY_IMAGE[]		= ":/media/binaryimage.png";
 const char DATA_IMAGE_MATRIX[]				= ":/media/matrix.jpg";
+const char DATA_IMAGE_INT[]					= ":/media/intdata.png";
 //MIME Type
 const char MIME_TYPE_TOOLITEM[] = "DesignNet/ToolItem";
 
@@ -39,14 +40,19 @@ const char PROPERTY_TYPE_PATHDIALOG[]		= "PropertyType/PathDialog";
 const char PROPERTY_TYPE_OPTION[]			= "PropertyType/Option";
 const char PROPERTY_TYPE_DOUBLERANGE[]		= "PropertyType/DoubleRange";
 const char PROPERTY_TYPE_BOOL[]				= "PropertyType/Bool";
+const char PROPERTY_TYPE_INT[]				= "PropertyType/Int";
 /// Data Type
-const char DATA_TYPE_IMAGE[] = "DataType/Image";
-const char DATA_TYPE_LABEL[] = "DataType/Label";
+const char DATA_TYPE_IMAGE[]	= "DataType/Image";
+const char DATA_TYPE_LABEL[]	= "DataType/Label";
 const char DATA_TYPE_HISTOGRAM[] = "DataType/Histogram";
-const char DATA_TYPE_MATRIX[] = "DataType/Matrix";
+const char DATA_TYPE_MATRIX[]	= "DataType/Matrix";
+const char DATA_TYPE_INT[]		= "DataType/Int";
 /// Data Widget Factory ID
 const char DATA_WIDGET_FACTORY_NORMAL[] = "DataWidgetFactory/Normal";
+/// ICON
 
+const char ICON_LIST_ADD[]		= "list-add.png";
+const char ICON_LIST_REMOVE[]	= "list-remove.png";
 
 const float ZValue_GraphicsBlock_Normal     = 20.0f;
 const float ZValue_GraphicsBlock_Emphasize  = 30.0f;

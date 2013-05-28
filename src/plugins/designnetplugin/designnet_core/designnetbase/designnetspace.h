@@ -32,7 +32,9 @@ public:
     explicit DesignNetSpace(DesignNetSpace *space = 0, QObject *parent = 0);
 
     void addProcessor(Processor* processor);    //!< 添加处理器
-    void removeProcessor(Processor* processor); //!< 移除处理器
+    void removeProcessor(Processor* processor); //!< 移除处理器,并delete
+	void detachProcessor(Processor* processor); //!< 取消该处理器所关联的Space
+
     bool contains(Processor* processor);        //!< 是否包含该Processor
     virtual Processor* create(DesignNetSpace *space = 0) const;          //!< 创建
     virtual QString name() const;               //!< DesignNetSpace名称
@@ -66,7 +68,6 @@ protected:
 	virtual void propertyChanged(Property *prop);
     QList<Processor*> m_processors;
 	QHash<Processor*, QFutureWatcher<bool>* > m_processorWatchers;//!< 监控着所有正在执行的Processor。
-    int     m_iMaxUID;          //!< 记录目前的最大ID，用来产生UID
     bool    m_bProcessing;      //!< 是否正在执行
 };
 }

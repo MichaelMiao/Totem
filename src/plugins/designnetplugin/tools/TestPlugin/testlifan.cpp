@@ -32,7 +32,7 @@ QString TestLiFan::category() const
 bool TestLiFan::process()
 {
 	IData* m = m_inputPort.data();
-	pushData(m,"")
+
 	return true;
 }
 

@@ -6,6 +6,7 @@
 #include "tooltipgraphicsitem.h"
 #include "designnetspace.h"
 #include "GraphicsUI/graphicsautoshowhideitem.h"
+#include "coreplugin/icore.h"
 
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
@@ -36,6 +37,7 @@ PortGraphicsItem::PortGraphicsItem(Port *port, QGraphicsItem *parent) :
 	m_typeImageItem->setPixmap(QPixmap::fromImage(port->data()->image()));
 	m_typeImageItem->setSize(QSize(16, 16));
 	m_typeImageItem->animateShow(false);
+	
 }
 
 PortGraphicsItem::~PortGraphicsItem()
@@ -119,13 +121,16 @@ void PortGraphicsItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 		toolTip += tr("<b>PortType:</b> <span style=\"color: red; font-size: small\">OUT_PORT</span>");
 
 	setToolTip(toolTip);
+	
     update();
     QGraphicsItem::hoverEnterEvent(event);
 }
 
 void PortGraphicsItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
+	
     update();
+	
     QGraphicsItem::hoverLeaveEvent(event);
 }
 
@@ -135,20 +140,23 @@ void PortGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	{
 		m_bPressed = true;
 		this->translate(1, 1);
+		
 		event->accept();
 	}
+//	QGraphicsItem::mousePressEvent(event);
 }
 
 void PortGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(m_bPressed &&
+	
+    if(m_bPressed && getPort()->portType() == Port::OUT_PORT &&
             QLineF(event->screenPos(), event->buttonDownScreenPos(Qt::LeftButton))
             .length() < QApplication::startDragDistance())
     {
 		event->accept();
-        return;
     }
-	event->accept();
+	setOpacity(0.5);
+	QGraphicsItem::mouseMoveEvent(event);
 }
 
 void PortGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
@@ -157,12 +165,12 @@ void PortGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
         m_bPressed = false;
         this->translate(-1, -1);
+		setOpacity(1);
     }
-    processor()->setSelected(true);
     if(event->button() == Qt::RightButton)
     {
         m_toolTipItem->setVisible(!m_toolTipItem->isVisible());
-        event->ignore();
+        event->accept();
         return ;
     }
     else if(event->button() == Qt::LeftButton)
@@ -177,6 +185,7 @@ void PortGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             }
         }
     }
+	event->accept();
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
@@ -220,5 +229,6 @@ void PortGraphicsItem::setTypeImageVisible( bool bVisible /*= true*/ )
 {
 	m_typeImageItem->animateShow(bVisible);
 }
+
 
 }

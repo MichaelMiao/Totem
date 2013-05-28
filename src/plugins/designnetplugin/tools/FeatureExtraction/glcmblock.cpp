@@ -26,6 +26,7 @@ GLCMBlock::GLCMBlock(DesignNet::DesignNetSpace *space, QGraphicsItem *parent )
 	d->m_typeOption->addOption(tr("Normal GLCM"), GLCMType::Normal);
 	d->m_typeOption->addOption(tr("Polor GLCM"), GLCMType::Polor);
 	addProperty(d->m_typeOption);
+	setName(tr("GLCM"));
 }
 
 GLCMBlock::~GLCMBlock()

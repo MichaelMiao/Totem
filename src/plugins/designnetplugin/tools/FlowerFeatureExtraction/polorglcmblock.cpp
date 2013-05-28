@@ -135,14 +135,31 @@ bool PolorGLCMBlock::process()
 			///找到P1, p2 两个点的灰度级
 			int v1 = grayMat.at<uchar>(p1.y, p1.x)/deltaBin;
 			int v2 = grayMat.at<uchar>(p2.y, p2.x)/deltaBin;
+			v1 = v1 >= m_glcm.rows ? m_glcm.rows - 1 : v1;
+			v2 = v2 >= m_glcm.cols ? m_glcm.cols - 1 : v2;
+			if (v1 < 0)
+			{
+				v1 = 0;
+			}
+			if (v2 < 0)
+			{
+				v2 = 0;
+			}
 			m_glcm.at<float>(v1, v2)++;
 
 			v1 = sobelMat.at<uchar>(p1.y, p1.x)/deltaBin;
 			uchar f = sobelMat.at<uchar>(p2.y, p2.x);
 			v2 = sobelMat.at<uchar>(p2.y, p2.x)/deltaBin;
-			qDebug() << v1 << " " << v2;
-			v1 = v1 >= 8 ? 7 : v1;
-			v2 = v2 >= 8 ? 7 : v2;
+			v1 = v1 >= m_glcm.rows ? m_glcm.rows - 1 : v1;
+			v2 = v2 >= m_glcm.cols ? m_glcm.cols - 1 : v2;
+			if (v1 < 0)
+			{
+				v1 = 0;
+			}
+			if (v2 < 0)
+			{
+				v2 = 0;
+			}
 			m_glcm_sobel.at<float>(v1, v2)++;
 		}
 	}

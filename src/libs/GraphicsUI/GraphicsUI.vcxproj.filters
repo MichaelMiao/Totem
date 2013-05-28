@@ -83,6 +83,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_graphicstoolbutton.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="textanimationblock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_textanimationblock.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_textanimationblock.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="graphicsui_global.h">
@@ -106,6 +115,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="graphicstoolbutton.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="textanimationblock.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

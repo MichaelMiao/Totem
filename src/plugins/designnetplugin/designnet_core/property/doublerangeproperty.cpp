@@ -96,6 +96,7 @@ void DoubleRangeProperty::onValueChanged( double value )
 {
 	d->m_value = value;
 	emit valueChanged(value);
+	emit changed();
 }
 
 int DoubleRangeProperty::decimals() const

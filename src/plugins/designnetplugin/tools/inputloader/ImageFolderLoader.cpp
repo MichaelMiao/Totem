@@ -1,6 +1,7 @@
 #include "ImageFolderLoader.h"
 #include "property/pathdialogproperty.h"
 #include "designnetplugin/designnet_core/data/imagedata.h"
+#include "designnetplugin/designnet_core/data/intdata.h"
 #include <QIcon>
 #include <QDir>
 #include <opencv2/core/core.hpp>
@@ -11,10 +12,13 @@ namespace InputLoader{
 const char ImageFolderIcon[] = ":/InputLoader/images/add_folder.png";
 ImageFolderLoader::ImageFolderLoader( DesignNet::DesignNetSpace *space, QGraphicsItem *parent /*= 0*/ )
 	: ProcessorGraphicsBlock(space, parent),
-	m_outPort(new ImageData(ImageData::IMAGE_BGR, this), Port::OUT_PORT)
+	m_outPort(new ImageData(ImageData::IMAGE_BGR, this), Port::OUT_PORT),
+	m_outImageCountPort(new IntData(0, this), Port::OUT_PORT)
 {
 	m_outPort.setName("ImageData");
+	m_outImageCountPort.setName("outimagecount");
 	addPort(&m_outPort);
+	addPort(&m_outImageCountPort);
 	
 	QStringList nameFilters;
 	nameFilters << "*.bmp" << "*.jpg" << "*.png";
@@ -59,29 +63,36 @@ bool ImageFolderLoader::process()
 	QList<Utils::Path> paths = m_pathProperty->paths();
 	if(paths.count() > 0)
 	{
+		QStringList fileList;
 		foreach(Utils::Path path, paths)
 		{
 			QDir dir(path.m_path);
-			QStringList fileList = dir.entryList(m_pathProperty->nameFilters(), QDir::Files | QDir::Readable);
-			foreach(QString file, fileList)
+			QFileInfoList infoList = dir.entryInfoList(m_pathProperty->nameFilters(), QDir::Files | QDir::Readable);
+			foreach(QFileInfo info, infoList)
 			{
-				std::string str = dir.absoluteFilePath(file).toLocal8Bit().data();
-				cv::Mat mat = cv::imread(str);
-				if(!mat.data)
-				{
-					emit logout(tr("Image Loader %1 load %2 failed").arg(id()).arg(file));
-					return false;
-				}
-				else
-				{
-					emit logout(tr("Image Loader id:%1 is loading %2...").arg(id()).arg(file));
-					ImageData imageData;
-					imageData.setImageData(mat);
-					pushData(&imageData, "ImageData");
-				}
+				fileList << info.absoluteFilePath();
 			}
 		}
-		
+		IntData intData(fileList.count());
+		pushData(&intData, "outimagecount");
+		foreach(QString file, fileList)
+		{
+			std::string str = file.toLocal8Bit().data();
+			cv::Mat mat = cv::imread(str);
+			if(!mat.data)
+			{
+				emit logout(tr("load %1 failed").arg(file));
+				return false;
+			}
+			else
+			{
+				emit logout(tr("loading %1...").arg(file));
+				qDebug() << "miao"<<file;
+				ImageData imageData;
+				imageData.setImageData(mat);
+				pushData(&imageData, "ImageData");
+			}
+		}
 	}
 	return true;
 }

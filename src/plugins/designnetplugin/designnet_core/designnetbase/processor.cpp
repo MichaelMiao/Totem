@@ -28,7 +28,7 @@ Processor::Processor(DesignNetSpace *space, QObject* parent)
 {
     m_name = "";
 	m_bReady = false;
-	m_id = 0;
+	m_id = -1;
 	m_thread = new QThread(this);
 	m_worker.moveToThread(m_thread);
 	QObject::connect(m_thread, SIGNAL(started()), &m_worker, SLOT(run()));
@@ -75,7 +75,12 @@ void Processor::addPort(Port *port)
 
 void Processor::removePort(Port *port)
 {
-    TOTEM_ASSERT(port != 0, return)
+    if (port == 0)
+    {
+		m_inputPorts.clear();
+		m_outputPorts.clear();
+		return;
+    }
     if(port->portType() == Port::IN_PORT)
     {
         m_inputPorts.removeOne(port);
@@ -213,6 +218,10 @@ void Processor::waitForFinish()
 
 bool Processor::connectionTest( Port* src, Port* target )
 {
+	if (src->data()->id() == target->data()->id())
+	{
+		return true;
+	}
 	return false;
 }
 
@@ -237,6 +246,15 @@ QString Processor::serializableType() const
 Utils::XmlSerializable* Processor::createSerializable() const
 {
 	return (Utils::XmlSerializable*)create();
+}
+
+void Processor::setSpace( DesignNetSpace *space ) 
+{
+	if (m_space)
+	{
+		m_space->detachProcessor(this);
+	}
+	m_space = space;
 }
 
 

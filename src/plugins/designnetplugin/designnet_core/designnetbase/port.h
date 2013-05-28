@@ -5,6 +5,7 @@
 #include "../designnet_core_global.h"
 #include "processor.h"
 #include "../data/idata.h"
+#include <QReadWriteLock>
 namespace DesignNet{
 /**
  * @brief The Port class
@@ -13,15 +14,16 @@ namespace DesignNet{
  *（可以通过设置MultiInput属性使该功能enble or not）
  */
 
-class DESIGNNET_CORE_EXPORT Port
+class DESIGNNET_CORE_EXPORT Port : public QObject
 {
+	Q_OBJECT
 public:
     enum PortType{
         IN_PORT,    //!< 输入端口
         OUT_PORT    //!< 输出端口
     };
 
-    explicit Port(IData *data, PortType portType, const QString &name = "");
+    explicit Port(IData *data, PortType portType, const QString &name = "", QObject *parent = 0);
 	virtual ~Port();
     PortType portType() const{return m_portType;}
     void setPortType(const PortType &portType){m_portType = portType;}
@@ -44,7 +46,7 @@ public:
     bool isConnected() const;               //!< 是否处于连接状态
     bool isConnectedTo(const Processor* processor) const;
     bool isMultiInputSupported() const;
-
+	void setMultiInputSupported(const bool &bSupported = true); //!< 设置端口是否支持多输入
     QList<Processor*> connectedProcessors() const;  //!< 返回该端口所连接的所有处理器
     QList<Port*>      connectedPorts() const;        //!< 返回所有连接的端口
     int connectedCount() const;
@@ -84,6 +86,7 @@ protected:
     QString     m_name;         //!< 端口名称（一个Processor中名称唯一）
     Processor*  m_processor;    //!< 该端口所属的处理器
     QList<Port*> m_portsConnected;//!< 当前端口所连接的所有Port
+	QReadWriteLock m_dataLocker;
 };
 }
 

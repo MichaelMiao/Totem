@@ -66,4 +66,9 @@ QString Property::serializableType() const
 	return typeID().toString();
 }
 
+Property::~Property()
+{
+
+}
+
 }

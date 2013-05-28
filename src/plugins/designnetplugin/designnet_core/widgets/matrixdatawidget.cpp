@@ -2,11 +2,14 @@
 #include "../data/matrixdata.h"
 #include "datadetailwidget.h"
 #include "designnetconstants.h"
+#include "coreplugin/icore.h"
+#include "coreplugin/mainwindow.h"
 #include <QVBoxLayout>
 #include <QTableView>
 #include <QPushButton>
 #include <QGraphicsScene>
 #include <QToolButton>
+#include <QMessageBox>
 namespace DesignNet{
 
 class MatrixDataWidgetPrivate{
@@ -16,7 +19,6 @@ public:
 	QTableView *	m_tableView;
 	MatrixModel*	m_matrixModel;
 	DataDetailWidget* m_detailWidget;
-	QGraphicsProxyWidget *m_proxyWidget;
 	MatrixDataWidget *q;
 };
 
@@ -24,14 +26,9 @@ MatrixDataWidgetPrivate::MatrixDataWidgetPrivate( MatrixDataWidget *widget )
 	: q(widget)
 {
 	/// ÉèÖÃµ¯³öÏêÏ¸Ô¤ÀÀ´°¿Ú
-	m_detailWidget = new DataDetailWidget;
+	m_detailWidget = new DataDetailWidget(Core::ICore::mainWindow(), Qt::Tool);
 	QVBoxLayout *layout = new QVBoxLayout(m_detailWidget);
 	m_detailWidget->setLayout(layout);
-	m_proxyWidget = widget->scene()->addWidget(m_detailWidget, Qt::Tool);
-	if (m_proxyWidget)
-	{
-		m_proxyWidget->setVisible(false);
-	}
 
 	m_tableView = new QTableView(m_detailWidget);
 	layout->addWidget(m_tableView);
@@ -54,7 +51,7 @@ MatrixDataWidget::MatrixDataWidget(IData *data, QGraphicsItem *parent, Qt::Windo
 
 MatrixDataWidget::~MatrixDataWidget()
 {
-
+	delete d;
 }
 
 QRectF MatrixDataWidget::boundingRect() const
@@ -74,8 +71,7 @@ void MatrixDataWidget::onUpdate()
 
 void MatrixDataWidget::onShowDetail()
 {
-	d->m_proxyWidget->setVisible(true);
-	d->m_proxyWidget->setZValue(DesignNet::Constants::ZValue_GraphicsBlock_Emphasize);
+	d->m_detailWidget->show();
 }
 
 void MatrixDataWidget::paint( QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget )

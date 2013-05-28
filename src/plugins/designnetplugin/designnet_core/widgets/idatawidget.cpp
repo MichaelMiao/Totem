@@ -3,6 +3,8 @@
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QLabel>
+#include <QHideEvent>
+#include <QShowEvent>
 namespace DesignNet {
 
 const char DETAILICON[] = ":/media/detail48.png";
@@ -18,7 +20,6 @@ IDataWidget::IDataWidget(IData *data, bool bDetailButton, QGraphicsItem *parent,
 	m_detailButton->setPos(boundingRect().right() - 32, boundingRect().top());
 	m_detailButton->setPixmap(QPixmap(":/media/detail48.png"));
 	connect(m_detailButton, SIGNAL(clicked()), this, SLOT(showDetail()));
-	connect(m_data, SIGNAL(dataChanged()), this ,SLOT(updateData()));
 }
 
 QRectF IDataWidget::boundingRect() const
@@ -50,6 +51,28 @@ bool IDataWidget::isValid() const
 void IDataWidget::showDetail()
 {
 	onShowDetail();
+}
+
+void IDataWidget::hideEvent( QHideEvent * event )
+{
+	closeConnection();
+}
+
+void IDataWidget::showEvent( QShowEvent * event )
+{
+	initConnection();
+	onUpdate();
+	update();
+}
+
+void IDataWidget::initConnection()
+{
+	connect(m_data, SIGNAL(dataChanged()), this ,SLOT(updateData()), Qt::BlockingQueuedConnection);
+}
+
+void IDataWidget::closeConnection()
+{
+	disconnect(m_data, SIGNAL(dataChanged()), this ,SLOT(updateData()));
 }
 
 

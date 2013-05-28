@@ -110,7 +110,6 @@ void ToolTipGraphicsItem::paint(QPainter *painter,
                                 const QStyleOptionGraphicsItem *item,
                                 QWidget *w)
 {
-    relayout();
     QPalette palette =  QApplication::palette();
     painter->save();
     painter->setBrush(palette.toolTipBase());
@@ -127,6 +126,7 @@ QVariant ToolTipGraphicsItem::itemChange(QGraphicsItem::GraphicsItemChange chang
         {
             toolButton->setChecked(false);
         }
+		relayout();
     }
     return QGraphicsItem::itemChange(change, value);
 }
@@ -153,7 +153,11 @@ void ToolTipGraphicsItem::setData(IData *data)
     if(d->m_data)
     {
         d->m_customWidget = DataManager::instance()->createWidget(data, this);
-        d->m_customWidget->setVisible(true);
+		if (d->m_customWidget)
+		{
+			d->m_customWidget->setVisible(true);
+		}
+        
     }
     update();
 }
@@ -162,7 +166,6 @@ void ToolTipGraphicsItem::relayout()
 {
 	prepareGeometryChange();
     QRectF rect = boundingRect();
-	qDebug() << "relayout";
     QSizeF closeSize = d->m_closeItem->boundingRect().size();
     d->m_closeItem->setPos(QPointF(rect.right() - closeSize.width(), rect.top()));
     d->m_anchorButton->setPos(QPointF(rect.right() - closeSize.width() - d->m_anchorButton->boundingRect().width(),
@@ -175,7 +178,7 @@ void ToolTipGraphicsItem::relayout()
                               TITLE_HEIGHT + d->m_textItem->boundingRect().height()));
 		d->m_customWidget->setVisible(true);
     }
-	scene()->update();
+	update();
 }
 
 void ToolTipGraphicsItem::onClosed()
@@ -218,6 +221,11 @@ void ToolTipGraphicsItem::onVisibleChanged()
 			d->m_customWidget->setVisible(false);
 		}
 	}
+}
+
+ToolTipGraphicsItem::~ToolTipGraphicsItem()
+{
+	delete d;
 }
 
 }

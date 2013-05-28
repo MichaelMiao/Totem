@@ -10,18 +10,17 @@ NormalDataFactory::NormalDataFactory(QObject *parent)
 {
 }
 
-IDataWidget *NormalDataFactory::createWidget(IData *property, QGraphicsItem* parent)
+IDataWidget *NormalDataFactory::createWidget(IData *data, QGraphicsItem* parent)
 {
 	IDataWidget* widget = 0;
-    if(property->id() == DesignNet::Constants::DATA_TYPE_IMAGE)
+    if(data->id() == DesignNet::Constants::DATA_TYPE_IMAGE)
     {
-        widget = new ImageDataWidget(property, parent);
+        widget = new ImageDataWidget(data, parent);
     }
-	else if(property->id() == DesignNet::Constants::DATA_TYPE_MATRIX)
+	else if(data->id() == DesignNet::Constants::DATA_TYPE_MATRIX)
 	{
-		widget = new MatrixDataWidget(property, parent);
+		widget = new MatrixDataWidget(data, parent);
 	}
-
     return widget;
 }
 

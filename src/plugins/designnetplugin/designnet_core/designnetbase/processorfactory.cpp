@@ -29,7 +29,9 @@ Processor *ProcessorFactory::create(DesignNetSpace *space, const QString &proces
     else
     {
         Processor* processor = itr.value();
-        return processor->create(space);
+		processor = processor->create(space);
+		processor->init();
+        return processor;
     }
 }
 
@@ -46,6 +48,7 @@ void ProcessorFactory::registerProcessor(Processor *processor) const
     {
         m_processors.insert(name, processor);
 		Core::ICore::serializableFactory()->registerSerializable(processor);
+		processor->init();
     }
     else
     {

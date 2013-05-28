@@ -32,7 +32,10 @@ public:
     virtual QSizeF sizeHint(Qt::SizeHint which,
                             const QSizeF & constraint = QSizeF()) const;
 	virtual bool isValid()const;
-
+	virtual void	hideEvent ( QHideEvent * event );
+	virtual void	showEvent ( QShowEvent * event );
+	void initConnection();
+	void closeConnection();
 signals:
 
 public slots:

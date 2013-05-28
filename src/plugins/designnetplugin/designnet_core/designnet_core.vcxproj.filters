@@ -562,6 +562,21 @@
     <ClCompile Include="Release\moc_designnetsolutionwizard.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="Debug\moc_port.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_port.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_intdata.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_intdata.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="data\intdata.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="designmode.h">
@@ -735,6 +750,12 @@
     <CustomBuild Include="designnetsolutionwizard.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="designnetbase\port.h">
+      <Filter>Header Files\designnetbase</Filter>
+    </CustomBuild>
+    <CustomBuild Include="data\intdata.h">
+      <Filter>Header Files\data</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\shared\totem_gui_pch.h.cpp">
@@ -779,9 +800,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="designnetbase\block.h">
-      <Filter>Header Files\designnetbase</Filter>
-    </ClInclude>
-    <ClInclude Include="designnetbase\port.h">
       <Filter>Header Files\designnetbase</Filter>
     </ClInclude>
     <ClInclude Include="property\propertyowner.h">

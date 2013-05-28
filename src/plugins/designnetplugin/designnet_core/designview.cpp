@@ -11,6 +11,7 @@
 #include "designnetconstants.h"
 #include "ProcessorGraphicsBlock.h"
 
+#include "coreplugin/actionmanager/actionmanager.h"
 #include <QGLWidget>
 #include <QWheelEvent>
 #include <QtCore/qmath.h>
@@ -26,7 +27,9 @@
 #include <QMimeData>
 #include <QDebug>
 #include <QMessageBox>
+#include <QMenu>
 
+using namespace Core;
 namespace DesignNet{
 
 DesignView::DesignView(DesignNetSpace *space, QWidget *parent) :
@@ -117,7 +120,7 @@ void DesignView::dropEvent(QDropEvent *event)
 
 void DesignView::mouseMoveEvent(QMouseEvent *event)
 {
-	if (m_pressedPort)
+	if (m_pressedPort && m_pressedPort->getPort()->portType() == Port::OUT_PORT)
 	{
 		if(QLineF(mapToScene(event->pos()), m_pressedPort->scenePos())
 			.length() < QApplication::startDragDistance())
@@ -141,6 +144,7 @@ void DesignView::mouseMoveEvent(QMouseEvent *event)
 		}
 		return ;
 	}
+
     QGraphicsView::mouseMoveEvent(event);
 }
 
@@ -157,18 +161,39 @@ void DesignView::mousePressEvent(QMouseEvent *event)
 
 void DesignView::mouseReleaseEvent(QMouseEvent *event)
 {
+	QGraphicsView::mouseReleaseEvent(event);
 	if (m_pressedPort)
 	{
-		if (m_currentArrowLinkItem)
+		if (m_pressedPort->getPort()->portType() == Port::OUT_PORT)
 		{
-			delete m_currentArrowLinkItem;
-			m_currentArrowLinkItem = 0;
-			QGraphicsItem *item = scene()->itemAt(mapToScene(event->pos()));
-			PortGraphicsItem *target = qgraphicsitem_cast<PortGraphicsItem*>(item);
-
-			if (target)
+			if (m_currentArrowLinkItem)
 			{
-				m_designnetSpace->connectPort(target->getPort(), m_pressedPort->getPort());
+				delete m_currentArrowLinkItem;
+				m_currentArrowLinkItem = 0;
+				QGraphicsItem *item = scene()->itemAt(mapToScene(event->pos()));
+				PortGraphicsItem *target = qgraphicsitem_cast<PortGraphicsItem*>(item);
+
+				if (target)
+				{
+					m_designnetSpace->connectPort(target->getPort(), m_pressedPort->getPort());
+				}
+			}
+			
+		}
+		else
+		{
+			ProcessorGraphicsBlock* block = (ProcessorGraphicsBlock*)m_pressedPort->processor();
+			QRectF portRect = m_pressedPort->sceneBoundingRect();
+			QRectF processorRect = block->sceneBoundingRect();
+			if (!processorRect.intersects(portRect))
+			{
+				blockSignals(true);
+				block->removePort(m_pressedPort);
+				blockSignals(false);
+			}
+			else
+			{
+				block->relayout();
 			}
 		}
 		m_pressedPort = 0;
@@ -177,7 +202,6 @@ void DesignView::mouseReleaseEvent(QMouseEvent *event)
     {
         updatedSelectedItems();
     }
-	QGraphicsView::mouseReleaseEvent(event);
 }
 
 void DesignView::wheelEvent(QWheelEvent *event)
@@ -234,7 +258,11 @@ void DesignView::removeItems(QList<QGraphicsItem *> items)
 
 void DesignView::contextMenuEvent(QContextMenuEvent *event)
 {
-    event->accept();
+//    event->accept();
+    QMenu *menu = createPopupMenu();
+	menu->exec(event->globalPos());
+	QGraphicsView::contextMenuEvent(event);
+	event->accept();
 }
 
 PortGraphicsItem *DesignView::getPortGraphicsItem(Port *port)
@@ -325,7 +353,7 @@ void DesignView::onProcessorAdded( Processor *processor )
 {
 	ProcessorGraphicsBlock *pBlock = (ProcessorGraphicsBlock *)processor;
 	scene()->addItem(pBlock);
-	pBlock->initialize();
+	pBlock->setPos(QPoint(pBlock->originalPosition().m_x, pBlock->originalPosition().m_y));
 	connect(pBlock, SIGNAL(closed()), this, SLOT(processorClosed()));
 	emit processorAdded(processor);
 }
@@ -353,10 +381,24 @@ void DesignView::reloadSpace()
 	{
 		ProcessorGraphicsBlock *block = dynamic_cast<ProcessorGraphicsBlock*>(processor);
 		mainScene->addItem(block);
- 		block->initialize();
 		Position pos = block->originalPosition();
 		block->setPos(QPointF(pos.m_x, pos.m_y));
 	}
+}
+
+QMenu* DesignView::createPopupMenu()
+{
+	QMenu *menu = new QMenu(this);
+	QList<QGraphicsItem*> items =  scene()->selectedItems();
+	foreach(QGraphicsItem *item, items)
+	{
+		ProcessorGraphicsBlock *block = qgraphicsitem_cast<ProcessorGraphicsBlock*>(item);
+		if (block)
+		{
+			block->createContextMenu(menu);
+		}
+	}
+	return menu;
 }
 
 }
