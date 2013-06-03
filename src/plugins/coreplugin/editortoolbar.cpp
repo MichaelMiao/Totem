@@ -130,7 +130,7 @@ void EditorToolBar::closeEditor()
 
 void EditorToolBar::updateActionShortcuts()
 {
-    //    d->m_closeEditorButton->setToolTip(ActionManager::command(Constants::CLOSE)->stringWithAppendedShortcut(EditorManager::tr("Close Document")));
+    d->m_closeEditorButton->setToolTip(ActionManager::command(Constants::ICON_CLOSE_DOCUMENT)->stringWithAppendedShortcut(EditorManager::tr("Close Document")));
 }
 
 void EditorToolBar::checkEditorStatus()

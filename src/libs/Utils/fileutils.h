@@ -2,6 +2,9 @@
 #define FILEUTILS_H
 
 #include "utils_global.h"
+#include "XML/xmlserializable.h"
+#include "XML/xmldeserializer.h"
+#include "XML/xmlserializer.h"
 
 #include <QCoreApplication>
 #include <QXmlStreamWriter>
@@ -9,19 +12,66 @@
 
 QT_BEGIN_NAMESPACE
 class QFile;
+class QFileInfo;
 class QTemporaryFile;
 class QWidget;
 class QTextStream;
 class QDataStream;
 class QDateTime;
+class QDir;
 QT_END_NAMESPACE
 namespace Utils{
 
-struct TOTEM_UTILS_EXPORT Path
+class TOTEM_UTILS_EXPORT FileName : private QString
 {
+public:
+    FileName();
+    explicit FileName(const QFileInfo &info);
+    QFileInfo toFileInfo() const;
+    static FileName fromString(const QString &filename);
+    static FileName fromUserInput(const QString &filename);
+    QString toString() const;
+    QString toUserOutput() const;
+
+    FileName parentDir() const;
+
+    bool operator==(const FileName &other) const;
+    bool operator!=(const FileName &other) const;
+    bool operator<(const FileName &other) const;
+    bool operator<=(const FileName &other) const;
+    bool operator>(const FileName &other) const;
+    bool operator>=(const FileName &other) const;
+
+    bool isChildOf(const FileName &s) const;
+    bool isChildOf(const QDir &dir) const;
+    bool endsWith(const QString &s) const;
+
+    Utils::FileName relativeChildPath(const FileName &parent) const;
+    Utils::FileName &appendPath(const QString &s);
+    Utils::FileName &append(const QString &str);
+    Utils::FileName &append(QChar str);
+
+    using QString::size;
+    using QString::count;
+    using QString::length;
+    using QString::isEmpty;
+    using QString::isNull;
+    using QString::clear;
+private:
+    FileName(const QString &string);
+};
+
+class TOTEM_UTILS_EXPORT Path : public XmlSerializable
+{
+public:
+	DECLARE_SERIALIZABLE(Path, Path)
+	virtual void serialize(XmlSerializer& s) const;
+	virtual void deserialize(XmlDeserializer& s) ;
     QString m_path; //!< 路径
     bool bRecursion;//!< 是否递归该路径
 };
+
+
 
 class TOTEM_UTILS_EXPORT FileUtils
 {

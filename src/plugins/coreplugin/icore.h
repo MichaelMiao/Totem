@@ -25,6 +25,9 @@ class QStatusBar;
 template <class T> class QList;
 QT_END_NAMESPACE
 
+namespace Utils{
+class XmlSerializableFactory;
+}
 namespace Core{
 class ActionManager;
 class Context;
@@ -66,6 +69,7 @@ public:
     static ActionManager *actionManager();
     static EditorManager *editorManager();
     static MessageManager*messageManager();
+	static Utils::XmlSerializableFactory *serializableFactory();
 signals:
     void coreAboutToOpen();
     void coreOpened();

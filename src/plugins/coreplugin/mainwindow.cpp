@@ -22,7 +22,8 @@
 #include "documentmanager.h"
 #include "progressview.h"
 #include "extensionsystem/progressmanagerprivate.h"
-
+#include "newdialog.h"
+#include "iwizard.h"
 #include <QFileInfo>
 #include <QMenu>
 #include <QMenuBar>
@@ -82,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(QApplication::instance(), SIGNAL(focusChanged(QWidget*,QWidget*)),
             this, SLOT(updateFocusWidget(QWidget*,QWidget*)));
     statusBar()->insertPermanentWidget(0, m_toggleSideBarButton);
-
+	setWindowIcon(QIcon(":/core/images/totem.ico"));
 }
 
 MainWindow::~MainWindow()
@@ -312,7 +313,6 @@ void MainWindow::registerDefaultContainers()
     menubar->appendGroup(Constants::G_TOOLS);
     menubar->appendGroup(Constants::G_HELP);
 
-
     ActionContainer *ac = 0;
     //File
     ac = am->createMenu(Constants::M_FILE);
@@ -320,7 +320,7 @@ void MainWindow::registerDefaultContainers()
     ac->menu()->setTitle(tr("&File"));
     ac->appendGroup(Constants::G_FILE_NEW);
     ac->appendGroup(Constants::G_FILE_OPEN);
-
+	ac->appendGroup(Constants::G_FILE_SAVE);
     //view
     ac = am->createMenu(Constants::M_VIEW);
     menubar->addMenu(ac, Constants::G_VIEW);
@@ -369,13 +369,32 @@ void MainWindow::registerDefaultActions()
     mFile->addAction(cmdNew, Constants::G_FILE_NEW);
     connect(tmpAction, SIGNAL(triggered()), this, SLOT(newFile()));
 
-        //Open
+    //Open
     icon = QIcon::fromTheme(QLatin1String("document-open"), QIcon(QLatin1String(Constants::ICON_OPEN_FILE)));
     tmpAction = new QAction(icon, tr("&Open File or Project..."), this);
     Core::Command *cmdOpen = am->registerAction(tmpAction, Constants::OPEN, globalContext);
     cmdOpen->setDefaultKeySequence(QKeySequence::Open);
     mFile->addAction(cmdOpen, Constants::G_FILE_OPEN);
     connect(tmpAction, SIGNAL(triggered()), this, SLOT(openFile()));
+	
+	///  Save
+	// Save Action
+	icon = QIcon::fromTheme(QLatin1String("document-save"), QIcon(QLatin1String(Constants::ICON_SAVE_FILE)));
+	QAction *tmpaction = new QAction(icon, tr("&Save"), this);
+	tmpaction->setEnabled(false);
+	Command *cmdSave = ActionManager::registerAction(tmpaction, Constants::SAVE, globalContext);
+	cmdSave->setDefaultKeySequence(QKeySequence::Save);
+	cmdSave->setAttribute(Command::CA_UpdateText);
+	cmdSave->setDescription(tr("Save"));
+	mFile->addAction(cmdSave, Constants::G_FILE_SAVE);
+	// Save As Action
+	icon = QIcon::fromTheme(QLatin1String("document-save-as"));
+	tmpaction = new QAction(icon, tr("Save &As..."), this);
+	tmpaction->setEnabled(false);
+	Command *cmdSaveAs = ActionManager::registerAction(tmpaction, Constants::SAVEAS, globalContext);
+	cmdSaveAs->setAttribute(Command::CA_UpdateText);
+	cmdSaveAs->setDescription(tr("Save As..."));
+	mFile->addAction(cmdSaveAs, Constants::G_FILE_SAVE);
 
 
     //------------help menu---------------
@@ -516,7 +535,15 @@ bool MainWindow::showOptionsDialog(const QString &category,
 
 void MainWindow::newFile()
 {
-
+	NewDialog dlg(this);
+	dlg.setWizards(IWizard::allWizards());
+	IWizard *wizard = dlg.showDialog();
+	if(wizard)
+	{
+		QString path = DocumentManager::fileDialogInitialDirectory();
+		wizard->runWizard(path, this, QVariantMap());
+	}
+	return ;
 }
 
 void MainWindow::openFile()

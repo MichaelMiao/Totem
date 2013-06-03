@@ -17,7 +17,8 @@ GraphicsAutoShowHideItem::GraphicsAutoShowHideItem(QGraphicsItem *parent) :
     m_animFade  = new QPropertyAnimation(this, "iconOpacity");
     m_animGroup->addAnimation(m_animFade);
     m_animFade->setDuration(m_iFadeSpeed);
-
+	m_bEableButtonStyle = true;
+	m_size = QSize(16, 16);
 }
 
 

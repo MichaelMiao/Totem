@@ -1,13 +1,16 @@
 #ifndef GRAPHICSTOOLBUTTON_H
 #define GRAPHICSTOOLBUTTON_H
 
-#include <QGraphicsProxyWidget>
+#include <QGraphicsObject>
+#include "graphicsui_global.h"
+#include "graphicsautoshowhideitem.h"
 namespace GraphicsUI{
-
-class GraphicsToolButton : public QGraphicsProxyWidget
+class TOTEM_GRAPHICSUI_EXPORT GraphicsToolButton : public GraphicsAutoShowHideItem
 {
+	Q_OBJECT
 public:
-    GraphicsToolButton();
+    GraphicsToolButton(QGraphicsItem *parent = 0);
+	virtual ~GraphicsToolButton();
 };
 }
 

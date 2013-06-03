@@ -33,7 +33,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Platform)\libs</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)d</TargetName>
   </PropertyGroup>
@@ -54,7 +54,8 @@
       <AdditionalDependencies>qtmaind.lib;QtCored4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy  "$(TargetPath)" "$(SolutionDir)$(Platform)\\$(Configuration)"</Command>
+      <Command>copy  "$(TargetPath)" "$(SolutionDir)$(Platform)\\$(Configuration)"
+copy  "$(TargetDir)\\$(TargetName).lib" "$(SolutionDir)$(Platform)\\libs\\$(TargetName).lib"</Command>
       <Message>copy  "$(TargetPath)" "$(SolutionDir)$(Platform)\\$(Configuration)"</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>

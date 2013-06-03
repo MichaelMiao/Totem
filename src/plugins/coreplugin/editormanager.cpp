@@ -13,7 +13,7 @@
 #include "utils/totemassert.h"
 #include "coreconstants.h"
 #include "settingsdatabase.h"
-
+#include "actionmanager.h"
 #include <QVBoxLayout>
 #include <QPointer>
 #include <QAction>
@@ -73,7 +73,7 @@ bool EditorClosingCoreListener::coreAboutToClose()
 {
     //这里解释说：不需要ask for save，MainWindow::closeEvent完成这项任务
 
-    return m_em->closeAllEditors(false);
+    return m_em->closeAllEditors(true);
 }
 }// namespace Internal
 
@@ -186,10 +186,6 @@ EditorManager::EditorManager(QWidget *parent) :
     d(new EditorManagerPrivate(parent))
 {
     m_instance = this;
-
-    connect(ICore::instance(), SIGNAL(contextAboutToChange(Core::IContext*)),
-            this, SLOT(handleContextChange(Core::IContext*)));
-
     d->m_splitter = new SplitterOrView(d->m_editorModel);
     d->m_view = d->m_splitter->view();
 
@@ -200,7 +196,13 @@ EditorManager::EditorManager(QWidget *parent) :
 
     d->m_autoSaveTimer = new QTimer(this);
     connect(d->m_autoSaveTimer, SIGNAL(timeout()), SLOT(autoSave()));
+	connect(ICore::instance(), SIGNAL(contextAboutToChange(Core::IContext*)),
+		this, SLOT(handleContextChange(Core::IContext*)));
 
+	const Context editManagerContext(Constants::C_EDITORMANAGER);
+	// menu
+	ActionManager::registerAction(d->m_saveAction, Constants::SAVE, editManagerContext);
+	connect(d->m_saveAction, SIGNAL(trigger()), this, SLOT(saveDocument()));
     updateActions();
 
 }
@@ -646,7 +648,7 @@ bool EditorManager::saveDocument(IDocument *documentParam)
     bool isReadOnly;
 
     // try saving, no matter what isReadOnly tells us
-    success = DocumentManager::saveDocument(document, QString(), &isReadOnly);
+    success = DocumentManager::saveDocument(document, fileName, &isReadOnly);
 
     if (!success && isReadOnly)
     {

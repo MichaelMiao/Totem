@@ -3,6 +3,7 @@
 #include "mainwindow.h"
 #include "messagemanager.h"
 #include "modewidget.h"
+#include "utils/XML/xmlserializablefactory.h"
 
 #include <QDir>
 #include <QCoreApplication>
@@ -10,7 +11,7 @@
 #include <QStatusBar>
 
 using namespace Core;
-
+using namespace Utils;
 ICore * ICore::m_instance = 0;
 Internal::MainWindow *ICore::m_mainwindow = 0;
 ICore::ICore(Internal::MainWindow *mw)
@@ -24,6 +25,12 @@ Core::ICore::~ICore()
 {
     m_instance = 0;
     m_mainwindow = 0;
+	Utils::XmlSerializableFactory::Release();
+}
+
+XmlSerializableFactory * Core::ICore::serializableFactory()
+{
+	return Utils::XmlSerializableFactory::instance();
 }
 
 ICore *ICore::instance()

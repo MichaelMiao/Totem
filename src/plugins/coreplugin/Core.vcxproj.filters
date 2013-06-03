@@ -55,23 +55,20 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="Source Files\actionmanager">
+      <UniqueIdentifier>{24a59eec-1732-46f5-a796-f68a2258ee40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\dialogs">
+      <UniqueIdentifier>{e3cdf1c7-457c-4f71-84c6-6c7b833536bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\actionmanager">
+      <UniqueIdentifier>{4bcea8b3-165d-4511-8ab3-c7f221862bcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\dialogs">
+      <UniqueIdentifier>{3d0b4f71-51ac-46c9-a767-37655d230721}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="actionmanager\actioncontainer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="actionmanager\actionmanager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="actionmanager\command.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="actionmanager\commandmappings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="actionmanager\commandsfile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="coreplugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -151,18 +148,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="rightpane.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dialogs\saveitemsdialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="settingsdatabase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dialogs\settingsdialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dialogs\shortcutsettings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="statusbarmanager.cpp">
@@ -420,32 +405,80 @@
     <ClCompile Include="GeneratedFiles\qrc_core.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="actionmanager\actioncontainer.cpp">
+      <Filter>Source Files\actionmanager</Filter>
+    </ClCompile>
+    <ClCompile Include="actionmanager\actionmanager.cpp">
+      <Filter>Source Files\actionmanager</Filter>
+    </ClCompile>
+    <ClCompile Include="actionmanager\command.cpp">
+      <Filter>Source Files\actionmanager</Filter>
+    </ClCompile>
+    <ClCompile Include="actionmanager\commandmappings.cpp">
+      <Filter>Source Files\actionmanager</Filter>
+    </ClCompile>
+    <ClCompile Include="actionmanager\commandsfile.cpp">
+      <Filter>Source Files\actionmanager</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogs\saveitemsdialog.cpp">
+      <Filter>Source Files\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="settingsdatabase.cpp">
+      <Filter>Source Files\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogs\settingsdialog.cpp">
+      <Filter>Source Files\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogs\shortcutsettings.cpp">
+      <Filter>Source Files\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_newdialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_newdialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogs\newdialog.cpp">
+      <Filter>Source Files\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="basefilewizard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_basefilewizard.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_basefilewizard.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="generatedfile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogs\promptoverwritedialog.cpp">
+      <Filter>Header Files\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_promptoverwritedialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_promptoverwritedialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_ifilewizardextension.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_ifilewizardextension.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_newdialogproxymodel.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_newdialogproxymodel.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogs\newdialogproxymodel.cpp">
+      <Filter>Source Files\dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="actionmanager\actioncontainer.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="actionmanager\actioncontainerprivate.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="actionmanager\actionmanager.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="actionmanager\actionmanagerprivate.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="actionmanager\command.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="actionmanager\commandmappings.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="actionmanager\commandprivate.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="actionmanager\commandsfile.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <ClInclude Include="core_global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -500,9 +533,6 @@
     <CustomBuild Include="infobar.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="dialogs\ioptionspage.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="ioutputpane.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -548,18 +578,6 @@
     <CustomBuild Include="rightpane.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="dialogs\saveitemsdialog.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <ClInclude Include="settingsdatabase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <CustomBuild Include="dialogs\settingsdialog.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="dialogs\shortcutsettings.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="statusbarmanager.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -569,6 +587,36 @@
     <CustomBuild Include="..\..\shared\totem_gui_pch.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="actionmanager\actioncontainer.h">
+      <Filter>Header Files\actionmanager</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\actioncontainerprivate.h">
+      <Filter>Header Files\actionmanager</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\actionmanager.h">
+      <Filter>Header Files\actionmanager</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\actionmanagerprivate.h">
+      <Filter>Header Files\actionmanager</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\command.h">
+      <Filter>Header Files\actionmanager</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\commandmappings.h">
+      <Filter>Header Files\actionmanager</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\commandprivate.h">
+      <Filter>Header Files\actionmanager</Filter>
+    </CustomBuild>
+    <ClInclude Include="settingsdatabase.h">
+      <Filter>Header Files\dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_newdialog.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="generatedfile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="debug\moc_coreplugin.cpp">
@@ -593,6 +641,45 @@
     </CustomBuild>
     <CustomBuild Include="dialogs\saveitemsdialog.ui">
       <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\commandsfile.h">
+      <Filter>Header Files\actionmanager</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\ioptionspage.h">
+      <Filter>Header Files\dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\saveitemsdialog.h">
+      <Filter>Header Files\dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\settingsdialog.h">
+      <Filter>Header Files\dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\shortcutsettings.h">
+      <Filter>Header Files\dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\newdialog.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\newdialog.h">
+      <Filter>Header Files\dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="basefilewizard.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Debug\basefilewizard.moc">
+      <Filter>Generated Files\Debug</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Release\basefilewizard.moc">
+      <Filter>Generated Files\Release</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\promptoverwritedialog.h">
+      <Filter>Header Files\dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ifilewizardextension.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\newdialogproxymodel.h">
+      <Filter>Header Files\dialogs</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -632,6 +719,7 @@
     <None Include="images\stock-plugin-16.png">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Core.pluginspec" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_commandmappings.h">

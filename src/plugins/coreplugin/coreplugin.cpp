@@ -35,7 +35,7 @@ bool CorePlugin::initialize(const QStringList &arguments, QString *errorMessage)
     const bool success = m_mainWindow->initialize(errorMessage);
     if (success)
     {
-       m_editMode = new EditMode;
+		m_editMode = new EditMode;
         addObject(m_editMode);
         ModeManager::activateMode(m_editMode->id());
     }
