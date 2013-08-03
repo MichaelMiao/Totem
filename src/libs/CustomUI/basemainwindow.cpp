@@ -23,7 +23,7 @@ public:
     QAction m_resetAction;  //!< 重置布局
 
     bool m_handleDockVisible;
-
+	bool m_handleDockVisibilityChanges;
 };
 BaseMainWindowPrivate::BaseMainWindowPrivate()
     : m_separator(0),
@@ -210,6 +210,17 @@ void BaseMainWindow::restoreSettings(const QHash<QString, QVariant> &settings)
         dock->setProperty(dockWidgetVisual,
              settings.value(dock->objectName(), false));
     }
+}
+
+void BaseMainWindow::setTrackingEnabled( bool enabled )
+{
+	if (enabled) {
+		d->m_handleDockVisible = true;
+		foreach (QDockWidget *dockWidget, dockWidgets())
+			dockWidget->setProperty(dockWidgetVisual, dockWidget->isVisible());
+	} else {
+		d->m_handleDockVisible = false;
+	}
 }
 
 }

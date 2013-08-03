@@ -36,6 +36,7 @@
 #include <QPixmap>
 QT_BEGIN_NAMESPACE
 class QLabel;
+class QVBoxLayout;
 QT_END_NAMESPACE
 namespace CustomUI {
 

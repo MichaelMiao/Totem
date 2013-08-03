@@ -11,7 +11,7 @@ using namespace Core;
 using namespace Core::Internal;
 
 CorePlugin::CorePlugin()
-    : m_mainWindow(new MainWindow),
+    : m_mainWindow(0),
       m_editMode(0)
 {
 
@@ -32,6 +32,7 @@ CorePlugin::~CorePlugin()
 
 bool CorePlugin::initialize(const QStringList &arguments, QString *errorMessage)
 {
+	m_mainWindow = new MainWindow;
     const bool success = m_mainWindow->initialize(errorMessage);
     if (success)
     {

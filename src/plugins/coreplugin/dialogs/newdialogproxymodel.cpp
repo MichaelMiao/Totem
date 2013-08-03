@@ -255,7 +255,12 @@ QList<IWizard*> WizardModel::wizards( const QModelIndex &parent )
 
 void WizardModel::getWizards( const QModelIndex& parent, QList<IWizard*> &wizards )
 {
-	int rows = rowCount(parent);
+	int rows = 0;
+	if (parent.isValid())
+	{
+		rows = rowCount(parent);
+	}
+	
 	for(int i = 0; i < rows; ++i)
 	{
 		QModelIndex index = parent.child(i, 0);

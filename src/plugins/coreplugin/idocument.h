@@ -110,7 +110,7 @@ signals:
     void aboutToReload();
     void reloaded();
     void fileNameChanged(const QString &oldName, const QString &newName);
-
+	void titleChanged(QString title);
 private:
     QString m_autoSaveName;
     InfoBar *m_infoBar;

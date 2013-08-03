@@ -84,7 +84,7 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void resizeEvent(QResizeEvent *);
 
-private slots:
+public slots:
     void updateToolTip(const QString &);
     void cancel();
     void setStarted();

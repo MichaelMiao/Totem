@@ -22,9 +22,11 @@ const char STR_IMAGE5[] = ":/app/images/Penguins.jpg";
 PluginLoaderView::PluginLoaderView(QWidget *parent) :
     FutureProgress(parent)
 {
+	setWindowFlags(Qt::WindowStaysOnTopHint | Qt::SplashScreen);
+	setKeepOnFinish(HideOnFinish);
     m_view = new GraphicsUI::ImageListAutoView(this);
     QVBoxLayout *vLayout = new QVBoxLayout;
-    vLayout->addWidget(m_view);
+    
     QStringList imageList;
     imageList << QLatin1String(STR_IMAGE1)
               << QLatin1String(STR_IMAGE2)
@@ -32,21 +34,12 @@ PluginLoaderView::PluginLoaderView(QWidget *parent) :
               << QLatin1String(STR_IMAGE4)
               << QLatin1String(STR_IMAGE5);
     m_view->pushImages(imageList);
-
-    m_pLabel = new QLabel(" ", this);
-    m_pProgressBar = new QProgressBar(this);
-
-    m_pLabel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-    m_view->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-
-    vLayout->addWidget(m_view);
-    vLayout->addWidget(m_pLabel);
-    vLayout->addWidget(m_pProgressBar);
-
-    this->setWindowFlags(Qt::FramelessWindowHint);
-
-    setLayout(vLayout);
-    resize(256, 256);
+    m_view->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	vLayout->addWidget(m_view);
+	QWidget *widget = new QWidget(this);
+    widget->setLayout(vLayout);
+	setWidget(widget);
+    resize(500, 500);
 }
 /*!
  * 该窗口的初始化，没有做任何操作
@@ -63,41 +56,12 @@ void PluginLoaderView::init()
 void PluginLoaderView::setStarted()
 {
     m_view->startToShow();
-    m_pLabel->setText(tr("Loading...%1%").arg(0));
+    setProgressText(tr("Loading...%1%").arg(0));
 }
 /*!
  * 槽函数，报告插件加载完毕
  */
 void PluginLoaderView::setFinished()
 {
-    m_pLabel->setText(tr("Load plugin Finished"));
-}
-/*!
- * 设置进度条显示范围
- * \param[in] min 进度条最小值
- * \param[in] max 进度条最大值
- */
-void PluginLoaderView::setProgressRange(int min, int max)
-{
-    m_pProgressBar->setRange(min, max);
-}
-
-/*!
- * 设置当前进度，该值不能大于最大值，否则显示出错
- * \param[in] val
- */
-void PluginLoaderView::setProgressValue(int val)
-{
-    float max = m_pProgressBar->maximum();
-    if(!qFuzzyCompare(max, 0))
-        m_pLabel->setText(tr("Loading...%1%").arg(int(val/max * 100)));
-    m_pProgressBar->setValue(val);
-}
-/*!
- * 设置进度文字
- * \param[in] text 要显示的文字
- */
-void PluginLoaderView::setProgressText(const QString &text)
-{
-    m_pLabel->setText(text);
+    setProgressText(tr("Load plugin Finished"));
 }

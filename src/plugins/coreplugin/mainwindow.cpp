@@ -36,6 +36,7 @@
 #include <QCloseEvent>
 #include <QFileDialog>
 #include <QApplication>
+#include <QToolBar>
 using namespace Core;
 using namespace Core::Internal;
 using namespace ExtensionSystem;
@@ -55,7 +56,6 @@ MainWindow::MainWindow(QWidget *parent)
       m_activeContext(0),
       m_rightPaneWidget(0),
       m_messageManager(0),
-      m_toggleSideBarButton(new QToolButton),
       m_progressManager(ProgressManagerPrivate::instance())
 
 {
@@ -69,7 +69,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     registerDefaultContainers();
     registerDefaultActions();
-
     m_rightPaneWidget = new RightPaneWidget();
     m_modeStack = new ModeTabWidget(this);
     m_modeManager = new ModeManager(this, m_modeStack);
@@ -82,7 +81,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(QApplication::instance(), SIGNAL(focusChanged(QWidget*,QWidget*)),
             this, SLOT(updateFocusWidget(QWidget*,QWidget*)));
-    statusBar()->insertPermanentWidget(0, m_toggleSideBarButton);
+	m_progressView = new ProgressView(this);
+	statusBar()->insertPermanentWidget(0, m_progressView);
 	setWindowIcon(QIcon(":/core/images/totem.ico"));
 }
 
@@ -262,7 +262,7 @@ QStatusBar *MainWindow::statusBar() const
     return m_modeStack->statusBar();
 }
 
-ProgressManager *MainWindow::progressManager() const
+ProgressManagerPrivate *MainWindow::progressManager() const
 {
     return m_progressManager;
 }

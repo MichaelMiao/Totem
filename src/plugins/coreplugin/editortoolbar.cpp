@@ -17,23 +17,25 @@ struct EditorToolBarPrivate
                                   EditorToolBar *q);
     QToolButton *m_closeEditorButton;
     Core::OpenEditorsModel* m_editorsModel;
-    QWidget *m_activeToolBar;
-    QWidget *m_toolBarPlaceholder;
-    QWidget *m_defaultToolBar;
-    QComboBox *m_editorList;
+    QWidget *	m_activeToolBar;
+    QWidget *	m_toolBarPlaceholder;
+    QWidget *	m_defaultToolBar;
+    QComboBox *	m_editorList;
+	bool		m_bStandalone;
 };
 
 EditorToolBarPrivate::EditorToolBarPrivate(QWidget *parent, EditorToolBar *q)
     : m_closeEditorButton(new QToolButton),
       m_activeToolBar(0),
       m_toolBarPlaceholder(new QWidget),
-      m_defaultToolBar(new QWidget(q))
+      m_defaultToolBar(new QWidget(q)),
+	  m_bStandalone(false)
 {
 
 }
 
 EditorToolBar::EditorToolBar(QWidget *parent) :
-    QWidget(parent),
+    CustomUI::StyledBar(parent),
     d(new EditorToolBarPrivate(parent, this))
 {
     QHBoxLayout *toolBarLayout = new QHBoxLayout(this);
@@ -70,6 +72,7 @@ EditorToolBar::EditorToolBar(QWidget *parent) :
 
 EditorToolBar::~EditorToolBar()
 {
+	delete d;
 }
 
 void EditorToolBar::addEditor(IEditor *editor)
@@ -77,7 +80,8 @@ void EditorToolBar::addEditor(IEditor *editor)
     TOTEM_ASSERT(editor, return);
     connect(editor, SIGNAL(changed()), this, SLOT(checkEditorStatus()));
     QWidget *toolBar = editor->toolBar();
-    addCenterToolBar(toolBar);
+	if (toolBar && !d->m_bStandalone)
+		addCenterToolBar(toolBar);
     updateEditorStatus(editor);
 }
 
@@ -157,12 +161,31 @@ void EditorToolBar::updateToolBar(QWidget *toolBar)
 void EditorToolBar::updateEditorStatus(IEditor *editor)
 {
     bool status = editor != 0;
-    d->m_closeEditorButton->setEnabled(status);
     if(!status)
     {
-        qDebug() << d->m_closeEditorButton->toolTip();
         this->setVisible(false);
     }
+	else
+	{
+		this->setVisible(true);
+		d->m_closeEditorButton->setEnabled(status);
+	}
+}
+
+void EditorToolBar::setCreationFlags( ToolbarCreationFlags flag )
+{
+	d->m_bStandalone = flag & FlagsStandalone;
+	if (d->m_bStandalone)
+	{
+		EditorManager *em = EditorManager::instance();
+		connect(em, SIGNAL(currentEditorChanged(Core::IEditor *)), SLOT(updateEditorListSelection(Core::IEditor*)));
+		d->m_closeEditorButton->setVisible(false);
+	}
+}
+
+void EditorToolBar::updateEditorListSelection( Core::IEditor *newSelection )
+{
+	
 }
 
 

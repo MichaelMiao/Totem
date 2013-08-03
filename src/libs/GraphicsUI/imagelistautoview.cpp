@@ -70,8 +70,9 @@ void ImageListAutoView::showImage(const int &iIndex)
         }
         bringToFront(item);
         m_iCurrentIndex = iIndex;
-        fitView();
+       
     }
+	 fitView();
 }
 
 void ImageListAutoView::reset()
@@ -114,8 +115,10 @@ void ImageListAutoView::onTimeOut()
 
     const int next = (m_iCurrentIndex+1) % m_imageList.count();
     m_imageList[m_iCurrentIndex]->fadeOut();
+	m_iCurrentIndex = next;
+	fitView();
     m_imageList[next]->fadeIn();
-    m_iCurrentIndex = next;
+
 }
 
 void ImageListAutoView::bringToFront(QGraphicsItem *pItem)

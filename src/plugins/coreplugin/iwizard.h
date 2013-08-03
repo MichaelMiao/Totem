@@ -4,7 +4,7 @@
 #include "core_global.h"
 #include "id.h"
 #include <QObject>
-
+#include <QVariantMap>
 QT_BEGIN_NAMESPACE
 class QIcon;
 QT_END_NAMESPACE

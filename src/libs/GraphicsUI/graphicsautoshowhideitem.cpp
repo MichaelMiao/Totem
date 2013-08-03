@@ -3,6 +3,8 @@
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
 #include <QPainter>
+#include <QGraphicsSceneMouseEvent>
+
 namespace GraphicsUI{
 
 GraphicsAutoShowHideItem::GraphicsAutoShowHideItem(QGraphicsItem *parent) :
@@ -31,6 +33,7 @@ void GraphicsAutoShowHideItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event
 {
     this->translate(-1, -1);
     emit clicked();
+	event->accept();
 }
 
 void GraphicsAutoShowHideItem::setPixmap(const QPixmap &pixmap)

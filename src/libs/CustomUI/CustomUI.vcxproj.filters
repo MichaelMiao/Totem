@@ -205,6 +205,15 @@
     <ClCompile Include="pathchooser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="styledbar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_styledbar.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_styledbar.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="basemainwindow.h">
@@ -274,6 +283,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="pathchooser.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="styledbar.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

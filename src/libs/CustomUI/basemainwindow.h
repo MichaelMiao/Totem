@@ -42,7 +42,7 @@ public:
     void restoreSettings(const QSettings *settings);
     QHash<QString, QVariant> getSettings() const;
     void restoreSettings(const QHash<QString, QVariant> &settings);
-
+	void setTrackingEnabled(bool enabled);
 signals:
     void resetLayout();
 public slots:

@@ -30,6 +30,7 @@ EditorView::EditorView(QWidget *parent) :
             this, SLOT(closeView()));
     m_infoBarDisplay->setTarget(tl, 1);
     tl->addWidget(m_toolBar);
+	m_toolBar->setVisible(false);
     tl->addWidget(m_container);
 }
 

@@ -11,6 +11,7 @@ class TOTEM_GRAPHICSUI_EXPORT ArrowLinkControlItem : public QGraphicsObject
     Q_OBJECT
 public:
     explicit ArrowLinkControlItem(QGraphicsItem *parent = 0);
+	virtual ~ArrowLinkControlItem();
     virtual QRectF	boundingRect () const ;
     virtual void paint(QPainter * painter,
                        const QStyleOptionGraphicsItem * option,

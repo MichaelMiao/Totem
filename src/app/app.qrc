@@ -1,4 +1,10 @@
 <RCC>
-    <qresource prefix="app">
+    <qresource prefix="/app">
+        <file>images/Hydrangeas.jpg</file>
+        <file>images/Jellyfish.jpg</file>
+        <file>images/Koala.jpg</file>
+        <file>images/Lighthouse.jpg</file>
+        <file>images/Penguins.jpg</file>
+        <file>images/Tulips.jpg</file>
     </qresource>
 </RCC>

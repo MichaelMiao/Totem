@@ -103,7 +103,7 @@ struct FutureProgressPrivate {
 
 FutureProgressPrivate::FutureProgressPrivate(FutureProgress *q) :
     m_progress(new Internal::ProgressBar), m_widget(0), m_widgetLayout(new QHBoxLayout),
-    m_keep(FutureProgress::HideOnFinish), m_waitingForUserInteraction(false),
+    m_keep(FutureProgress::KeepOnFinish), m_waitingForUserInteraction(false),
     m_faderWidget(new Internal::FadeWidgetHack(q)), m_q(q), m_isFading(false)
 {
 }

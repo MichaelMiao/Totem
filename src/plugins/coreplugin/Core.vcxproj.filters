@@ -87,9 +87,6 @@
     <ClCompile Include="editorview.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="icontext.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="icore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -476,6 +473,9 @@
     </ClCompile>
     <ClCompile Include="dialogs\newdialogproxymodel.cpp">
       <Filter>Source Files\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="icontext.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

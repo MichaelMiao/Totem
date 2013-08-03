@@ -7,7 +7,6 @@
 #include <QFutureWatcher>
 #include "futureprogress.h"
 namespace ExtensionSystem{
-
 class EXTENSIONSYSTEM_EXPORT ProgressManagerPrivate : public ProgressManager
 {
     Q_OBJECT
@@ -19,6 +18,8 @@ public:
                              const QString &type,
                              const QString &title,
                              FutureProgress* widget);
+signals:
+
 public slots:
     virtual void cancelTasks(const QString &type);
 
@@ -27,7 +28,6 @@ private slots:
     void cancelAllRunningTasks();
 private:
     explicit ProgressManagerPrivate(QObject *parent = 0);
-
 
     QMap<QFutureWatcher<void> *, QString> m_runningTasks;
     static ProgressManagerPrivate* m_instance;

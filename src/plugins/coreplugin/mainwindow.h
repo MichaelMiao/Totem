@@ -13,7 +13,7 @@ class QToolButton;
 class QAction;
 QT_END_NAMESPACE
 namespace ExtensionSystem{
-class ProgressManager;
+class ProgressManagerPrivate;
 }
 namespace Core{
 
@@ -24,6 +24,7 @@ class RightPaneWidget;
 class EditorManager;
 class ActionManager;
 class ModeTabWidget;
+class ProgressView;
 
 namespace Internal{
 
@@ -68,7 +69,7 @@ public:
     Core::MessageManager*messageManager() const;
     Core::ModeTabWidget* modeTabWidget() const;
     QStatusBar *statusBar() const;
-    ExtensionSystem::ProgressManager *progressManager() const;
+    ExtensionSystem::ProgressManagerPrivate *progressManager() const;
 signals:
     void windowActivated();
 
@@ -106,12 +107,12 @@ private:
     EditorManager *m_editorManager;
     StatusBarManager *m_statusBarManager;
     MessageManager *m_messageManager;
-    ExtensionSystem::ProgressManager *m_progressManager;
+    ExtensionSystem::ProgressManagerPrivate *m_progressManager;
     RightPaneWidget *m_rightPaneWidget;
     ModeTabWidget *m_modeStack;
     ModeManager *m_modeManager;
     Core::StatusBarWidget *m_outputView;
-
+	ProgressView*		   m_progressView;
 
 
     IContext *m_activeContext;

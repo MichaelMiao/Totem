@@ -119,7 +119,7 @@ void ModeTabBar::paintTab(QPainter *painter, int tabIndex) const
         grad.setColorAt(0, QColor(255, 255, 255, 140));
         grad.setColorAt(1, QColor(255, 255, 255, 210));
         painter->fillRect(rect.adjusted(0, 0, 0, -1), grad);
-        painter->restore();
+        
 
         //shadows
         painter->setPen(QColor(0, 0, 0, 110));
@@ -136,6 +136,7 @@ void ModeTabBar::paintTab(QPainter *painter, int tabIndex) const
         painter->drawLine(rect.topLeft() + QPoint(0, 0), rect.topRight());
         painter->drawLine(rect.topRight() + QPoint(0, 1), rect.bottomRight() - QPoint(0, 1));
         painter->drawLine(rect.bottomLeft() + QPoint(0,-1), rect.bottomRight()-QPoint(0,1));
+		painter->restore();
     }
 
     QString tabText(this->tabText(tabIndex));
@@ -438,9 +439,8 @@ bool ModeTabWidget::isTabEnabled(int index) const
 void ModeTabWidget::addToolBar(QToolBar *toolBar)
 {
     if(!toolBar ||m_toolBars.contains(toolBar))
-    {
         return ;
-    }
+
     toolBar->setStyleSheet("border:none");
     if(toolBar->windowTitle().isEmpty())
     {

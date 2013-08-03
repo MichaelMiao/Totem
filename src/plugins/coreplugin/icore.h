@@ -6,7 +6,7 @@
 #include <QMainWindow>
 #include <QSettings>
 #include <QObject>
-
+#include <QDebug>
 #define LOGOUT(x) \
     {   \
         Core::ICore::messageManager()->printToOutputPane(x); \

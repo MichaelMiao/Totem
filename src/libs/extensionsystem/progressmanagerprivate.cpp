@@ -1,4 +1,5 @@
 ﻿#include "progressmanagerprivate.h"
+
 using namespace ExtensionSystem;
 ProgressManagerPrivate *ProgressManagerPrivate::m_instance = 0;
 ProgressManagerPrivate::ProgressManagerPrivate(QObject *parent) :
@@ -31,9 +32,11 @@ void ProgressManagerPrivate::addTask(QFuture<void> future,
     m_runningTasks.insert(watcher, type);
     connect(watcher, SIGNAL(finished()), this, SLOT(taskFinished()));
     watcher->setFuture(future);
+
     widget->setTitle(title);
     widget->setType(type);
     widget->setFuture(future);
+	emit taskStarted(type);
 }
 
 void ProgressManagerPrivate::cancelTasks(const QString &type)

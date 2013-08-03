@@ -1,15 +1,20 @@
 #ifndef ARROWLINKITEM_H
 #define ARROWLINKITEM_H
 
-#include <QGraphicsObject>
+#include <QGraphicsPathItem>
 #include "graphicsui_global.h"
 namespace GraphicsUI{
 
 class ArrowLinkControlItem;
-class TOTEM_GRAPHICSUI_EXPORT ArrowLinkItem : public QGraphicsObject
+class TOTEM_GRAPHICSUI_EXPORT ArrowLinkItem : public QObject, public QGraphicsPathItem
 {
     Q_OBJECT
 public:
+	enum {
+		SELECT_STATE	= 0x01,
+		HOVER_STATE		= 0x01 << 1,
+		NORMAL_STATE	= 0x00
+	};
     explicit ArrowLinkItem(QGraphicsItem *parent = 0);
     virtual ~ArrowLinkItem();
     virtual QPainterPath shape() const;
@@ -30,6 +35,11 @@ public:
 
     QPointF getControlItemPosFirst() const;
     QPointF getControlItemPosSecond() const;
+
+	virtual void	hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
+	virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
+
+	void setColor(const QColor &color, const int &state = NORMAL_STATE);
 public slots:
     void controlItemPositionChanged();
 protected:
@@ -37,7 +47,10 @@ protected:
     ArrowLinkControlItem* m_controlPoint_2; //!< 控制点2
     QPointF m_startPoint;               //!< 开始点坐标
     QPointF m_endPoint;                 //!< 结束点坐标
-
+	bool	m_bHoverOver;				//!< 鼠标是否hover
+	QColor	m_colorSelect;				//!< link颜色
+	QColor	m_colorHover;				//!< hover颜色
+	QColor	m_colorNormal;				//!< normal颜色
 };
 }
 

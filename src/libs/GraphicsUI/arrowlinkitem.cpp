@@ -7,7 +7,7 @@
 namespace GraphicsUI{
 
 ArrowLinkItem::ArrowLinkItem(QGraphicsItem *parent) :
-    QGraphicsObject(parent)
+    QGraphicsPathItem(parent)
 {
     m_controlPoint_1 = new ArrowLinkControlItem(this);
 
@@ -20,11 +20,20 @@ ArrowLinkItem::ArrowLinkItem(QGraphicsItem *parent) :
     setAcceptHoverEvents(true);
     setFlags(ItemIsSelectable);
 	setCacheMode(QGraphicsItem::ItemCoordinateCache);
+	m_colorHover = m_colorSelect = Qt::red;
+	m_colorNormal= Qt::green;
 }
 
 ArrowLinkItem::~ArrowLinkItem()
 {
-
+	if (m_controlPoint_1)
+	{
+		delete m_controlPoint_1;
+	}
+	if (m_controlPoint_2)
+	{
+		delete m_controlPoint_2;
+	}
 }
 
 QPainterPath ArrowLinkItem::shape() const
@@ -74,10 +83,15 @@ void ArrowLinkItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     if(option->state & QStyle::State_Selected)
     {
         setControlPointVisible(true);
-        painter->setPen(Qt::green);
+		QPen pen(Qt::DotLine);
+		pen.setWidth(1);
+		pen.setColor(QColor(0, 0, 255, 125));
+		painter->save();
+        painter->setPen(pen);
         painter->drawLine(c1, startPos);
         painter->drawLine(c2, endPos);
-        penColor = Qt::red;
+		painter->restore();
+		penColor = m_colorSelect;
     }
     else
     {
@@ -112,7 +126,7 @@ void ArrowLinkItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     QPolygonF arrowHead;
     arrowHead << arrowP2 << arrowP1 << line.p1();
-    painter->setBrush(Qt::red);
+    painter->setBrush(penColor);
     painter->drawPolygon(arrowHead);
 }
 
@@ -182,4 +196,34 @@ void ArrowLinkItem::updateGeometory()
 
     update();
 }
+
+void ArrowLinkItem::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
+{
+	m_bHoverOver = true;
+	update();
+}
+
+void ArrowLinkItem::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
+{
+	m_bHoverOver = false;
+	update();
+}
+
+void ArrowLinkItem::setColor( const QColor &color, const int &state /*= NORMAL_STATE*/ )
+{
+	switch (state)
+	{
+	case SELECT_STATE:
+		m_colorSelect = color;
+		break;
+	case HOVER_STATE:
+		m_colorHover = color;
+		break;
+	case NORMAL_STATE:
+		m_colorNormal = color;
+		break;
+	}
+	update();
+}
+
 }

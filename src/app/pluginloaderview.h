@@ -26,15 +26,11 @@ public:
     void init();
 
 protected slots:
-    virtual void setStarted();
-    virtual void setFinished();
-    virtual void setProgressRange(int min, int max);
-    virtual void setProgressValue(int val);
-    virtual void setProgressText(const QString &text);
+    void setStarted();
+    void setFinished();
+
 private:
     GraphicsUI::ImageListAutoView *m_view;//!< QGraphicsView类型，有淡入淡出效果
-    QProgressBar *m_pProgressBar;   //!< 进度条
-    QLabel       *m_pLabel; //!< 进度文字
 };
 
 #endif // PLUGINLOADERVIEW_H

@@ -38,6 +38,7 @@
 #include "iwizard.h"
 #include "generatedfile.h"
 #include "extensionsystem/iplugin.h"
+#include <QVariantMap>
 QT_BEGIN_NAMESPACE
 class QWizard;
 class QWizardPage;

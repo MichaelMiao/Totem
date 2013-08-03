@@ -1,10 +1,11 @@
 #include "a.h"
 #include <QTimerEvent>
+
 using namespace GraphicsUI;
 A::A(QObject *parent)
 	: QObject(parent)
 {
-	m_block = new TextAnimationBlock();
+	m_autoView = new ImageListAutoView();
 }
 
 A::~A()

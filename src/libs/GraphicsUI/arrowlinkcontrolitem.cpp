@@ -39,4 +39,10 @@ QVariant ArrowLinkControlItem::itemChange(QGraphicsItem::GraphicsItemChange chan
     }
     return QGraphicsItem::itemChange(change, value);
 }
+
+ArrowLinkControlItem::~ArrowLinkControlItem()
+{
+
+}
+
 }

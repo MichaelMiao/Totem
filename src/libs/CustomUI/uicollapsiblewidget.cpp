@@ -42,6 +42,7 @@ uiCollapsibleWidget::uiCollapsibleWidget(Qt::Alignment alignment, QWidget *paren
     d->m_alignment = alignment;
     d->m_layout->setSpacing(0);
     d->m_layout->setMargin(0);
+	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     d->m_layout->addSpacerItem(d->m_spacer);
     this->setLayout(d->m_layout);
 }
@@ -58,14 +59,21 @@ void uiCollapsibleWidget::addRegion(const QString &text, QLayout *pLayout)
 
 void uiCollapsibleWidget::insertRegion(const QString &text, QWidget *widget, int index)
 {
-    CollapsibleButton *pButton = new CollapsibleButton(text, this);
-    QVBoxLayout *vLayout = new QVBoxLayout;
-    if(widget)
-    {
-        vLayout->addWidget(widget);
-    }
-    pButton->setLayout(vLayout);
-    d->m_layout->insertWidget(index, pButton);
+	if (text.isEmpty())
+	{
+		d->m_layout->insertWidget(index, widget);
+	}
+	else
+	{
+		CollapsibleButton *pButton = new CollapsibleButton(text, this);
+		QVBoxLayout *vLayout = new QVBoxLayout;
+		if(widget)
+		{
+			vLayout->addWidget(widget);
+		}
+		pButton->setLayout(vLayout);
+		d->m_layout->insertWidget(index, pButton);
+	}
 }
 
 void uiCollapsibleWidget::insertRegion(const QString &text, QLayout *pLayout, int index)

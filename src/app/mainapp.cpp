@@ -279,8 +279,9 @@ int MainApp::init()
 
     ExtensionSystem::ProgressManagerPrivate *progressMgr = ExtensionSystem::ProgressManagerPrivate::instance();
     progressMgr->addTask(m_futureInterface->future(), QLatin1String("LoadPlugin"), tr(""), m_pLoader);
+// 	m_pLoader->show();
     loadPluginThread(this);
-//    QtConcurrent::run(loadPluginThread, this);
+	
     return 0;
 }
 /**
@@ -308,6 +309,7 @@ bool MainApp::loadSkin(const QString &strFileName)
 void MainApp::onStart()
 {
     m_pLoader->show();
+	m_pLoader->raise();
 }
 
 void MainApp::onFinish()
