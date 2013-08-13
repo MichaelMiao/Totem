@@ -128,7 +128,8 @@ void EditorToolBar::closeEditor()
     IEditor *current = EditorManager::currentEditor();
     if (!current)
         return;
-    EditorManager::instance()->closeEditor(current);
+	if (d->m_bStandalone)
+		EditorManager::instance()->closeEditor(current);
     emit closeClicked();
 }
 

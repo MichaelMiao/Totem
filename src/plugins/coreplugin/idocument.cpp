@@ -73,8 +73,6 @@ bool IDocument::open(QString *errorString, const QString &fileName, const QStrin
         m_bReadOnly = !fi.isWritable();
         m_fileName = QDir::cleanPath(fi.absoluteFilePath());
 
-        m_fileName = fi.fileName();
-
         m_document->setModified(false);
 
         m_document->setModified(fileName != realFileName);

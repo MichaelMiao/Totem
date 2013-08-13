@@ -1,0 +1,29 @@
+<XML XMLVersion="0.0.1">
+    <DesignNetSpace Name="DesignNetSpace" type="DesignNetSpace" ID="-1">
+        <Processors>
+            <Processor Name="Join" type="Operations/Join" ID="0"/>
+            <Processor Name="Buffer" type="Operations/Buffer" ID="1">
+                <Property typeID="PropertyType/DoubleRange" Name="BufferSize" value="10" type="PropertyType/DoubleRange" ID="BufferSize"/>
+            </Processor>
+            <Processor Name="Image Folder Loader" type="Loader/Image Folder Loader" ID="2"/>
+            <Processor Name="Join" type="Operations/Join" ID="3"/>
+            <Processor Name="Buffer" type="Operations/Buffer" ID="4">
+                <Property typeID="PropertyType/DoubleRange" Name="BufferSize" value="10" type="PropertyType/DoubleRange" ID="BufferSize"/>
+            </Processor>
+            <Processor Name="Image Folder Loader" type="Loader/Image Folder Loader" ID="6"/>
+            <Processor Name="Centroid" type="FeatureExtraction/Centroid" ID="8"/>
+        </Processors>
+        <Connections>
+            <Connection src_processor="2" target_processor="1" target_port="Buffer Size" src_port="outimagecount"/>
+            <Connection src_processor="6" target_processor="4" target_port="Buffer Size" src_port="outimagecount"/>
+        </Connections>
+    </DesignNetSpace>
+    <Positions>
+        <Pos X="-393" Y="-180" type="Position"/>
+        <Pos X="-84" Y="-155" type="Position"/>
+        <Pos X="-214" Y="80" type="Position"/>
+        <Pos X="-372" Y="7" type="Position"/>
+        <Pos X="-297" Y="79" type="Position"/>
+        <Pos X="-72" Y="108" type="Position"/>
+    </Positions>
+</XML>

@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/InputLoader">
+        <file>images/NormalImageLoader.png</file>
+        <file>images/add_folder.png</file>
+    </qresource>
+</RCC>

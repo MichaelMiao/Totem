@@ -1,0 +1,23 @@
+<XML XMLVersion="0.0.1">
+    <DesignNetSpace Name="DesignNetSpace" type="DesignNetSpace" ID="-1">
+        <Processors>
+            <Processor Name="Join" type="Operations/Join" ID="0"/>
+            <Processor Name="Color Feature HSV" type="Flowers/Feature/Color Feature HSV" ID="1"/>
+            <Processor Name="Centroid" type="FeatureExtraction/Centroid" ID="2"/>
+            <Processor Name="Color 2 Gray" type="Conversion/Color 2 Gray" ID="3"/>
+            <Processor Name="Color Space Conversion" type="Conversion/Color Space Conversion" ID="4">
+                <Property typeID="PropertyType/Option" Name="Conversion" value="BGR 2 HSV" type="PropertyType/Option" ID="ConversionOption"/>
+            </Processor>
+        </Processors>
+        <Connections>
+            <Connection src_processor="4" target_processor="1" target_port="" src_port="OutputImage"/>
+        </Connections>
+    </DesignNetSpace>
+    <Positions>
+        <Position X="-332" Y="-67" type="Position" Processor id="0"/>
+        <Position X="-19" Y="-78" type="Position" Processor id="1"/>
+        <Position X="-150" Y="66" type="Position" Processor id="2"/>
+        <Position X="-313" Y="89" type="Position" Processor id="3"/>
+        <Position X="-269" Y="11" type="Position" Processor id="4"/>
+    </Positions>
+</XML>
