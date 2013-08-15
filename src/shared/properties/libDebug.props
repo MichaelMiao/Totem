@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <TargetName>$(ProjectName)d</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <Link>
+      <ImportLibrary>$(SolutionDir)$(Platform)\libs\$(TargetName).lib</ImportLibrary>
+      <OutputFile>$(OutDir)\$(ProjectName)d.dll</OutputFile>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy  "$(TargetPath)" "$(SolutionDir)$(Platform)\\$(Configuration)"
+copy  "$(TargetDir)\\$(TargetName).lib" "$(SolutionDir)$(Platform)\\libs\\$(TargetName).lib"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>copy  "$(TargetPath)" "$(SolutionDir)$(Platform)\\$(Configuration)"</Message>
+    </PostBuildEvent>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(OPENCV_DIR)include;$(SolutionDir)src;$(SolutionDir)src\libs;$(SolutionDir)src\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

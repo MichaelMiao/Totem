@@ -1,4 +1,4 @@
-﻿#ifndef PROPERTYOWNER_H
+#ifndef PROPERTYOWNER_H
 #define PROPERTYOWNER_H
 
 
