@@ -8,6 +8,7 @@
     <TargetName>$(ProjectName)d</TargetName>
     <EnableManagedIncrementalBuild>true</EnableManagedIncrementalBuild>
     <LinkIncremental>true</LinkIncremental>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -20,7 +21,7 @@
     <Link>
       <OutputFile>$(Configuration)\$(TargetName).dll</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Aggregationd.lib;Utilsd.lib;ExtensionSystemd.lib;CustomUId.lib;Cored.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Aggregationd.lib;Utilsd.lib;ExtensionSystemd.lib;CustomUId.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>

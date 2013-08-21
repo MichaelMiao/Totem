@@ -44,11 +44,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CustomUId</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IgnoreImportLibrary>
-    <PostBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</PostBuildEventUseInBuild>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\lib\totem\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CustomUI</TargetName>
@@ -91,7 +89,6 @@
       <OutputFile>$(OutDir)\CustomUId.dll</OutputFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ImportLibrary>$(SolutionDir)$(Platform)\libs\$(TargetName).lib</ImportLibrary>
     </Link>
     <Midl>
       <DefaultCharType>Unsigned</DefaultCharType>
@@ -101,11 +98,7 @@
     <ResourceCompile>
       <PreprocessorDefinitions>_CONSOLE;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;WITH_TESTS;TOTEM_LIBRARY_BASENAME="lib";QT_NO_CAST_TO_ASCII;QT_USE_FAST_OPERATOR_PLUS;QT_USE_FAST_CONCATENATION;_CRT_SECURE_NO_WARNINGS;CUSTOMUI_LIB;QT_DLL;QT_TESTLIB_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
-    <PostBuildEvent>
-      <Command>copy  "$(TargetPath)" "$(SolutionDir)$(Platform)\\$(Configuration)"
-copy  "$(TargetDir)\\$(TargetName).lib" "$(SolutionDir)$(Platform)\\libs\\$(TargetName).lib"</Command>
-      <Message>copy  "$(TargetPath)" "$(SolutionDir)$(Platform)\\$(Configuration)"</Message>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -621,7 +614,7 @@ echo #include "totem_gui_pch.h"&gt;&gt;..\..\shared\totem_gui_pch.h.cpp</Command
   <ImportGroup Label="ExtensionTargets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties QtVersion_x0020_Win32="4.8.4" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" />
+      <UserProperties QtVersion_x0020_Win32="4.8.5" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

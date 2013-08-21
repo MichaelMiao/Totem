@@ -43,7 +43,6 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)d</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IgnoreImportLibrary>
@@ -1184,7 +1183,7 @@ echo #include "totem_gui_pch.h"&gt;&gt;..\..\shared\totem_gui_pch.h.cpp</Command
   <ImportGroup Label="ExtensionTargets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties QtVersion_x0020_Win32="4.8.4" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" />
+      <UserProperties QtVersion_x0020_Win32="4.8.5" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

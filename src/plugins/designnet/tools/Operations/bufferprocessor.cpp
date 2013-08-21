@@ -36,6 +36,7 @@ BufferProcessor::BufferProcessor( DesignNet::DesignNetSpace *space, QObject* par
 	addProperty(d->m_property);
 	addPort(&d->m_bufferSizePort);
 	addPort(&d->m_inputBufferPort);
+	addPort(&d->m_outputMatrixPort);
 	d->m_property->setValue(10);
 	setName(tr("Buffer"));
 }

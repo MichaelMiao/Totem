@@ -76,7 +76,7 @@ bool DesignNetCorePlugin::initialize( const QStringList &arguments, QString *err
 	addAutoReleasedObject(new DesignNetSolutionWizard(param, this));
 	addAutoReleasedObject(new DesignNetEditorFactory);
 	// Core
-	connect(ICore::instance(), SIGNAL(saveSettingsRequested()), SLOT(writeSettings()));
+	connect(ICore::instance(), SIGNAL(saveSettingsRequested()), this, SLOT(writeSettings()));
 	d->m_designNetFormMgr = DesignNetFormManager::instance();
 	d->m_designNetFormMgr->startInit();
 	return true;

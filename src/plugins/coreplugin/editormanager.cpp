@@ -202,7 +202,7 @@ EditorManager::EditorManager(QWidget *parent) :
 	const Context editManagerContext(Constants::C_EDITORMANAGER);
 	// menu
 	ActionManager::registerAction(d->m_saveAction, Constants::SAVE, editManagerContext);
-	connect(d->m_saveAction, SIGNAL(trigger()), this, SLOT(saveDocument()));
+	connect(d->m_saveAction, SIGNAL(trigger(bool)), this, SLOT(saveDocument()));
     updateActions();
 
 }

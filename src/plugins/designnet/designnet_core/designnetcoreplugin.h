@@ -14,8 +14,10 @@ public:
 	void extensionsInitialized();
 	bool delayedInitialize();
 	ShutdownFlag aboutToShutdown();
+
 public slots:
 	void writeSettings();
+
 private:
 	DesignNetCorePluginPrivate *d;
 };

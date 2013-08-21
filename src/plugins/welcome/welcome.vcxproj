@@ -26,8 +26,8 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\shared\properties\PluginConfigurationDebug.props" />
     <Import Project="..\..\shared\properties\OpenCVConfigDebug.props" />
+    <Import Project="..\..\shared\properties\PluginConfigurationDebug.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -51,18 +51,11 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <OutputFile>$(Configuration)\$(TargetName).dll</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(SolutionDir)$(Platform)\libs;$(SolutionDir)$(Platform)\plugins;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>Aggregationd.lib;Utilsd.lib;ExtensionSystemd.lib;CustomUId.lib;$(QTDIR)\lib\QtHelpd4.lib;$(QTDIR)\lib\QtTestd4.lib;$(QTDIR)\lib\QtScriptd4.lib;$(QTDIR)\lib\QtSqld4.lib;$(QTDIR)\lib\QtGuid4.lib;$(QTDIR)\lib\QtNetworkd4.lib;$(QTDIR)\lib\QtCored4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>copy  "welcome.pluginspec" "$(SolutionDir)$(Platform)\plugins\"
-copy  "$(Configuration)\$(TargetName).dll" "$(SolutionDir)$(Platform)\plugins\"
-copy  "$(Configuration)\$(TargetName).lib" "$(SolutionDir)$(Platform)\libs\"
-
-</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -96,7 +89,7 @@ copy  "$(Configuration)\$(TargetName).lib" "$(SolutionDir)$(Platform)\libs\"
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties UicDir=".\GeneratedFiles" MocDir=".\GeneratedFiles\$(ConfigurationName)" MocOptions="" RccDir=".\GeneratedFiles" lupdateOnBuild="0" lupdateOptions="" lreleaseOptions="" QtVersion_x0020_Win32="4.8.4" />
+      <UserProperties UicDir=".\GeneratedFiles" MocDir=".\GeneratedFiles\$(ConfigurationName)" MocOptions="" RccDir=".\GeneratedFiles" lupdateOnBuild="0" lupdateOptions="" lreleaseOptions="" QtVersion_x0020_Win32="4.8.5" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

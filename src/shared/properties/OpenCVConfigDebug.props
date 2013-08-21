@@ -8,6 +8,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <LinkIncremental>true</LinkIncremental>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>

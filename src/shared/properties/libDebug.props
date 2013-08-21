@@ -3,9 +3,10 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)d</TargetName>
     <LinkIncremental>true</LinkIncremental>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <OutDir>$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
@@ -17,16 +18,15 @@
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
     </ProjectReference>
     <Link>
-      <ImportLibrary>$(SolutionDir)$(Platform)\libs\$(TargetName).lib</ImportLibrary>
+      <ImportLibrary>
+      </ImportLibrary>
       <OutputFile>$(OutDir)\$(ProjectName)d.dll</OutputFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy  "$(TargetPath)" "$(SolutionDir)$(Platform)\\$(Configuration)"
-copy  "$(TargetDir)\\$(TargetName).lib" "$(SolutionDir)$(Platform)\\libs\\$(TargetName).lib"</Command>
+      <Command>copy  "$(TargetPath)" "$(SolutionDir)$(Platform)\$(Configuration)"
+copy  "$(TargetDir)$(TargetName).lib" "$(SolutionDir)$(Platform)\libs\$(TargetName).lib"</Command>
     </PostBuildEvent>
-    <PostBuildEvent>
-      <Message>copy  "$(TargetPath)" "$(SolutionDir)$(Platform)\\$(Configuration)"</Message>
-    </PostBuildEvent>
+    <PostBuildEvent />
     <ClCompile>
       <AdditionalIncludeDirectories>$(OPENCV_DIR)include;$(SolutionDir)src;$(SolutionDir)src\libs;$(SolutionDir)src\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
