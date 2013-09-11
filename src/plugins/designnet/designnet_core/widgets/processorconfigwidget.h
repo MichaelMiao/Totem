@@ -20,12 +20,15 @@ public:
 	ProcessorConfigWidget(Processor* processor, QWidget *parent);
 	virtual ~ProcessorConfigWidget();
 	virtual ProcessorConfigWidget* create(Processor* processor, QWidget *parent = 0);
+	virtual void init();
 	void addPropertyPage(Processor* processor);
 	void addPage(ProcessorConfigPage* page);
 	void addListener(ProcessorConfigListener *listener);
+
 public slots:
 	void onSettingsChanged();
-private:
+
+protected:
 	QTabWidget*	m_tabWidget;
 	Processor*	m_processor;
 	QList<ProcessorConfigListener*> m_listeners;

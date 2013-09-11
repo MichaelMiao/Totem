@@ -6,7 +6,7 @@
     <TargetName>$(ProjectName)d</TargetName>
     <LinkIncremental>true</LinkIncremental>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
-    <OutDir>$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
@@ -18,13 +18,12 @@
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
     </ProjectReference>
     <Link>
-      <ImportLibrary>
-      </ImportLibrary>
-      <OutputFile>$(OutDir)\$(ProjectName)d.dll</OutputFile>
+      <ImportLibrary>$(SolutionDir)$(Platform)\libs\$(ProjectName)d.lib</ImportLibrary>
+      <OutputFile>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)d.dll</OutputFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy  "$(TargetPath)" "$(SolutionDir)$(Platform)\$(Configuration)"
-copy  "$(TargetDir)$(TargetName).lib" "$(SolutionDir)$(Platform)\libs\$(TargetName).lib"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PostBuildEvent />
     <ClCompile>

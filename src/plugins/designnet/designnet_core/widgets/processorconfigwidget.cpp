@@ -73,4 +73,9 @@ void ProcessorConfigWidget::onSettingsChanged()
 	}
 }
 
+void ProcessorConfigWidget::init()
+{
+
+}
+
 }

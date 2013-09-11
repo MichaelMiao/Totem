@@ -39,7 +39,7 @@ QString GraphicsNormalImageLoader::category() const
     return tr("Loader");
 }
 
-bool GraphicsNormalImageLoader::process()
+bool GraphicsNormalImageLoader::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
     emit logout(tr("GraphicsNormalImageLoader Processing"));
 	if(m_filePath.isEmpty())

@@ -14,7 +14,8 @@ const char ImageFolderIcon[] = ":/InputLoader/images/add_folder.png";
 ImageFolderLoader::ImageFolderLoader( DesignNet::DesignNetSpace *space, QObject *parent /*= 0*/ )
 	: Processor(space, parent),
 	m_outPort(new ImageData(ImageData::IMAGE_BGR, this), Port::OUT_PORT),
-	m_outImageCountPort(new IntData(0, this), Port::OUT_PORT)
+	m_outImageCountPort(new IntData(0, this), Port::OUT_PORT),
+	m_iCurIndex(0)
 {
 	m_outPort.setName("ImageData");
 	m_outImageCountPort.setName("outimagecount");
@@ -45,46 +46,38 @@ QString ImageFolderLoader::category() const
 	return tr("Loader");
 }
 
-bool ImageFolderLoader::process()
+bool ImageFolderLoader::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
 	emit logout(tr("ImageFolderLoader Processing"));
-	if(m_folderPath.isEmpty())
+	ProcessResult pr;
+	if (m_iCurIndex >= m_filePaths.size())
 	{
-		emit logout(tr("Property %1 is not valid.").arg(m_folderPath));
+		pr.m_bSucessed = true;
+		pr.m_bNeedLoop = false;
+		future.reportResult(pr);
+		return true;
+	}
+	pr.m_bNeedLoop = true;
+	QString file = m_filePaths.at(m_iCurIndex);
+	std::string str = file.toLocal8Bit().data();
+	cv::Mat mat = cv::imread(str);
+	if(!mat.data)
+	{
+		emit logout(tr("load %1 failed").arg(file));
+		pr.m_bSucessed = false;
+		pr.m_bNeedLoop = false;
+		future.reportResult(pr);
 		return false;
 	}
-	QStringList fileList;
-	QStringList nameFilters;
-	nameFilters << "*.bmp" << "*.jpg" << "*.png";
-	QDir dir(m_folderPath);
-	QFileInfoList infoList = dir.entryInfoList(nameFilters, 
-		QDir::Files | QDir::Readable);
-	foreach(QFileInfo info, infoList)
+	else
 	{
-		fileList << info.absoluteFilePath();
+		emit logout(tr("loading %1...").arg(file));
+		ImageData imageData;
+		imageData.setImageData(mat);
+		imageData.setIndex(m_iCurIndex++);
+		pushData(&imageData, "ImageData");
 	}
-	IntData intData(fileList.count());
-	intData.setPermanent(true);
-	pushData(&intData, "outimagecount");
-	int i = 0;
-	foreach(QString file, fileList)
-	{
-		std::string str = file.toLocal8Bit().data();
-		cv::Mat mat = cv::imread(str);
-		if(!mat.data)
-		{
-			emit logout(tr("load %1 failed").arg(file));
-			return false;
-		}
-		else
-		{
-			emit logout(tr("loading %1...").arg(file));
-			ImageData imageData;
-			imageData.setImageData(mat);
-			imageData.setIndex(i++);
-			pushData(&imageData, "ImageData");
-		}
-	}
+	future.reportResult(pr);
 	return true;
 }
 
@@ -103,6 +96,36 @@ QString ImageFolderLoader::path() const
 {
 	QReadLocker locker(&m_lock);
 	return m_folderPath;
+}
+
+bool ImageFolderLoader::prepareProcess()
+{
+	m_folderPath = QString::fromUtf8("F:\\MD\\flower\\Test Data\\");
+	if(m_folderPath.isEmpty())
+	{
+		emit logout(tr("Property %1 is not valid.").arg(m_folderPath));
+		return false;
+	}
+	QStringList nameFilters;
+	nameFilters << "*.bmp" << "*.jpg" << "*.png";
+	QDir dir(m_folderPath);
+	QFileInfoList infoList = dir.entryInfoList(nameFilters, 
+		QDir::Files | QDir::Readable);
+	
+	foreach(QFileInfo info, infoList)
+		m_filePaths << info.absoluteFilePath();
+
+	IntData intData(m_filePaths.count());
+	intData.setPermanent(true);
+	pushData(&intData, "outimagecount");
+
+	return true;
+}
+
+bool ImageFolderLoader::finishProcess()
+{
+	m_iCurIndex = 0;
+	return true;
 }
 
 }//!< namespace InputLoader

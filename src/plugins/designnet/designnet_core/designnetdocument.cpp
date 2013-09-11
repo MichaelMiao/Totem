@@ -116,8 +116,9 @@ bool DesignNetDocument::save(QString *errorString, const QString &fileName, bool
 {
 	Utils::XmlSerializer x;
 	x.serialize("DesignNetSpace", *(d->space));
-	emit serialized(x);
 	x.write(fileName);
+	emit serialized(x);
+
     return true;
 }
 

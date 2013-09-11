@@ -52,14 +52,14 @@ QString JoinProcessor::category() const
 	return tr("Operations");
 }
 
-bool JoinProcessor::process()
+bool JoinProcessor::process(QFutureInterface<ProcessResult> &future)
 {
 	int iRows = 0, iCols = 0;
 	foreach(Port *p, m_inputPorts)
 	{
-		if (p->data()->isValid())
+		if (p->getInputData().at(0)->isValid())
 		{
-			cv::Mat &mat = ((MatrixData*)p->data())->getMatrix();
+			cv::Mat &mat = ((MatrixData*)p->getInputData().at(0))->getMatrix();
 			mat = mat.reshape(1, 1);
 			iCols += mat.cols;
 		}

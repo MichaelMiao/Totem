@@ -53,7 +53,7 @@ QString GLCMBlock::category() const
 	return tr("FeatureExtraction");
 }
 
-bool GLCMBlock::process()
+bool GLCMBlock::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
 	return true;
 }

@@ -46,8 +46,12 @@ public:
     virtual void propertyRemoving(Property* prop);//!< 属性移除前调用
     virtual void propertyRemoved(Property* prop); //!< 属性移除完成
 	virtual void propertyAdded(Property* prop);
-    virtual bool process();                     //!< 处理函数
-    virtual Core::Id typeID() const;            //!<
+
+	virtual bool prepareProcess();
+    virtual bool process(QFutureInterface<ProcessResult> &future);                     //!< 处理函数
+    virtual bool finishProcess();
+
+	virtual Core::Id typeID() const;            //!<
     virtual QString category() const;//!< 返回种类
 	QList<Processor*> processors();
 	Processor* findProcessor(const int &id);
@@ -66,9 +70,10 @@ public slots:
 
 protected:
 	virtual void propertyChanged(Property *prop);
+	bool sortProcessors(QList<Processor*> &processors);// 拓扑排序
+
     QList<Processor*> m_processors;
 	QHash<Processor*, QFutureWatcher<bool>* > m_processorWatchers;//!< 监控着所有正在执行的Processor。
-    bool    m_bProcessing;      //!< 是否正在执行
 };
 }
 

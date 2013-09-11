@@ -44,17 +44,17 @@ QString BinaryImage::category() const
 	return tr("Conversion");
 }
 
-bool BinaryImage::process()
+bool BinaryImage::process(QFutureInterface<ProcessResult> &future)
 {
-	ImageData *srcData = qobject_cast<ImageData*>(m_inputPort.data());
+	ImageData *srcData = qobject_cast<ImageData*>(getData("Gray Image").at(0));
 	cv::Mat mat = srcData->imageData();
 	double valueThreshold = m_doubleRangeProperty->value();///ãÐÖµ
 	cv::Mat binaryImage;
 	cv::Mat grayMat = srcData->imageData();
 	
 	cv::threshold(grayMat, binaryImage, valueThreshold, 255, CV_THRESH_BINARY);
-	MatrixData data;
-	data.setMatrix(binaryImage);
+	ImageData data;
+	data.setImageData(binaryImage);
 	data.setIndex(srcData->index());
 	pushData(&data, "Binary Image");
 	return true;

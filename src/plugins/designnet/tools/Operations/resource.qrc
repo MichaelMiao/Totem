@@ -1,5 +1,6 @@
 <RCC>
-    <qresource prefix="/">
-        <file>images/join.png</file>
-    </qresource>
+  <qresource prefix="/">
+    <file>images/join.png</file>
+    <file>images/save.png</file>
+  </qresource>
 </RCC>

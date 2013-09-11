@@ -69,8 +69,8 @@ DesignNetView::DesignNetView(DesignNetSpace *space, QWidget *parent)
 	scene->setBackgroundBrush(Qt::gray);
 	setScene(scene);
 	setAcceptDrops(true);
-	QObject::connect(space, SIGNAL(logout(QString)),
-		this, SLOT(OnShowMessage(QString)));
+	if (space)
+		QObject::connect(space, SIGNAL(logout(QString)), this, SLOT(OnShowMessage(QString)));
 }
 
 DesignNetView::~DesignNetView()
@@ -127,7 +127,12 @@ void DesignNetView::dragEnterEvent( QDragEnterEvent * event )
 
 void DesignNetView::setDesignNetSpace( DesignNetSpace *space )
 {
+	if (d->m_designnetSpace)
+		d->m_designnetSpace->disconnect();
+
 	d->m_designnetSpace = space;
+	if (space)
+		QObject::connect(space, SIGNAL(logout(QString)), this, SLOT(OnShowMessage(QString)));
 }
 
 DesignNetSpace* DesignNetView::getSpace() const
@@ -139,6 +144,7 @@ void DesignNetView::processorClosed()
 {
 	ProcessorGraphicsBlock *block = qobject_cast<ProcessorGraphicsBlock*>(sender());
 	removeProcessor(block);
+	delete block;
 }
 
 void DesignNetView::keyReleaseEvent( QKeyEvent *keyEvent )
@@ -329,7 +335,6 @@ void DesignNetView::removeProcessor( ProcessorGraphicsBlock *item )
 			scene()->removeItem(item);
 			d->m_designnetSpace->removeProcessor(processor);
 		}
-		
 	}
 }
 

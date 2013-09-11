@@ -54,16 +54,11 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <OutputFile>$(Configuration)\$(TargetName).dll</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(SolutionDir)$(Platform)\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glu32.lib;opengl32.lib;gdi32.lib;user32.lib;designnet_cored.lib;$(QTDIR)\lib\QtTestd4.lib;$(QTDIR)\lib\QtOpenGLd4.lib;$(QTDIR)\lib\QtGuid4.lib;$(QTDIR)\lib\QtCored4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>copy  "FlowerFeatureExtraction.pluginspec" "$(SolutionDir)$(Platform)\plugins\"
-copy  "$(Configuration)\$(TargetName).dll" "$(SolutionDir)$(Platform)\plugins\"
-copy  "$(Configuration)\$(TargetName).lib" "$(SolutionDir)$(Platform)\libs\"</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

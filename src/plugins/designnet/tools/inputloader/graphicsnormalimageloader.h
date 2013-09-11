@@ -23,7 +23,7 @@ public:
     virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const;
     virtual QString title() const;
     virtual QString category() const;//!< 种类
-    virtual bool process();     //!< 处理函数
+    virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);     //!< 处理函数
 	void setPath(const QString &p);
 	QString path() const;
 protected:

@@ -12,7 +12,6 @@ public:
 	OptionProperty*			m_property;
 	Port					m_inputPort;
 	Port					m_outputPort;
-	ImageData*				m_imageData;	//!< 
 	ColorSpaceConversion *	m_conversion;
 };
 
@@ -24,7 +23,6 @@ ColorSpaceConversionPrivate::ColorSpaceConversionPrivate( ColorSpaceConversion *
 	m_property = new OptionProperty("ConversionOption", QLatin1String("ConversionOption"), parent);
 	m_inputPort.setName(QLatin1String("InputImage"));
 	m_outputPort.setName(QLatin1String("OutputImage"));
-	m_imageData = new ImageData(ImageData::IMAGE_BGR, parent);
 }
 
 ColorSpaceConversion::ColorSpaceConversion( DesignNetSpace *space, QObject *parent /*= 0*/ )
@@ -70,15 +68,16 @@ QString ColorSpaceConversion::category() const
 	return tr("Conversion");
 }
 
-bool ColorSpaceConversion::process()
+bool ColorSpaceConversion::process(QFutureInterface<ProcessResult> &future)
 {
 	int iType = d->m_property->value().toInt(0);
 	if(iType != 0)
 	{
+		ImageData* imageData = qobject_cast<ImageData*>(getData("InputImage").at(0));
 		cv::Mat mat;
-		cv::cvtColor(d->m_imageData->imageData(), mat, iType);
-		d->m_imageData->setImageData(mat);
-		pushData(d->m_imageData, "OutputImage");
+		cv::cvtColor(imageData->imageData(), mat, iType);
+		imageData->setImageData(mat);
+		pushData(imageData, "OutputImage");
 	}
 	return true;
 }

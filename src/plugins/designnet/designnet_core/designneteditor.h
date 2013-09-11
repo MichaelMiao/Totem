@@ -36,7 +36,7 @@ public:
 
 	DesignNetView *designNetView();
 
-	void run();
+	bool run();
 protected:
 	void createCommand();
 

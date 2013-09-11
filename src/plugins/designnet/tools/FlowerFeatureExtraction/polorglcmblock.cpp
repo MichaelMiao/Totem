@@ -55,13 +55,30 @@ QString PolorGLCMBlock::category() const
 	return tr("Flowers/Feature");
 }
 
-bool PolorGLCMBlock::process()
+bool PolorGLCMBlock::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
-	ImageData *grayImage = qobject_cast<ImageData*>(m_inputPort.data());
-	cv::Mat binaryImage = ((MatrixData*)m_inputBinaryImagePort.data())->getMatrix();
+	QVector<IData*> datas = m_inputPort.getInputData();
+	if (datas.size() == 0)
+	{
+		emit logout("the input gray image is not provided");
+		return false;
+	}
+	if (m_inputBinaryImagePort.getInputData().size() == 0)
+	{
+		emit logout("The binary image is needed.");
+		return false;
+	}
+	if (m_inputCentroidPort.getInputData().size() == 0)
+	{
+		emit logout("The image of Centroid isn't provided");
+		return false;
+	}
+
+	ImageData *grayImage = qobject_cast<ImageData*>(m_inputPort.getInputData().at(0));
+	cv::Mat binaryImage = ((MatrixData*)m_inputBinaryImagePort.getInputData().at(0))->getMatrix();
 	cv::Mat grayMat = grayImage->imageData();
-	cv::Mat centroidMat = ((MatrixData*)m_inputCentroidPort.data())->getMatrix();
-	/// 求中心
+	cv::Mat centroidMat = ((MatrixData*)m_inputCentroidPort.getInputData().at(0))->getMatrix();
+	/// 中心
 	cv::Point2d centroid(0, 0);
 	centroid.x = centroidMat.at<float>(0, 0);
 	centroid.y = centroidMat.at<float>(0, 1);

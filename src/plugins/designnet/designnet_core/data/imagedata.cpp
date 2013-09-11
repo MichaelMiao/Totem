@@ -55,9 +55,8 @@ bool ImageData::copy( IData* data )
 	TOTEM_ASSERT(data->id() == id(), return false);
 	ImageData *imageData = qobject_cast<ImageData*>(data);
 	if(!imageData)
-	{
 		return false;
-	}
+
 	imageData->imageData().copyTo(m_imageMat);
 	return IData::copy(data);
 

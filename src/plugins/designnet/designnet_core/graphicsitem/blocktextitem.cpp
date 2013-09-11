@@ -44,6 +44,7 @@ QRectF BlockTextItem::boundingRect() const
 void BlockTextItem::setBlockName( const QString &blockName )
 {
 	m_blockName = blockName;
+	setToolTip(blockName);
 }
 
 void BlockTextItem::setSize( const QSizeF &sz )

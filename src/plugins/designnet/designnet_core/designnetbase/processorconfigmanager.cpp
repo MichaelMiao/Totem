@@ -71,6 +71,7 @@ ProcessorConfigWidget* ProcessorConfigManager::createConfigWidget( Processor* pr
 		widget = widget->create(processor, parent);
 		widget->setWindowTitle(tr("%1-%2-ID:%3").arg(widget->windowTitle()).arg(processor->name()).arg(processor->id()));
 		widget->setAttribute(Qt::WA_DeleteOnClose);
+		widget->init();
 		return widget;
 	}
 	return 0;

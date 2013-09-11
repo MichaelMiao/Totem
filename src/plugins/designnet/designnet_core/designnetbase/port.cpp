@@ -173,34 +173,25 @@ void Port::notifyStateChanged()
     processor()->stateChanged(this);
 }
 
-void Port::notifyDataArrive()
-{
-	QWriteLocker locker(&processor()->m_workingLock);
-    processor()->dataArrived(this);
-}
-
 void Port::addData(IData *data)
 {
+	Q_ASSERT(m_portType == OUT_PORT);
 	QWriteLocker locker(&m_dataLocker);
 	m_data->copy(data);
-	if (m_portType == IN_PORT)
-	{
-		m_processor->waitForFinish();/// 等待该端口所在的处理器完成任务后，才能写数据
-		
-		notifyDataArrive();
-	}
-	if(m_portType == OUT_PORT)
-	{
-		foreach(Port* port, m_portsConnected)
-		{
-			port->addData(data);
-		}
-	}
 }
 
 IData *Port::data() const
 {
     return m_data;
+}
+
+QVector<IData*> Port::getInputData()
+{
+	QVector<IData*> datas;
+	QList<Port*> ports = connectedPorts();
+	foreach(Port* port, ports)
+		datas << port->data();
+	return datas;
 }
 
 Port::~Port()

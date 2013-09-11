@@ -50,6 +50,13 @@ public:
     QList<Processor*> connectedProcessors() const;  //!< 返回该端口所连接的所有处理器
     QList<Port*>      connectedPorts() const;        //!< 返回所有连接的端口
     int connectedCount() const;
+
+    QString name() const;
+    void setName(const QString &name);
+	
+	QString marks() const { return m_portMarks; }
+	void setMarks(const QString &strMark) { m_portMarks = strMark; }
+
     /*!
      * \brief addConnectedPort
      *
@@ -67,25 +74,24 @@ public:
      */
     void removeConnectedPort(Port* port);//!< \note
 
-
-    QString name() const;
-    void setName(const QString &name);
-
     void notifyStateChanged();  //!< 端口状态改变
-    void notifyDataArrive();    //!< 通知数据到达
     //////////////////////////////////////////////////////
     ///
     ///
     void addData(IData* data);  //!< 向端口添加数据
     IData* data() const;        //!< 端口中存放的数据
-	void waitForReadyToWrite() const;	//!< 等待端口可写 
+	QVector<IData*> getInputData();
+
 signals:
+
 	void disconnectFromPort(Port* port);
 protected:
+
     bool        m_bMultiInput;  //!< 是否支持多份输入
     PortType    m_portType;     //!< 端口类型
     IData*      m_data;         //!< 数据
     QString     m_name;         //!< 端口名称（一个Processor中名称唯一）
+	QString		m_portMarks;		//!< 端口说明
     Processor*  m_processor;    //!< 该端口所属的处理器
     QList<Port*> m_portsConnected;//!< 当前端口所连接的所有Port
 	QReadWriteLock m_dataLocker;

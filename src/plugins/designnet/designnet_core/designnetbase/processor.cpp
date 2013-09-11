@@ -5,10 +5,13 @@
 #include "designnetspace.h"
 #include "Utils/XML/xmlserializer.h"
 #include "Utils/XML/xmldeserializer.h"
+#include "Utils/runextensions.h"
 
 #include <QMutexLocker>
 #include <QDebug>
 #include <QThread>
+#include <QtConcurrentRun>
+
 namespace DesignNet{
 
 
@@ -20,7 +23,11 @@ ProcessorWorker::ProcessorWorker( Processor *processor )
 
 void ProcessorWorker::run()
 {
-	m_processor->run();
+	futureInterface.reportStarted();
+	QFuture<ProcessResult> future = futureInterface.future();
+	m_processor->m_watcher.setFuture(future);
+	m_processor->run(futureInterface);
+	futureInterface.reportFinished();
 }
 
 bool ProcessorWorker::isWorking()
@@ -41,25 +48,40 @@ void ProcessorWorker::started()
 	m_bWorking = true;
 }
 
-Processor::Processor(DesignNetSpace *space, QObject* parent)
-	: QObject(parent), m_space(space), m_worker(this)
+Processor::Processor(DesignNetSpace *space, QObject* parent, ProcessorType processorType)
+	: QObject(parent), m_space(space), m_worker(this), m_eType(processorType), m_thread(0)
 {
     m_name = "";
-	m_bReady = false;
 	m_id = -1;
 	m_portCountResizable = false;
-	m_thread = new QThread(this);
-	m_worker.moveToThread(m_thread);
-	m_icon = QIcon(":/media/default_processor.png");
-	QObject::connect(m_thread, SIGNAL(started()), &m_worker, SLOT(run()));
-	QObject::connect(m_thread, SIGNAL(finished()), &m_worker, SLOT(stopped()));
-	QObject::connect(m_thread, SIGNAL(terminated()), &m_worker, SLOT(stopped()));
+	if (processorType == ProcessorType_Permanent)
+	{
+		m_thread = new QThread(this);
+		m_worker.moveToThread(m_thread);
+		QObject::connect(m_thread, SIGNAL(started()), &m_worker, SLOT(run()));
+		QObject::connect(m_thread, SIGNAL(finished()), &m_worker, SLOT(stopped()));
+		QObject::connect(m_thread, SIGNAL(terminated()), &m_worker, SLOT(stopped()));
+	}
+	else
+	{
+		QObject::connect(&m_watcher, SIGNAL(finished()), &m_worker, SLOT(stopped()));
+		QObject::connect(&m_watcher, SIGNAL(started()), &m_worker, SLOT(started()));
+	}
 }
 
 Processor::~Processor()
 {
-	m_thread->terminate();
-	m_thread->wait();
+	if (m_eType == ProcessorType_Permanent)
+	{
+		Q_ASSERT(m_thread);
+		m_thread->terminate();
+		m_thread->wait();
+	}
+	else
+	{
+		m_watcher.cancel();
+		m_watcher.waitForFinished();
+	}
 }
 
 const QList<Port*> & Processor::getInputPorts() const
@@ -134,8 +156,26 @@ int Processor::id() const
 void Processor::pushData(IData *data, const QString &portname)
 {
     Port *port = getPort(portname);
-    if(port)
-        port->addData(data);
+	Q_ASSERT(port);
+    port->addData(data);
+}
+
+QVector<IData*> Processor::getData( const QString& portname )
+{
+	QVector<IData*> res;
+	Port *port = getPort(portname);
+	Q_ASSERT(port);
+	if (port->portType() == Port::OUT_PORT)
+	{
+		res << port->data();
+	}
+	else
+	{
+		QList<Port*> ports = port->connectedPorts();
+		foreach (Port* p, ports)
+			res << p->data();
+	}
+	return res;
 }
 
 int Processor::indegree(QList<Processor *> exclusions) const
@@ -163,22 +203,11 @@ void Processor::stateChanged(Port *port)
 void Processor::dataArrived(Port *port)
 {
 	emit logout("dataArrived");
-	if (checkDataReady())
-	{
-		setDataReady(true);
-	}
 }
 
-bool Processor::beforeProcess()
+bool Processor::beforeProcess(QFutureInterface<ProcessResult> &future)
 {
-	QMutexLocker lock(&m_mutexReady);
-	if(!m_bReady)
-	{
-		emit logout(tr("Data has not been ready!"));
-		return false;
-	}
-	emit logout(tr("%1 id: %2 start processing...").arg(name()).arg(id()));
-	return m_bReady;
+	return true;
 }
 
 void Processor::afterProcess(bool status)
@@ -186,36 +215,17 @@ void Processor::afterProcess(bool status)
 	emit logout(tr("%1 id: %2 processing finished.").arg(name()).arg(id()));
 }
 
-void Processor::run()
+void Processor::run( QFutureInterface<ProcessResult> &future )
 {
-	if(!beforeProcess())
-		return ;
-	bool ret = process();
-	if(!ret)
+	ProcessResult pr;
+	future.reportResult(pr);
+	if(!beforeProcess(future) || !process(future))
 	{
-		emit logout(tr("Failed to process Processor(id: %1)").arg(id()));
+		pr.m_bNeedLoop = future.future().result().m_bNeedLoop;
+		pr.m_bSucessed = false;
+		future.reportResult(pr);
 	}
-	afterProcess(ret);
-}
-
-void Processor::setDataReady( const bool &bReady /*= true*/ )
-{
-	QMutexLocker lock(&m_mutexReady);
-	emit logout("set Data Ready");
-	m_bReady = bReady;
-	if(m_bReady)
-		qDebug() << name() << "data is ready";
-	if(m_bReady)
-	{
-		qDebug() << name() << "thread is started";
-		m_thread->start();
-	}
-}
-
-bool Processor::isDataReady() const
-{
-	QMutexLocker lock(&m_mutexReady);
-	return m_bReady;
+	afterProcess(pr.m_bSucessed);
 }
 
 void Processor::setRepickData( const bool &repick /*= true*/ )
@@ -223,14 +233,26 @@ void Processor::setRepickData( const bool &repick /*= true*/ )
 	m_bRepickData = repick;
 }
 
+void Processor::start()
+{
+	if (m_eType == ProcessorType_Permanent)
+		m_thread->start();
+	else
+		m_watcher.setFuture(QtConcurrent::run(&Processor::run, this));
+}
+
 void Processor::waitForFinish()
 {
-	if(m_thread->isRunning())
+	if(m_eType == ProcessorType_Permanent && m_thread->isRunning())
 	{
 		qDebug() << tr("Waiting %1 for finish").arg(this->name());
 		m_thread->quit();
 		m_thread->wait();
 		qDebug() << tr("%1 finished").arg(this->name());
+	}
+	else if (m_eType == ProcessorType_Once)
+	{
+		m_watcher.waitForFinished();
 	}
 }
 
@@ -273,27 +295,6 @@ void Processor::setSpace( DesignNetSpace *space )
 		m_space->detachProcessor(this);
 	}
 	m_space = space;
-}
-
-bool Processor::checkDataReady()
-{
-	int i = -1;
-	foreach(Port *port, m_inputPorts)
-	{
-		if (port->data()->isPermanent())
-		{
-			continue;
-		}
-		if (i == -1)
-		{
-			i = port->data()->index();
-		}
-		if (i == -1 || i != port->data()->index())
-		{
-			return false;
-		}
-	}
-	return true;
 }
 
 QIcon Processor::icon() const

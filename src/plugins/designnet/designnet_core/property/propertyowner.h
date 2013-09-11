@@ -46,7 +46,7 @@ public:
     virtual void propertyRemoved(Property* prop);
 	virtual void propertyAdded(Property* prop);
 
-	virtual void serialize(Utils::XmlSerializer& s) const const;
+	virtual void serialize(Utils::XmlSerializer& s) const;
 	virtual void deserialize(Utils::XmlDeserializer& s) ;
 protected:
     Aggregation::Aggregate* m_aggregate; //!< 所有属性为一个整体，不可以删除

@@ -53,9 +53,9 @@ QString Centroid::category() const
 	return tr("FeatureExtraction");
 }
 
-bool Centroid::process()
+bool Centroid::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
-	cv::Mat binaryImage = ((MatrixData*)d->m_inputBinaryImagePort->data())->getMatrix();
+	cv::Mat binaryImage = ((MatrixData*)getData("grayImageInput").at(0))->getMatrix();
 	/// ÇóÖÐÐÄ
 	cv::Point2d centroid(0, 0);
 	vector<vector<cv::Point> > countours;

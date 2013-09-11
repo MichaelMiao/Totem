@@ -15,12 +15,8 @@ public:
 		m_inputBufferPort(new MatrixData(processor), Port::IN_PORT, "Input Buffer"),
 		m_outputMatrixPort(new MatrixData(processor), Port::OUT_PORT, "Output Matrix")
 	{
-		m_property = new DesignNet::DoubleRangeProperty("BufferSize", "BufferSize", processor);
 		m_inputBufferPort.setMultiInputSupported(true);
-		m_property->setDecimals(0);
-		m_property->setRange(1, 10000);
 	}
-	DesignNet::DoubleRangeProperty *m_property; //!< 缓冲区的大小
 	DesignNet::Port				m_bufferSizePort;
 	DesignNet::Port				m_inputBufferPort;
 	DesignNet::Port				m_outputMatrixPort;
@@ -33,11 +29,9 @@ BufferProcessor::BufferProcessor( DesignNet::DesignNetSpace *space, QObject* par
 	: DesignNet::Processor(space, parent),
 	d(new BufferProcessorPrivate(this))
 {
-	addProperty(d->m_property);
 	addPort(&d->m_bufferSizePort);
 	addPort(&d->m_inputBufferPort);
 	addPort(&d->m_outputMatrixPort);
-	d->m_property->setValue(10);
 	setName(tr("Buffer"));
 }
 
@@ -61,8 +55,24 @@ QString BufferProcessor::category() const
 	return tr("Operations");
 }
 
-bool BufferProcessor::process()
+bool BufferProcessor::process(QFutureInterface<ProcessResult> &future)
 {
+	QVector<IData*> datas = getData("Input Buffer");
+	if (datas.size() == 0)
+	{
+		emit logout("There's no input data.");
+		return false;
+	}
+	foreach (IData* data, datas)
+	{
+		MatrixData *mat = (MatrixData*)data;
+		d->m_mats.push_back(mat->getMatrix());
+	}
+	IntData* dataCount = (IntData*)d->m_bufferSizePort.getInputData().at(0);
+	Q_ASSERT(dataCount->value() > 0);
+	if (d->m_mats.size() < dataCount->value())
+		return true;
+	
 	cv::Mat mat;
 	cv::merge(d->m_mats, mat);
 	MatrixData data;
@@ -70,27 +80,6 @@ bool BufferProcessor::process()
 	pushData(&data, "Output Matrix");
 	d->m_mats.clear();
 	return true;
-}
-
-void BufferProcessor::dataArrived( DesignNet::Port* port )
-{
-	if (port == &d->m_bufferSizePort)
-	{
-		d->m_property->setValue(((IntData*)d->m_bufferSizePort.data())->value());
-	}
-	else
-	{
-		MatrixData *mat = (MatrixData*)(port->data());
-		if (d->m_mats.size() >= d->m_property->value())
-		{
-			d->m_mats.pop_back();
-			d->m_mats.push_back(mat->getMatrix());
-			setDataReady(true);
-			return;
-		}
-		d->m_mats.push_back(mat->getMatrix());
-	}
-	
 }
 
 void BufferProcessor::propertyChanged( DesignNet::Property *prop )

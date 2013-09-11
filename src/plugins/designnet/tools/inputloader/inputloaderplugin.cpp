@@ -26,6 +26,7 @@ void InputLoaderPlugin::extensionsInitialized()
 {
     m_normalImageLoader = new GraphicsNormalImageLoader(0);
 	m_imageFolderLoader = new ImageFolderLoader(0);
+	
 	ProcessorConfigManager::instance()->registerConfigWidget(m_imageFolderLoader->typeID().toString(),
 		new ImageFolderConfigWidget(0, 0));
 	ProcessorConfigManager::instance()->registerConfigWidget(m_normalImageLoader->typeID().toString(),

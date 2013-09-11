@@ -5,6 +5,7 @@
 #include "designnetbase/designnetspace.h"
 #include "processorgraphicsblock.h"
 #include "Utils/XML/xmldeserializer.h"
+#include <QtConcurrentRun>
 #include <QTextEdit>
 #include <QMessageBox>
 #include <QToolBar>
@@ -138,9 +139,21 @@ void DesignNetEditor::createCommand()
 
 }
 
-void DesignNetEditor::run()
+bool DesignNetEditor::run()
 {
-	d->m_file->designNetSpace()->setDataReady(true);
+	QFutureWatcher<bool> bWatcher;
+	bWatcher.setFuture(QtConcurrent::run(d->m_file->designNetSpace(), &DesignNetSpace::prepareProcess));
+	bWatcher.waitForFinished();
+	if (bWatcher.result() == false)
+		return false;
+	d->m_file->designNetSpace()->start();
+
+	bWatcher.setFuture(QtConcurrent::run(d->m_file->designNetSpace(), &DesignNetSpace::finishProcess));
+	bWatcher.waitForFinished();
+	if (bWatcher.result() == false)
+		return false;
+
+	return true;
 }
 
 }

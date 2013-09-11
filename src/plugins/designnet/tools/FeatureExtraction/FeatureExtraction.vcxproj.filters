@@ -64,6 +64,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_centroid.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="maxboundrect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_maxboundrect.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_maxboundrect.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="featureextraction.pluginspec" />
@@ -73,6 +82,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="centroid.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="maxboundrect.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

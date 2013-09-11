@@ -38,10 +38,16 @@ QString HSColorFeature::category() const
 	return tr("Flowers/Feature");
 }
 
-bool HSColorFeature::process()
+bool HSColorFeature::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
 	qDebug() << "HSColorFeature process";
-	m_imageData.copy(m_inputPort.data());
+	QVector<IData*> datas = m_inputPort.getInputData();
+	if (datas.size() == 0)
+	{
+		emit logout("The input image has not been provided.");
+		return false;
+	}
+	m_imageData.copy(m_inputPort.getInputData().at(0));
 	cv::Mat &hsvimage = m_imageData.imageData();
 	int hbins = 30, sbins = 32;
 	int histSize[] = {hbins, sbins};

@@ -22,8 +22,8 @@ public:
 	virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const;
 	virtual QString title() const;
 	virtual QString category() const;//!< 种类
-	virtual bool process();			//!< 处理函数
-	void centroid();	//!<	计算中心坐标
+	virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);			//!< 处理函数
+
 protected:
 	virtual void propertyChanged(DesignNet::Property *prop);
 private:

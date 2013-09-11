@@ -114,13 +114,20 @@ void PortGraphicsItem::updateData()
 void PortGraphicsItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
 	QString toolTip;
+	QString strPattern = tr("<b>%1</b> <span style=\"color: red; font-size: small\">%2</span>");
 	toolTip = tr("<p><b>PortName:</b> <span style=\"color: red; font-size: small\">%2</span></p>").arg(m_port->name());
-	if (this->m_port->portType() == Port::IN_PORT)
+	QString sTitle, sMark;
+	sTitle = tr("PortType: ");
+	sMark = m_port->portType() == Port::IN_PORT ? tr("IN_PORT") : tr("OUT_PORT");
+
+	toolTip += strPattern.arg(sTitle).arg(sMark);
+
+	sMark	= m_port->marks();
+	if (!sMark.isEmpty())
 	{
-		toolTip += tr("<b>PortType:</b> <span style=\"color: red; font-size: small\">IN_PORT</span>");	
+		sTitle	= tr("Data Marks");
+		toolTip += strPattern.arg(sTitle).arg(sMark);
 	}
-	else
-		toolTip += tr("<b>PortType:</b> <span style=\"color: red; font-size: small\">OUT_PORT</span>");
 
 	setToolTip(toolTip);
 	
@@ -130,9 +137,7 @@ void PortGraphicsItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 void PortGraphicsItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-	
     update();
-	
     QGraphicsItem::hoverLeaveEvent(event);
 }
 

@@ -9,6 +9,7 @@
 #include "utils/runextensions.h"
 
 #include <QDebug>
+#include <QFutureSynchronizer>
 using namespace Utils;
 namespace DesignNet{
 
@@ -42,10 +43,9 @@ Connection::Connection( const Connection &c )
 
 
 DesignNetSpace::DesignNetSpace(DesignNetSpace *space, QObject *parent) :
-    Processor(space),
-    m_bProcessing(false)
+    Processor(space)
 {
-    connect(this, SIGNAL(logout(QString)), Core::ICore::messageManager(), SLOT(printToOutputPanePopup(QString)));
+
 }
 
 void DesignNetSpace::addProcessor(Processor *processor)
@@ -54,7 +54,7 @@ void DesignNetSpace::addProcessor(Processor *processor)
     bool bret = contains(processor);
     if(bret)
     {
-        LOGOUT(tr("can't add the exist processor to the space"));
+        emit logout(tr("can't add the exist processor to the space"));
         return;
     }
 	processor->setSpace(this);
@@ -134,50 +134,80 @@ void DesignNetSpace::removeProcessor(Processor *processor)
     delete processor;
 }
 
-bool DesignNetSpace::process()
-{	
-    m_bProcessing = true;
-    ///
-    /// \brief 首先进行拓扑排序
-    ///
-    QList<Processor*> exclusions;
-    QList<Processor*> tempNet = m_processors;
-    bool dirty = true;
-    while(dirty)
-    {
-        dirty = false;
-        foreach(Processor* processor, tempNet)
-        {
-            int indegree = processor->indegree(exclusions);
-            if(indegree == 0)
-            {
-                exclusions.append(processor);
-                tempNet.removeOne(processor);
-                dirty = true;
-            }
-        }
-    }
-    if(!tempNet.isEmpty())
-    {
-        emit logout(tr("The designnet space can't be processed. Maybe there are some circle relationships in the space."));
-        return false;
-    }
+bool DesignNetSpace::prepareProcess()
+{
+	QList<Processor*> exclusions;
+
+	if(!sortProcessors(exclusions))
+	{
+		emit logout(tr("The designnet space can't be processed. Maybe there are some circle relationships in the space."));
+		return false;
+	}
+	QList<Processor*> tempNet;
 	foreach(Processor* processor, exclusions)
 	{
-		if(processor->indegree() == 0)
+		QList<Processor*> processors;
+		bool bHasError = false;
+		if(processor->indegree(tempNet) == 0)
 		{
-			processor->setDataReady(true);
+			bHasError = !processor->prepareProcess();
+			if (bHasError)
+				return false;
+			processors.push_back(processor);
+			tempNet.push_back(processor);
 		}
 	}
-	foreach(Processor* processor, exclusions)
+	return true;
+}
+
+bool DesignNetSpace::process(QFutureInterface<ProcessResult> &future)
+{	
+    ///
+    /// \brief 首先进行拓扑排序, 检查一下是否可以执行
+    ///
+    QList<Processor*> exclusions;
+    if(!sortProcessors(exclusions))
+    {
+        emit logout(tr("The designnet space can't be processed. Maybe there are some circle relationships in the space."));
+		return false;
+    }
+	bool bNeedLoop = true;
+	while (bNeedLoop)
 	{
-		processor->waitForFinish();
+		bNeedLoop = false;
+
+		QList<Processor*> tempNet;
+		foreach(Processor* processor, exclusions)
+		{
+			QList<Processor*> processors;
+			if(processor->indegree(tempNet) == 0)
+			{
+				processor->start();
+				processors.push_back(processor);
+				tempNet.push_back(processor);
+			}
+			foreach(Processor* processor, processors)
+			{
+				processor->waitForFinish();
+				if (!processor->result().m_bSucessed)
+				{
+					emit logout(tr("Processor %d run faild").arg(processor->id()));
+					return false;
+				}
+				else
+				{
+					bNeedLoop |= processor->result().m_bNeedLoop;
+				}
+			}
+		}
 	}
-	QString log = tr("The designnet space has been processed.");
-    
-	emit logout(log);
-	m_bProcessing = false;
-	waitForFinish();
+	
+	emit logout(tr("The designnet space has been processed."));
+	return true;
+}
+
+bool DesignNetSpace::finishProcess()
+{
 	return true;
 }
 
@@ -308,5 +338,32 @@ void DesignNetSpace::detachProcessor( Processor* processor )
 	m_processors.removeOne(processor);
 	emit processorRemoved(processor);
 }
+
+bool DesignNetSpace::sortProcessors( QList<Processor*> &processors )
+{
+	Q_ASSERT(processors.size() == 0);
+
+	QList<Processor*> tempNet = m_processors;
+	bool dirty = true;
+	while(dirty)
+	{
+		dirty = false;
+		foreach(Processor* processor, tempNet)
+		{
+			int indegree = processor->indegree(processors);
+			if(indegree == 0)
+			{
+				processors.append(processor);
+				tempNet.removeOne(processor);
+				dirty = true;
+			}
+		}
+	}
+	if(!tempNet.isEmpty())
+		return false;
+	
+	return true;
+}
+
 
 }

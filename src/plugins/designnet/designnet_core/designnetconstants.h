@@ -50,6 +50,7 @@ const char DATA_TYPE_LABEL[]	= "DataType/Label";
 const char DATA_TYPE_HISTOGRAM[] = "DataType/Histogram";
 const char DATA_TYPE_MATRIX[]	= "DataType/Matrix";
 const char DATA_TYPE_INT[]		= "DataType/Int";
+const char DATA_TYPE_CUSTOM[]	= "DataType/Custom";
 /// Data Widget Factory ID
 const char DATA_WIDGET_FACTORY_NORMAL[] = "DataWidgetFactory/Normal";
 /// ICON

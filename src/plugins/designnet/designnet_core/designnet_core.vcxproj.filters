@@ -569,6 +569,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_processorconfiglistener.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_customdata.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_customdata.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="data\customdata.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="designnetcoreplugin.h">
@@ -818,6 +827,9 @@
     </CustomBuild>
     <CustomBuild Include="processorconfiglistener.h">
       <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="data\customdata.h">
+      <Filter>Header Files\data</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

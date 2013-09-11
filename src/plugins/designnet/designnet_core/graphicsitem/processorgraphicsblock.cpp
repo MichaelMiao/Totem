@@ -109,7 +109,11 @@ ProcessorGraphicsBlock::ProcessorGraphicsBlock( Processor *processor /*= 0*/, QG
 
 ProcessorGraphicsBlock::~ProcessorGraphicsBlock()
 {
-
+	if (m_configWidget)
+	{
+		m_configWidget->close();
+		m_configWidget->deleteLater();
+	}
 }
 
 QRectF ProcessorGraphicsBlock::boundingRect() const

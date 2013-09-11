@@ -32,10 +32,10 @@ QString Color2Gray::category() const
 	return tr("Conversion");
 }
 
-bool Color2Gray::process()
+bool Color2Gray::process(QFutureInterface<ProcessResult> &future)
 {
 	emit logout("Color2Gray::process()");
-	ImageData *idata = qobject_cast<ImageData *>(m_inputPort.data());
+	ImageData *idata = qobject_cast<ImageData *>(getData("InputColorImage").at(0));
 	if(idata)
 	{
 		cv::Mat mat;

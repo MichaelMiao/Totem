@@ -104,12 +104,10 @@ QList<Property*> PropertyOwner::getInvalidProperties()
 	return list;
 }
 
-void PropertyOwner::serialize( Utils::XmlSerializer& s )const
+void PropertyOwner::serialize( Utils::XmlSerializer& s ) const
 {
 	foreach(Property *p, m_aggregate->components<Property>())
-	{
 		s.serialize("Property", *p);
-	}
 }
 
 void PropertyOwner::deserialize( Utils::XmlDeserializer& s )

@@ -41,7 +41,7 @@ public:
 	 *  feature[5]: 经过sobel算子之后的 glcm 对比度
 	 *  feature[6]: 经过sobel算子之后的 glcm 同质性
 	 */
-	virtual bool process();     
+	virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);     
 protected:
 	virtual void propertyChanged(DesignNet::Property *prop);
 	bool connectionTest( DesignNet::Port* src, DesignNet::Port* target );
