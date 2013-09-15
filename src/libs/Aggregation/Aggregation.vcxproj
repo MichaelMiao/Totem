@@ -94,6 +94,11 @@
     </CustomBuild>
     <ClInclude Include="aggregation_global.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Utils\Utils.vcxproj">
+      <Project>{5ebfdff9-3efb-4ff1-b47c-28ec944c7604}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

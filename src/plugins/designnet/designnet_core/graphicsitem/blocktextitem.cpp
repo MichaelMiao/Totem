@@ -26,7 +26,7 @@ void BlockTextItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * 
 	QFontMetrics fm(font());
 	QRectF rect = fm.boundingRect(m_blockName);
 
-	QString tempBlockName = fm.elidedText(m_blockName, Qt::ElideMiddle, qMin(rectF.width(), (qreal)m_maxWidth));
+	QString tempBlockName = fm.elidedText(m_blockName, Qt::ElideRight, qMin(rectF.width(), (qreal)m_maxWidth));
 	painter->drawText(rectF,  Qt::AlignCenter, tempBlockName);
 	painter->restore();	
 }

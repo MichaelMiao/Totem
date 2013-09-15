@@ -13,15 +13,8 @@ namespace InputLoader{
 const char ImageFolderIcon[] = ":/InputLoader/images/add_folder.png";
 ImageFolderLoader::ImageFolderLoader( DesignNet::DesignNetSpace *space, QObject *parent /*= 0*/ )
 	: Processor(space, parent),
-	m_outPort(new ImageData(ImageData::IMAGE_BGR, this), Port::OUT_PORT),
-	m_outImageCountPort(new IntData(0, this), Port::OUT_PORT),
 	m_iCurIndex(0)
 {
-	m_outPort.setName("ImageData");
-	m_outImageCountPort.setName("outimagecount");
-	m_outImageCountPort.data()->setPermanent(true);
-	addPort(&m_outPort);
-	addPort(&m_outImageCountPort);
 	setName(tr("Image Folder Loader"));
 	setIcon((QLatin1String(ImageFolderIcon)));
 }
@@ -72,18 +65,12 @@ bool ImageFolderLoader::process(QFutureInterface<DesignNet::ProcessResult> &futu
 	else
 	{
 		emit logout(tr("loading %1...").arg(file));
-		ImageData imageData;
-		imageData.setImageData(mat);
-		imageData.setIndex(m_iCurIndex++);
-		pushData(&imageData, "ImageData");
+		m_imageData.setImageData(mat);
+		m_imageData.setIndex(m_iCurIndex++);
+		pushData(QVariant::fromValue((IData*)&m_imageData), "ImageData");
 	}
 	future.reportResult(pr);
 	return true;
-}
-
-void ImageFolderLoader::dataArrived( DesignNet::Port* port )
-{
-	Processor::dataArrived(port);
 }
 
 void ImageFolderLoader::setPath( const QString &p )
@@ -115,9 +102,7 @@ bool ImageFolderLoader::prepareProcess()
 	foreach(QFileInfo info, infoList)
 		m_filePaths << info.absoluteFilePath();
 
-	IntData intData(m_filePaths.count());
-	intData.setPermanent(true);
-	pushData(&intData, "outimagecount");
+	pushData(m_filePaths.count(), "outimagecount");
 
 	return true;
 }

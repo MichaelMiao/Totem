@@ -13,12 +13,9 @@ using namespace DesignNet;
 namespace InputLoader{
 const char NormalImageLoader[] = ":/InputLoader/images/NormalImageLoader.png";
 GraphicsNormalImageLoader::GraphicsNormalImageLoader(DesignNetSpace *space, QObject* parent)
-    : Processor(space, parent),
-      m_outPort(new ImageData(ImageData::IMAGE_BGR, this), Port::OUT_PORT)
+    : Processor(space, parent)
 {
     m_name = this->metaObject()->className();
-    m_outPort.setName("ImageData");
-    addPort(&m_outPort);
     m_imageData = new ImageData(ImageData::IMAGE_BGR, this);
     setName(tr("Image File"));
     setIcon(QLatin1String(NormalImageLoader));
@@ -27,11 +24,6 @@ GraphicsNormalImageLoader::GraphicsNormalImageLoader(DesignNetSpace *space, QObj
 Processor *GraphicsNormalImageLoader::create(DesignNetSpace *space) const
 {
     return new GraphicsNormalImageLoader(space);
-}
-
-QString GraphicsNormalImageLoader::title() const
-{
-    return name();
 }
 
 QString GraphicsNormalImageLoader::category() const
@@ -60,7 +52,8 @@ bool GraphicsNormalImageLoader::process(QFutureInterface<DesignNet::ProcessResul
 	{
 		m_imageData->setImageData(mat);
 		m_imageData->setIndex(0);
-		pushData(m_imageData, "ImageData");
+
+		pushData(QVariant::fromValue((IData*)m_imageData), "ImageData");
 	}
 
     return true;

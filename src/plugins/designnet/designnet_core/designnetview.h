@@ -47,12 +47,16 @@ public:
 
 	void deserialize(Utils::XmlDeserializer &x);
 	void serialize(Utils::XmlSerializer &s);
+
 public slots:
 
+	void onProcessorAdded(Processor* processor);
+	void onProcessorRemoved(Processor* processor);
 	void processorClosed();
 	void reloadSpace();
 	void OnShowMessage(const QString &strMessage);
 protected:
+
 	ProcessorGraphicsBlock *getGraphicsProcessor(const int &id);
 	virtual void mouseMoveEvent ( QMouseEvent * event );
 	virtual void mousePressEvent ( QMouseEvent * event );
@@ -60,11 +64,6 @@ protected:
 
 	void removeItems(QList<QGraphicsItem*> items);//!< É¾³ýItem
 	void addProcessor(ProcessorGraphicsBlock *processor);
-	void addArrow(PortGraphicsItem* source, PortGraphicsItem * target);
-	void removeArrow(PortArrowLinkItem* arrow);
-	void removeArrow(PortGraphicsItem* source, PortGraphicsItem * target);
-	void removeArrow(const int& src_processor_id, const QString &src_port_name,
-		const int& target_processor_id, const QString &target_port_name);
 	void removeProcessor(ProcessorGraphicsBlock *processor);
 private:
 	DesignNetViewPrivate* d;

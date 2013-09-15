@@ -2,7 +2,6 @@
 #define GRAPHICSNORMALIMAGELOADER_H
 
 #include "designnet/designnet_core/designnetbase/processor.h"
-#include "designnet/designnet_core/designnetbase/port.h"
 #include "designnet/designnet_core/data/imagedata.h"
 
 namespace DesignNet{
@@ -21,14 +20,12 @@ class GraphicsNormalImageLoader : public DesignNet::Processor
 public:
     GraphicsNormalImageLoader(DesignNet::DesignNetSpace *space, QObject* parent = 0);
     virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const;
-    virtual QString title() const;
     virtual QString category() const;//!< 种类
     virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);     //!< 处理函数
 	void setPath(const QString &p);
 	QString path() const;
 protected:
 	virtual void propertyChanged(DesignNet::Property *prop);
-    DesignNet::Port m_outPort;
     DesignNet::ImageData* m_imageData;     //!< 图片数据
 	QString m_filePath;
 	mutable QReadWriteLock	m_lock;

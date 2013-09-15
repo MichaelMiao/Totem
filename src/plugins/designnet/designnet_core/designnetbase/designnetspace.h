@@ -31,8 +31,8 @@ public:
 	DECLARE_SERIALIZABLE(DesignNetSpace, DesignNetSpace)
     explicit DesignNetSpace(DesignNetSpace *space = 0, QObject *parent = 0);
 
-    void addProcessor(Processor* processor);    //!< 添加处理器
-    void removeProcessor(Processor* processor); //!< 移除处理器,并delete
+    void addProcessor(Processor* processor, bool bNotifyModify = false);    //!< 添加处理器
+    void removeProcessor(Processor* processor, bool bNotifyModify = false); //!< 移除处理器,并delete
 	void detachProcessor(Processor* processor); //!< 取消该处理器所关联的Space
 
     bool contains(Processor* processor);        //!< 是否包含该Processor
@@ -40,8 +40,9 @@ public:
     virtual QString name() const;               //!< DesignNetSpace名称
 
 
-    bool connectPort(Port* inputPort, Port* outputPort);//!< 连接两个端口
-    bool disconnectPort(Port* inputPort, Port* outputPort);//!< 断开两个端口的链接
+	bool connectProcessor(Processor* father, Processor* child);
+	bool disconnectProcessor(Processor* father, Processor* child);
+
     int generateUID();
     virtual void propertyRemoving(Property* prop);//!< 属性移除前调用
     virtual void propertyRemoved(Property* prop); //!< 属性移除完成
@@ -60,8 +61,9 @@ public:
 signals:
     void processorAdded(Processor* processor);
     void processorRemoved(Processor* processor);
-    void connectionAdded(Port* inputPort, Port* outputPort);
-    void connectionRemoved(Port* inputPort, Port* outputPort);
+
+    void connectionAdded(Processor* father, Processor* pChild);
+    void connectionRemoved(Processor* father, Processor* pChild);
 	void modified();
 	void loadFinished();//!< 载入完成
 public slots:

@@ -212,11 +212,6 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\designnet_core\designnet_core.vcxproj">
-      <Project>{e7ee1883-bddc-47ac-9ef7-0cd2b5456392}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

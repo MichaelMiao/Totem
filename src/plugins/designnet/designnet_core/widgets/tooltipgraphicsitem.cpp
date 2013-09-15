@@ -2,10 +2,9 @@
 #include "data/idata.h"
 #include "idatawidget.h"
 #include "data/datamanager.h"
-#include "graphicsitem/portgraphicsitem.h"
 #include "GraphicsUI/graphicsautoshowhideitem.h"
-
-#include "designnetbase/port.h"
+#include "../designnetconstants.h"
+#include "processorgraphicsblock.h"
 
 #include <QGraphicsLinearLayout>
 #include <QGraphicsSceneMouseEvent>
@@ -69,13 +68,12 @@ ToolTipGraphicsItemPrivate::ToolTipGraphicsItemPrivate(ToolTipGraphicsItem* item
 }
 
 
-ToolTipGraphicsItem::ToolTipGraphicsItem(PortGraphicsItem *parent)
+ToolTipGraphicsItem::ToolTipGraphicsItem(ProcessorGraphicsBlock *parent)
     : QGraphicsObject(parent),
       d(new ToolTipGraphicsItemPrivate(this))
 {
     connect(d->m_closeItem, SIGNAL(clicked()), this, SLOT(onClosed()));
 	connect(this, SIGNAL(visibleChanged()), this, SLOT(onVisibleChanged()));
-	setData(parent->getPort()->data());
 	setAcceptHoverEvents(true);
 	setFlags(ItemIsSelectable);
 	setCacheMode(QGraphicsItem::ItemCoordinateCache);
@@ -91,9 +89,7 @@ QRectF ToolTipGraphicsItem::boundingRect() const
     QRectF rectF(0, 0, 0, 0);
     QRectF customRect;
     if(d->m_customWidget)
-    {
         customRect = d->m_customWidget->boundingRect();
-    }
     else
         customRect = QRectF(0, 0, IDataWidget::DEFAULT_WIDTH, IDataWidget::DEFAULT_HEIGHT);
     QRectF rectText = d->m_textItem->boundingRect();
@@ -135,9 +131,8 @@ bool ToolTipGraphicsItem::topmost() const
 {
     QToolButton* toolButton = qobject_cast<QToolButton*>(d->m_anchorButton->widget());
     if(toolButton)
-    {
         return toolButton->isChecked();
-    }
+
     return false;
 }
 

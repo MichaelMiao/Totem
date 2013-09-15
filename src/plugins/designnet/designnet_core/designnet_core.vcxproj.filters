@@ -344,22 +344,10 @@
     <ClCompile Include="GeneratedFiles\Release\moc_histogramdata.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_idata.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_idata.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_idatawidgetfactory.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_idatawidgetfactory.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_imagedata.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_imagedata.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_intdata.cpp">
@@ -410,18 +398,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_blocktextitem.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_portarrowlinkitem.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_portarrowlinkitem.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_portgraphicsitem.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_portgraphicsitem.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_processorgraphicsblock.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -431,17 +407,8 @@
     <ClCompile Include="graphicsitem\blocktextitem.cpp">
       <Filter>Source Files\graphicsitem</Filter>
     </ClCompile>
-    <ClCompile Include="graphicsitem\portarrowlinkitem.cpp">
-      <Filter>Source Files\graphicsitem</Filter>
-    </ClCompile>
-    <ClCompile Include="graphicsitem\portgraphicsitem.cpp">
-      <Filter>Source Files\graphicsitem</Filter>
-    </ClCompile>
     <ClCompile Include="graphicsitem\processorgraphicsblock.cpp">
       <Filter>Source Files\graphicsitem</Filter>
-    </ClCompile>
-    <ClCompile Include="designnetbase\block.cpp">
-      <Filter>Source Files\designnetbase</Filter>
     </ClCompile>
     <ClCompile Include="designnetbase\designnetspace.cpp">
       <Filter>Source Files\designnetbase</Filter>
@@ -450,24 +417,6 @@
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_designnetspace.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="designnetbase\iabstarctfactory.cpp">
-      <Filter>Source Files\designnetbase</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_iabstarctfactory.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_iabstarctfactory.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="designnetbase\port.cpp">
-      <Filter>Source Files\designnetbase</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_port.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_port.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="designnetbase\processorfactory.cpp">
@@ -578,6 +527,18 @@
     <ClCompile Include="data\customdata.cpp">
       <Filter>Source Files\data</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_idata.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_idata.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_imagedata.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_imagedata.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="designnetcoreplugin.h">
@@ -600,9 +561,6 @@
     </ClInclude>
     <ClInclude Include="data\normaldatafactory.h">
       <Filter>Header Files\data</Filter>
-    </ClInclude>
-    <ClInclude Include="designnetbase\block.h">
-      <Filter>Header Files\designnetbase</Filter>
     </ClInclude>
     <ClInclude Include="toolitem.h">
       <Filter>Header Files</Filter>
@@ -774,12 +732,6 @@
     <CustomBuild Include="data\matrixdata.h">
       <Filter>Header Files\data</Filter>
     </CustomBuild>
-    <CustomBuild Include="graphicsitem\portarrowlinkitem.h">
-      <Filter>Header Files\graphicsitem</Filter>
-    </CustomBuild>
-    <CustomBuild Include="graphicsitem\portgraphicsitem.h">
-      <Filter>Header Files\graphicsitem</Filter>
-    </CustomBuild>
     <CustomBuild Include="graphicsitem\processorgraphicsblock.h">
       <Filter>Header Files\graphicsitem</Filter>
     </CustomBuild>
@@ -787,12 +739,6 @@
       <Filter>Header Files\graphicsitem</Filter>
     </CustomBuild>
     <CustomBuild Include="designnetbase\designnetspace.h">
-      <Filter>Header Files\designnetbase</Filter>
-    </CustomBuild>
-    <CustomBuild Include="designnetbase\iabstarctfactory.h">
-      <Filter>Header Files\designnetbase</Filter>
-    </CustomBuild>
-    <CustomBuild Include="designnetbase\port.h">
       <Filter>Header Files\designnetbase</Filter>
     </CustomBuild>
     <CustomBuild Include="designnetbase\processorfactory.h">

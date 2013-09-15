@@ -18,7 +18,9 @@ public:
 	};
 
 	explicit ImageData(int type = IMAGE_BGR, QObject *parent = 0);//!< type可以是IMAGE_GRAY,IMAGE_BINARY,IMAGE_BGR,IMAGE_BGRA
-    virtual Core::Id id();
+	~ImageData(){}
+
+	virtual Core::Id id();
     void setImageData(const cv::Mat& mat);
     cv::Mat imageData() const;
 	IData* clone(QObject *parent = 0 );
@@ -33,6 +35,7 @@ protected:
     cv::Mat m_imageMat;//!< opencv Image图像
 	int m_type;
 };
+
 }
 
 #endif // IMAGEDATA_H

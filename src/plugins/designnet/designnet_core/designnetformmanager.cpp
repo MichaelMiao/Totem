@@ -36,6 +36,7 @@ public:
 
 DesignNetFormManagerPrivate::DesignNetFormManagerPrivate()
 {
+	qDebug() << "form";
 	m_context.add(DesignNet::Constants::C_DESIGNNET);
 }
 
@@ -47,9 +48,8 @@ DesignNetFormManagerPrivate::~DesignNetFormManagerPrivate()
 DesignNetFormManager *DesignNetFormManager::m_instance = 0;
 
 DesignNetFormManager::DesignNetFormManager()
-	: d(new DesignNetFormManagerPrivate())
 {
-	
+	d = new DesignNetFormManagerPrivate();
 }
 
 DesignNetFormManager::~DesignNetFormManager()
@@ -119,8 +119,7 @@ bool DesignNetFormManager::startInit()
 QToolBar * DesignNetFormManager::createEditorToolBar() const
 {
 	QToolBar *editorToolBar = new QToolBar;
-	const QList<Core::Id>::const_iterator cend = d->m_toolActionIds.constEnd();
-	for (QList<Core::Id>::const_iterator it = d->m_toolActionIds.constBegin(); it != cend; ++it)
+	for (QList<Core::Id>::iterator it = d->m_toolActionIds.begin(); it != d->m_toolActionIds.end(); ++it)
 	{
 		Core::Command *cmd = Core::ActionManager::instance()->command(*it);
 		QAction *action = cmd->action();
@@ -142,13 +141,19 @@ void DesignNetFormManager::setupActions()
 {
 	d->m_toolActionIds.push_back(Core::Id("DesignNet.StartBuild"));
 	
-	
 	QAction *pRunAction = new QAction(this);
 	Command *pCommand = Core::ActionManager::registerAction(pRunAction, d->m_toolActionIds.back(), d->m_context);
 	pCommand->setAttribute(Core::Command::CA_Hide);
 	QIcon icon(":/media/start.png");
 	pCommand->action()->setIcon(icon);
 	QObject::connect(pRunAction, SIGNAL(triggered(bool)), this, SLOT(onRunDesignNet()));
+	
+	d->m_toolActionIds.push_back(Core::Id("DesignNet.Link"));
+	pRunAction = new QAction(this);
+	pCommand = Core::ActionManager::registerAction(pRunAction, d->m_toolActionIds.back(), d->m_context);
+	pCommand->action()->setIcon(QIcon(":/media/link.png"));
+	pCommand->setAttribute(Core::Command::CA_Hide);
+
 }
 
 void DesignNetFormManager::addToolAction( QAction* pAction, const Core::Context& context, const Core::Id &id, Core::ActionContainer *pContainer, const QString& keySequence )

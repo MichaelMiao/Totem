@@ -8,7 +8,7 @@
 namespace DesignNet{
 class ToolTipGraphicsItemPrivate;
 class IData;
-class PortGraphicsItem;
+class ProcessorGraphicsBlock;
 /*!
  * \brief The ToolTipGraphicsItem class DesignView中显示的提示
  *
@@ -18,7 +18,7 @@ class DESIGNNET_CORE_EXPORT ToolTipGraphicsItem : public QGraphicsObject
 {
     Q_OBJECT
 public:
-    ToolTipGraphicsItem(PortGraphicsItem *parent);
+    ToolTipGraphicsItem(ProcessorGraphicsBlock *parent);
 	virtual ~ToolTipGraphicsItem();
     void setText(const QString& text);
     QRectF boundingRect () const;

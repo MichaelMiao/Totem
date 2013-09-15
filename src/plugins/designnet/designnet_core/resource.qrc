@@ -18,5 +18,6 @@
         <file>media/intdata.png</file>
         <file>media/pause.png</file>
         <file>media/start.png</file>
+        <file>media/link.png</file>
     </qresource>
 </RCC>

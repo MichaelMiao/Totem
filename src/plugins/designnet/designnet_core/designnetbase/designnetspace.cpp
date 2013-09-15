@@ -1,6 +1,5 @@
 #include "designnetspace.h"
 #include "utils/totemassert.h"
-#include "port.h"
 #include "coreplugin/icore.h"
 #include "coreplugin/messagemanager.h"
 
@@ -48,7 +47,7 @@ DesignNetSpace::DesignNetSpace(DesignNetSpace *space, QObject *parent) :
 
 }
 
-void DesignNetSpace::addProcessor(Processor *processor)
+void DesignNetSpace::addProcessor(Processor *processor, bool bNotifyModify)
 {
     TOTEM_ASSERT(processor != 0, return);
     bool bret = contains(processor);
@@ -65,10 +64,29 @@ void DesignNetSpace::addProcessor(Processor *processor)
 	}
 	
     m_processors.push_back(processor);
-    emit processorAdded(processor);
-	emit modified();
+    QObject::connect(processor, SIGNAL(connected(Processor*, Processor*)), this, SLOT(connectionAdded(Processor*, Processor*)));
+	emit processorAdded(processor);
+	if (bNotifyModify)
+		emit modified();
 }
 
+void DesignNetSpace::removeProcessor(Processor *processor, bool bNotifyModify)
+{
+	if (processor == 0)
+	{
+		foreach (Processor* p, m_processors)
+			removeProcessor(processor, bNotifyModify);
+		return ;
+	}
+	QList<Processor*>::const_iterator itr = (qFind(m_processors, processor));
+	TOTEM_ASSERT(itr != m_processors.end(), qDebug()<< "can't not remove the processor");
+	m_processors.removeOne(processor);
+	emit processorRemoved(processor);
+
+	if (bNotifyModify)
+		emit modified();
+	delete processor;
+}
 
 bool DesignNetSpace::contains(Processor *processor)
 {
@@ -86,23 +104,16 @@ QString DesignNetSpace::name() const
     return QString("DesignNetSpace");
 }
 
-bool DesignNetSpace::connectPort(Port *inputPort, Port *outputPort)
+bool DesignNetSpace::connectProcessor( Processor* father, Processor* child )
 {
-    if(outputPort->connect(inputPort))
-    {
-        emit connectionAdded(inputPort, outputPort);
-        return true;
-    }
-    return false;
+	if (!child->connectionTest(father))
+		return false;
+
+	return father->connectTo(child);//!< 发出connectAdd()信号
 }
 
-bool DesignNetSpace::disconnectPort(Port *inputPort, Port *outputPort)
+bool DesignNetSpace::disconnectProcessor(Processor* father, Processor* child)
 {
-    if(outputPort->disconnect(inputPort))
-    {
-        emit connectionRemoved(inputPort, outputPort);
-        return true;
-    }
     return false;
 }
 
@@ -123,15 +134,6 @@ void DesignNetSpace::propertyRemoving(Property *prop)
 
 void DesignNetSpace::propertyRemoved(Property *prop)
 {
-}
-
-void DesignNetSpace::removeProcessor(Processor *processor)
-{
-    QList<Processor*>::const_iterator itr = (qFind(m_processors, processor));
-    TOTEM_ASSERT(itr != m_processors.end(), qDebug()<< "can't not remove the processor");
-    m_processors.removeOne(processor);
-    emit processorRemoved(processor);
-    delete processor;
 }
 
 bool DesignNetSpace::prepareProcess()
@@ -246,71 +248,11 @@ void DesignNetSpace::propertyAdded( Property* prop )
 void DesignNetSpace::serialize( Utils::XmlSerializer& s ) const
 {
 	Processor::serialize(s);
-	QList<Connection> connections;
-	foreach(Processor *processor, m_processors)
-	{
-		foreach(Port* outputport, processor->getOutputPorts())
-		{
-			foreach (Port* inputport, outputport->connectedPorts())
-			{
-				Connection c;
-				c.m_srcPort			= outputport->name();
-				c.m_srcProcessor	= outputport->processor()->id();
-				c.m_targetPort		= inputport->name();
-				c.m_targetProcessor = inputport->processor()->id();
-				connections.push_back(c);
-			}
-		}
-	}
-	s.serialize("Processors", m_processors, "Processor");
-	s.serialize("Connections", connections, "Connection");
 }
 
 void DesignNetSpace::deserialize( Utils::XmlDeserializer& s )
 {
 	Processor::deserialize(s);
-	QList<Processor*> processors;
-	s.deserializeCollection("Processors", processors, "Processor");
-	foreach(Processor* p, processors)
-	{
-		p->init();
-		addProcessor(p);
-	}
-	QList<Connection> connections;
-	s.deserializeCollection("Connections", connections, "Connection");
-	foreach(Connection c, connections)
-	{
-		Processor *srcProcessor = findProcessor(c.m_srcProcessor);
-		Processor *targetProcessor = findProcessor(c.m_targetProcessor);
-		if (!srcProcessor || !targetProcessor)
-		{
-			emit logout(tr("Cannot add the connection from processor %1 to processor %2").arg(c.m_srcProcessor).arg(c.m_targetProcessor));
-			continue;
-		}
-		else
-		{
-			Port *srcPort = srcProcessor->getPort(c.m_srcPort);
-			Port *targetPort = targetProcessor->getPort(c.m_targetPort);
-			if (!srcPort)
-			{
-				emit logout(tr("Cannot add the connection from port [%1] to port [%2] because source port is empty.")
-					.arg(c.m_srcPort).arg(c.m_targetPort));
-				continue;
-			}
-			if (!targetPort)
-			{
-				emit logout(tr("Cannot add the connection from port [%1] to port [%2]  because target port is empty")
-					.arg(c.m_srcPort).arg(c.m_targetPort));
-				continue;
-			}
-			if(!connectPort(targetPort, srcPort))
-			{
-				emit logout(tr("Cannot add the connection from port [%1] to port [%2] ")
-					.arg(c.m_srcPort).arg(c.m_targetPort));
-				continue;
-			}
-		}
-	}
 }
 
 QList<Processor*> DesignNetSpace::processors()
@@ -324,9 +266,7 @@ Processor* DesignNetSpace::findProcessor( const int &id )
 	foreach(Processor* p, processorList)
 	{
 		if(p->id() == id)
-		{
 			return p;
-		}
 	}
 	return 0;
 }
@@ -364,6 +304,4 @@ bool DesignNetSpace::sortProcessors( QList<Processor*> &processors )
 	
 	return true;
 }
-
-
 }

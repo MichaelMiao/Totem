@@ -1,5 +1,4 @@
 #include "processor.h"
-#include "port.h"
 #include "../data/idata.h"
 #include "utils/totemassert.h"
 #include "designnetspace.h"
@@ -11,6 +10,8 @@
 #include <QDebug>
 #include <QThread>
 #include <QtConcurrentRun>
+#include <QtAlgorithms>
+#include <QVector>
 
 namespace DesignNet{
 
@@ -53,7 +54,6 @@ Processor::Processor(DesignNetSpace *space, QObject* parent, ProcessorType proce
 {
     m_name = "";
 	m_id = -1;
-	m_portCountResizable = false;
 	if (processorType == ProcessorType_Permanent)
 	{
 		m_thread = new QThread(this);
@@ -84,55 +84,6 @@ Processor::~Processor()
 	}
 }
 
-const QList<Port*> & Processor::getInputPorts() const
-{
-    return m_inputPorts;
-}
-
-const QList<Port*> & Processor::getOutputPorts() const
-{
-    return m_outputPorts;
-}
-
-Port *Processor::getPort(const QString &name) const
-{
-    foreach (Port* port, m_inputPorts) {
-        if(port->name() == name)
-            return port;
-    }
-    foreach (Port* port, m_outputPorts) {
-        if(port->name() == name)
-            return port;
-    }
-    return 0;
-}
-
-void Processor::addPort(Port *port)
-{
-    TOTEM_ASSERT(port != 0, return)
-    port->setProcessor(this);
-    if(port->portType() == Port::IN_PORT)
-        m_inputPorts.append(port);
-    else
-        m_outputPorts.append(port);
-}
-
-void Processor::removePort(Port *port)
-{
-    if (port == 0)
-    {
-		m_inputPorts.clear();
-		m_outputPorts.clear();
-		return;
-    }
-    if(port->portType() == Port::IN_PORT)
-    {
-        m_inputPorts.removeOne(port);
-    }
-    else
-        m_outputPorts.removeOne(port);
-}
-
 void Processor::setName(const QString &name)
 {
     m_name = name;
@@ -153,27 +104,31 @@ int Processor::id() const
     return m_id;
 }
 
-void Processor::pushData(IData *data, const QString &portname)
+void Processor::pushData(QVariant variant, const QString& dataLabel)
 {
-    Port *port = getPort(portname);
-	Q_ASSERT(port);
-    port->addData(data);
+	ProcessData data;
+	data.variant = variant;
+	data.processorID = m_id;
+    m_outputDatas.insert(dataLabel, data);
 }
 
-QVector<IData*> Processor::getData( const QString& portname )
+QList<ProcessData> Processor::getOutputData( const QString& dataLabel )
 {
-	QVector<IData*> res;
-	Port *port = getPort(portname);
-	Q_ASSERT(port);
-	if (port->portType() == Port::OUT_PORT)
+	// 现在自己里面找，没有的话向父亲要数据
+	if (m_outputDatas.contains(dataLabel))
+		return m_outputDatas.values(dataLabel);
+	
+	return getInputData(dataLabel);
+}
+
+QList<ProcessData> Processor::getInputData( const QString& dataLabel)
+{
+	QList<ProcessData> res;
+	foreach (Processor* father, m_fathers)
 	{
-		res << port->data();
-	}
-	else
-	{
-		QList<Port*> ports = port->connectedPorts();
-		foreach (Port* p, ports)
-			res << p->data();
+		QList<ProcessData> &datas = father->getOutputData(dataLabel);
+		for(QList<ProcessData>::iterator itr = datas.begin(); itr != datas.end(); itr++)
+			res << *itr;
 	}
 	return res;
 }
@@ -181,28 +136,14 @@ QVector<IData*> Processor::getData( const QString& portname )
 int Processor::indegree(QList<Processor *> exclusions) const
 {
     int degree = 0;
-    foreach(Port* port, m_inputPorts)
-    {
-        QList<Processor*> processors = port->connectedProcessors();
+	QVector<Processor*> processors = m_fathers;
 
-        foreach(Processor *processor, processors)
-        {
-            if(!exclusions.contains(processor))
-            {
-                degree++;
-            }
-        }
-    }
+	foreach(Processor *processor, processors)
+	{
+		if(!exclusions.contains(processor))
+			degree++;
+	}
     return degree;
-}
-
-void Processor::stateChanged(Port *port)
-{
-}
-
-void Processor::dataArrived(Port *port)
-{
-	emit logout("dataArrived");
 }
 
 bool Processor::beforeProcess(QFutureInterface<ProcessResult> &future)
@@ -228,11 +169,6 @@ void Processor::run( QFutureInterface<ProcessResult> &future )
 	afterProcess(pr.m_bSucessed);
 }
 
-void Processor::setRepickData( const bool &repick /*= true*/ )
-{
-	m_bRepickData = repick;
-}
-
 void Processor::start()
 {
 	if (m_eType == ProcessorType_Permanent)
@@ -256,13 +192,9 @@ void Processor::waitForFinish()
 	}
 }
 
-bool Processor::connectionTest( Port* src, Port* target )
+bool Processor::connectionTest(Processor* father)
 {
-	if (src->data()->id() == target->data()->id())
-	{
-		return true;
-	}
-	return false;
+	return true;
 }
 
 void Processor::serialize( Utils::XmlSerializer& s ) const
@@ -302,16 +234,6 @@ QIcon Processor::icon() const
 	return m_icon;
 }
 
-bool Processor::isPortCountResizable() const
-{
-	return m_portCountResizable;
-}
-
-void Processor::setPortCountResizable( const bool &resizable )
-{
-	m_portCountResizable = true;
-}
-
 Core::Id Processor::typeID() const
 {
 	return Core::Id(QString(category() + "/" + name()));
@@ -332,11 +254,6 @@ bool Processor::isRunning()
 	return m_worker.isWorking();
 }
 
-void Processor::showConfig()
-{
-
-}
-
 void Processor::propertyAdded( Property* prop )
 {
 	QObject::connect(prop, SIGNAL(changed()), this, SLOT(onPropertyChanged_internal()));
@@ -352,6 +269,31 @@ void Processor::onPropertyChanged_internal()
 	Property *prop = qobject_cast<Property*>(sender());
 	if(prop)
 		propertyChanged(prop);
+}
+
+bool Processor::connectTo( Processor* child )
+{
+	if (!child->connectionTest(this))
+		return false;
+	
+	if (m_children.contains(child) || m_fathers.contains(child)) // 不能连接两次
+		return false;
+
+	m_children.append(child);
+	emit connected(this, child);
+	return true;
+}
+
+bool Processor::disconnect( Processor* pChild )
+{
+	if (!m_children.contains(pChild)) // 不能连接两次
+		return false;
+	int iIndex = m_children.indexOf(pChild, 0);
+	if (iIndex > 0)
+		m_children.remove(iIndex);
+
+	emit disconnected(this, pChild);
+	return true;
 }
 
 }

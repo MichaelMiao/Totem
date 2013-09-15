@@ -31,6 +31,7 @@ protected:
 	int		m_index;//!< 数据索引
 	bool	m_bPermanent;//!< 是否是permanent数据
 };
+Q_DECLARE_METATYPE(IData*)
 }
 
 #endif // IDATATYPE_H
