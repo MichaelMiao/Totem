@@ -3,11 +3,13 @@
 
 #include "designnet/designnet_core/designnetbase/processor.h"
 #include "designnet/designnet_core/designnetbase/port.h"
-#include "designnet/designnet_core/data/imagedata.h"
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 namespace DesignNet{
 class Processor;
 class Property;
+class ImageData;
 }
 namespace InputLoader {
 /*!

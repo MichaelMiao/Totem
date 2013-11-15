@@ -1,4 +1,3 @@
-#include "totem_gui_pch.h"
 #include "inputloaderplugin.h"
 #include "graphicsnormalimageloader.h"
 #include "ImageFolderLoader.h"

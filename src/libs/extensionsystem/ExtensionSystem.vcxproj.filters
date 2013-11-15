@@ -218,9 +218,6 @@
     <CustomBuild Include="progressmanagerprivate.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shared\totem_gui_pch.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <ClInclude Include="GeneratedFiles\ui_plugindetailsview.h">
       <Filter>Generated Files</Filter>
     </ClInclude>

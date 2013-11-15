@@ -2,9 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <OPENCV_DIR>F:\SDKs\opencv2.4.6\build\</OPENCV_DIR>
-    <OPENCV_VERSION>246</OPENCV_VERSION>
-    <OPENCV_LIB>F:\SDKs\opencv2.4.6\build\x86\vc10\lib\</OPENCV_LIB>
+    <OPENCV_DIR>F:\SDKs\opencv247\buildx86\install\</OPENCV_DIR>
+    <OPENCV_VERSION>247</OPENCV_VERSION>
+    <OPENCV_LIB>F:\SDKs\opencv247\buildx86\lib\Debug\</OPENCV_LIB>
   </PropertyGroup>
   <PropertyGroup>
     <LinkIncremental>true</LinkIncremental>

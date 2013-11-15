@@ -2,11 +2,11 @@
 #include "designnet/designnet_core/designnetbase/processor.h"
 #include "designnet/designnet_core/property/pathdialogproperty.h"
 #include "designnet/designnet_core/property/property.h"
+#include "designnet/designnet_core/data/imagedata.h"
 #include "coreplugin/icore.h"
 #include "coreplugin/messagemanager.h"
 #include <iostream>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+
 #include <QDebug>
 using namespace std;
 using namespace DesignNet;
