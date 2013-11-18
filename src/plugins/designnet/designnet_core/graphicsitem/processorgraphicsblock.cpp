@@ -36,6 +36,7 @@
 using namespace GraphicsUI;
 namespace DesignNet{
 const int PORT_MARGIN = 15;
+#define MAX_LENGTH	1000
 
 
 void Position::serialize(Utils::XmlSerializer& s) const
@@ -60,6 +61,12 @@ ProcessorGraphicsBlock::ProcessorGraphicsBlock( Processor *processor /*= 0*/, QG
 	setFlag(ItemSendsGeometryChanges);
 	setAcceptHoverEvents(true);
 	setCacheMode(DeviceCoordinateCache);
+	m_dropdownShadowEffect = new QGraphicsDropShadowEffect(this);
+	m_dropdownShadowEffect->setBlurRadius(8);
+	m_dropdownShadowEffect->setOffset(0, 0);
+	m_dropdownShadowEffect->setColor(Qt::gray);
+	setGraphicsEffect(m_dropdownShadowEffect);
+	m_dropdownShadowEffect->setEnabled(false);
 	/// title
 	m_titleItem = new BlockTextItem(this);
 	m_titleItem->setBlockName(m_processor->name());
@@ -113,13 +120,6 @@ QSizeF ProcessorGraphicsBlock::minimumSizeHint() const
     return QSizeF(DEFAULT_WIDTH, TITLE_HEIGHT + 2 * PORT_MARGIN + 1);
 }
 
-void ProcessorGraphicsBlock::layoutItems()
-{
-    prepareGeometryChange();
-
-	
-}
-
 Processor *ProcessorGraphicsBlock::processor()
 {
     return (Processor *)m_processor;
@@ -141,13 +141,17 @@ void ProcessorGraphicsBlock::propertyRemoved(Property *prop)
 
 QVariant ProcessorGraphicsBlock::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
 {
-    if(change == ItemSelectedHasChanged)
+    if(change == ItemSelectedHasChanged && scene())
     {
         if(value.toBool() == false)
         {
             emit selectionChanged(false);
         }
     }
+	else if (change == ItemPositionChange && scene())
+	{
+		emit positionChanged();
+	}
     return QGraphicsItem::itemChange(change,value);
 }
 
@@ -179,9 +183,6 @@ void ProcessorGraphicsBlock::paint( QPainter* painter, const QStyleOptionGraphic
 	
 	QRectF rectF = boundingRect();
 	painter->setPen(Qt::NoPen);
-	QRectF rectShadow = rectF;
-	rectShadow.translate(5, 5);
-	painter->fillRect(rectShadow, qApp->palette().shadow().color());
 
 	painter->fillRect(rectF, QColor(102, 175,253));
 	if(isSelected())
@@ -326,6 +327,46 @@ void ProcessorGraphicsBlock::startDeserialize(Utils::XmlDeserializer& s)
 void ProcessorGraphicsBlock::contextMenuEvent( QGraphicsSceneContextMenuEvent *event )
 {
 	event->accept();
+}
+
+void ProcessorGraphicsBlock::setHover( bool bHovered /*= true*/ )
+{
+	setState(STATE_MOUSEOVER, bHovered);
+	m_dropdownShadowEffect->setColor(bHovered ? Qt::yellow : Qt::gray);
+	m_dropdownShadowEffect->setEnabled(bHovered);
+	qDebug() << bHovered << " ";
+}
+
+QPointF ProcessorGraphicsBlock::getCrossPoint( const QLineF &line )
+{
+	QLineF lineSrc(line);
+	lineSrc.setLength(MAX_LENGTH);
+	QPointF ptTemp(0, 0);
+	QPolygonF polygon(mapToScene(boundingRect()));
+	int iCount = polygon.count();
+	if (iCount > 0)
+	{
+		QPointF p2;
+		QPointF p1 = polygon.at(0);
+		p2 = p1;
+		for (int i = 1; i < iCount; i++)
+		{
+			QPointF p2 = polygon.at(i);
+			QLineF lineTemp(p2, p1);
+			QPointF ptTemp;
+			if (lineSrc.intersect(lineTemp, &ptTemp) == QLineF::BoundedIntersection)
+				return ptTemp;
+			p1 = p2;
+		}
+	}
+	return QPointF(0, 0);
+}
+
+void ProcessorGraphicsBlock::setEmphasized( bool bEmphasized /*= true*/ )
+{
+	setState(STATE_EMPHASIZE, bEmphasized);
+	m_dropdownShadowEffect->setBlurRadius(bEmphasized ? 35 : 0);
+	m_dropdownShadowEffect->setEnabled(bEmphasized);
 }
 
 }

@@ -1,10 +1,12 @@
 #ifndef IMAGEFOLDERCONFIGWIDGET_H
 #define IMAGEFOLDERCONFIGWIDGET_H
 
-#include <QWidget>
-#include "widgets/processorconfigwidget.h"
-
+#include "stdafx.h"
+#include "designnet/designnet_core/widgets/processorconfigwidget.h"
 #include "designnet/designnet_core/processorconfiglistener.h"
+
+#include <QWidget>
+
 
 namespace DesignNet{
 class Processor;

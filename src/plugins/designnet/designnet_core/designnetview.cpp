@@ -4,12 +4,13 @@
 #include "designnetbase/processor.h"
 #include "designnetconstants.h"
 #include "graphicsitem/processorgraphicsblock.h"
+#include "graphicsitem/processorarrowlink.h"
 #include "Utils/XML/xmlserializer.h"
 #include "Utils/XML/xmldeserializer.h"
 #include "Utils/totemassert.h"
 #include "coreplugin/icore.h"
 #include "coreplugin/messagemanager.h"
-
+#include "graphicsitem/blocktextitem.h"
 #include <QDropEvent>
 #include <QMouseEvent>
 #include <QGraphicsScene>
@@ -17,6 +18,7 @@
 #include <QGraphicsItem>
 #include <QMultiHash>
 #include <QApplication>
+#include <QGraphicsLineItem>
 namespace DesignNet{
 class DesignNetViewPrivate
 {
@@ -25,11 +27,17 @@ public:
 	~DesignNetViewPrivate();
 	DesignNetSpace*								m_designnetSpace;
 	QMap<Processor*, ProcessorGraphicsBlock*>	m_processorMaps;
+	ProcessorGraphicsBlock*						m_tempProcessor;
+	ProcessorGraphicsBlock*						m_srcProcessor;
+	QGraphicsLineItem*							m_lineItem;
 };
 
 DesignNetViewPrivate::DesignNetViewPrivate()
 {
 	m_designnetSpace = 0;
+	m_tempProcessor = 0;
+	m_lineItem = 0;
+	m_srcProcessor = 0;
 }
 
 DesignNetViewPrivate::~DesignNetViewPrivate()
@@ -42,24 +50,28 @@ DesignNetView::DesignNetView(DesignNetSpace *space, QWidget *parent)
 	d(new DesignNetViewPrivate)
 {
 	d->m_designnetSpace = space;
+	d->m_lineItem = new QGraphicsLineItem(0);
+	QPen pen(QBrush(QColor(255, 20, 0, 180)), 3, Qt::DotLine);
+	d->m_lineItem->setPen(pen);
 	m_bLinking = false;
+	m_bPressed = false;
 	setObjectName(QLatin1String("DesignView"));
-	setCacheMode(CacheBackground);
-	setRenderHint(QPainter::Antialiasing);
-	setViewportUpdateMode(FullViewportUpdate);
+ 	setRenderHint(QPainter::Antialiasing);
 	setSceneRect(-1000, -1000, 2000, 2000);
 	viewport()->setMouseTracking(true);
-	setFocusPolicy(Qt::StrongFocus);
-	setDragMode(QGraphicsView::RubberBandDrag);
+ 	setFocusPolicy(Qt::StrongFocus);
+ 	setDragMode(QGraphicsView::RubberBandDrag);
 	QGraphicsScene *scene = new QGraphicsScene(this);
 	scene->setBackgroundBrush(Qt::gray);
 	setScene(scene);
+	scene->addItem(d->m_lineItem);
 	setAcceptDrops(true);
 	if (space)
 	{
 		QObject::connect(space, SIGNAL(logout(QString)), this, SLOT(OnShowMessage(QString)));
 		QObject::connect(space, SIGNAL(processorAdded(Processor*)), this, SLOT(onProcessorAdded(Processor*)));
 		QObject::connect(space, SIGNAL(processorRemoved(Processor*)), this, SLOT(onProcessorRemoved(Processor*)));
+		QObject::connect(space, SIGNAL(connectionAdded(Processor*, Processor*)), this, SLOT(onConnectionAdded(Processor*, Processor*)));
 	}
 }
 
@@ -92,7 +104,7 @@ void DesignNetView::dropEvent( QDropEvent * event )
 	QPointF point = mapToScene(event->pos());
 
 	QString processorName = QString::fromAscii(event->mimeData()->data(Constants::MIME_TYPE_TOOLITEM).data());
-	Processor *processor = ProcessorFactory::instance()->create(d->m_designnetSpace, processorName);
+	Processor *processor = ProcessorFactory::instance()->create(0, processorName);
 	d->m_designnetSpace->addProcessor(processor, true);
 	
 	scene()->clearSelection();
@@ -131,6 +143,7 @@ void DesignNetView::setDesignNetSpace( DesignNetSpace *space )
 		QObject::connect(space, SIGNAL(logout(QString)), this, SLOT(OnShowMessage(QString)));
 		QObject::connect(space, SIGNAL(processorAdded(Processor*)), this, SLOT(onProcessorAdded(Processor*)));
 		QObject::connect(space, SIGNAL(processorRemoved(Processor*)), this, SLOT(onProcessorRemoved(Processor*)));
+		QObject::connect(space, SIGNAL(connectionAdded(Processor*, Processor*)), this, SLOT(onConnectionAdded(Processor*, Processor*)));
 	}
 }
 
@@ -152,6 +165,10 @@ void DesignNetView::keyReleaseEvent( QKeyEvent *keyEvent )
 	{
 		QList<QGraphicsItem*> items = scene()->selectedItems();
 		removeItems(items);
+	}
+	else if (keyEvent->key() == Qt::Key_Escape)
+	{
+		setEditState(EditState_Move);
 	}
 	keyEvent->accept();
 }
@@ -180,18 +197,75 @@ void DesignNetView::removeItems( QList<QGraphicsItem*> items )
 	scene()->blockSignals(false);
 }
 
-void DesignNetView::mouseMoveEvent( QMouseEvent * event )
-{
-	QGraphicsView::mouseMoveEvent(event);
-}
-
 void DesignNetView::mousePressEvent( QMouseEvent * event )
 {
+	qDebug() << "mouse press";
+	QPointF scenePos = mapToScene(event->pos());
+	QGraphicsItem *pItem = scene()->itemAt(scenePos);
+	if (!pItem || pItem->type() != (QGraphicsItem::UserType + ProcessorGraphicsBlockType))
+	{
+		event->accept();
+	}
+	else if(m_eEditState == EditState_Link)
+	{
+		m_bPressed = true;
+		d->m_srcProcessor = (ProcessorGraphicsBlock*)pItem;
+		d->m_srcProcessor->setHover(true);
+		d->m_lineItem->setVisible(true);
+		d->m_lineItem->setLine(scenePos.x(), scenePos.y(), scenePos.x(), scenePos.y());
+	}
+
 	QGraphicsView::mousePressEvent(event);
+}
+
+void DesignNetView::mouseMoveEvent( QMouseEvent * event )
+{
+	qDebug() << "mouse move";
+	if (m_eEditState == EditState_Link && m_bPressed)
+	{
+		QPointF scenePos = mapToScene(event->pos());
+		QPointF p = d->m_srcProcessor->scenePos();
+		QPointF posSrc = d->m_srcProcessor->getCrossPoint(QLineF(p, scenePos));
+		d->m_lineItem->setLine(p.x(), p.y(), scenePos.x(), scenePos.y());
+
+		QGraphicsItem *pItem = scene()->itemAt(scenePos);
+		if (!pItem || pItem->type() != (QGraphicsItem::UserType + ProcessorGraphicsBlockType))
+		{
+			if (d->m_tempProcessor && d->m_tempProcessor != d->m_srcProcessor)
+				d->m_tempProcessor->setHover(false);
+			d->m_tempProcessor = 0;
+			return;
+		}
+		
+		d->m_tempProcessor = (ProcessorGraphicsBlock*)pItem;
+		d->m_tempProcessor->setEmphasized(true);
+	}
+	QGraphicsView::mouseMoveEvent(event);
 }
 
 void DesignNetView::mouseReleaseEvent( QMouseEvent * event )
 {
+	if (m_eEditState == EditState_Link && m_bPressed)
+	{
+		if (d->m_tempProcessor && d->m_tempProcessor != d->m_srcProcessor)
+		{
+			d->m_tempProcessor->setHover(true);
+			d->m_designnetSpace->connectProcessor(d->m_srcProcessor->processor(), d->m_tempProcessor->processor());
+		}
+	}
+	else if (m_eEditState == EditState_Move)
+	{
+		QPointF scenePos = mapToScene(event->pos());
+		QGraphicsItem *pItem = scene()->itemAt(scenePos);
+		if (pItem && pItem->type() == (QGraphicsItem::UserType + ProcessorGraphicsBlockType))
+			emit showAvailiableData(((ProcessorGraphicsBlock*)pItem)->processor());
+	}
+	if (m_bPressed)
+	{
+		m_bPressed = false;
+		d->m_tempProcessor = 0;
+		d->m_lineItem->setVisible(false);
+	}
 	event->accept();
 	QGraphicsView::mouseReleaseEvent(event);
 }
@@ -279,12 +353,36 @@ void DesignNetView::OnShowMessage( const QString &strMessage )
 void DesignNetView::onProcessorAdded( Processor* processor )
 {
 	ProcessorGraphicsBlock *pBlock = new ProcessorGraphicsBlock(processor, scene());
+	pBlock->setFlag(QGraphicsItem::ItemIsMovable, m_eEditState == EditState_Move);
 	addProcessor(pBlock);
 }
 
 void DesignNetView::onProcessorRemoved( Processor* processor )
 {
+	if (d->m_processorMaps.contains(processor))
+		removeProcessor(d->m_processorMaps.value(processor));
+}
 
+void DesignNetView::onConnectionAdded( Processor* father, Processor* child )
+{
+	ProcessorArrowLink* pLink = new ProcessorArrowLink(0);
+	scene()->addItem(pLink);
+	pLink->connectProcessor(d->m_processorMaps[father], d->m_processorMaps[child]);
+	pLink->setSelected(true);
+}
+
+void DesignNetView::setEditState( EditState e )
+{
+	if (m_eEditState != e)
+	{
+		m_eEditState = e;
+		foreach(ProcessorGraphicsBlock* pBlock, d->m_processorMaps.values())
+			pBlock->setFlag(QGraphicsItem::ItemIsMovable, m_eEditState == EditState_Move);
+		if (m_eEditState == EditState_Link)
+			setCursor(Qt::CrossCursor);
+		else
+			setCursor(Qt::ArrowCursor);
+	}
 }
 
 }

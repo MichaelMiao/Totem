@@ -9,7 +9,7 @@ ArrowLinkControlItem::ArrowLinkControlItem(QGraphicsItem *parent) :
 {
     setAcceptHoverEvents(true);
     setFlags(ItemIsMovable
-             | ItemSendsGeometryChanges
+             | ItemSendsScenePositionChanges
              | ItemIgnoresTransformations);
 }
 
@@ -33,10 +33,16 @@ void ArrowLinkControlItem::paint(QPainter *painter, const QStyleOptionGraphicsIt
 
 QVariant ArrowLinkControlItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
 {
-    if(change == ItemPositionChange && scene())
+    if(change == ItemScenePositionHasChanged && scene())
     {
         emit positionChanged();
     }
+	else if (change == ItemSelectedHasChanged)
+	{
+		QGraphicsItem *pItem = parentItem();
+		if(pItem)
+			pItem->setFlag(ItemIsMovable, !value.toBool());
+	}
     return QGraphicsItem::itemChange(change, value);
 }
 

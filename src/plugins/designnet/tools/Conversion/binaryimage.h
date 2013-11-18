@@ -1,8 +1,6 @@
 #ifndef BINARYIMAGE_H
 #define BINARYIMAGE_H
-
-#include "designnet/designnet_core/graphicsitem/processorgraphicsblock.h"
-#include "designnet/designnet_core/designnetbase/port.h"
+#include "designnet/designnet_core/designnetbase/processor.h"
 #include "designnet/designnet_core/data/imagedata.h"
 #include <opencv2/core/core.hpp>
 namespace DesignNet{
@@ -22,10 +20,10 @@ public:
 	virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);     //!< 处理函数
 protected:
 	virtual void propertyChanged(DesignNet::Property *prop);
-	virtual bool connectionTest(DesignNet::Port* src, DesignNet::Port* target);
-	
-	DesignNet::Port m_outputPort;	//!< 输出端口
-	DesignNet::Port m_inputPort;	//!< 输入端口
+	virtual QMultiMap<QString, DesignNet::ProcessData> datasNeeded();
+	virtual QMap<QString, DesignNet::ProcessData> dataProvided();
+
+
 	DesignNet::ImageData m_binaryData;				//!< 二值图
 	DesignNet::ImageData m_grayData;				//!< 灰度图
 	DesignNet::DoubleRangeProperty* m_doubleRangeProperty; //!< 阈值

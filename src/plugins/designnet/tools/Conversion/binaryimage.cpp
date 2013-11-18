@@ -1,23 +1,25 @@
 #include "binaryimage.h"
-#include "designnet/designnet_core/graphicsitem/portgraphicsitem.h"
 #include "designnet/designnet_core/data/imagedata.h"
 #include "designnet/designnet_core/data/matrixdata.h"
+#include "designnet/designnet_core/data/datatype.h"
 #include "designnet/designnet_core/property/doublerangeproperty.h"
 
 #include "ConversionConstants.h"
 
 #include <opencv2/imgproc/imgproc.hpp>
 #include <QIcon>
+#include <QMultiMap>
 using namespace DesignNet;
+#define DATA_LABEL_GRAYIMAGE "GrayImage"
+#define DATA_LABEL_BINARYIMAGE "BinaryImage"
+
+
 namespace Conversion{
 
+
 BinaryImage::BinaryImage( DesignNet::DesignNetSpace *space, QObject *parent /*= 0*/ )
-	: DesignNet::Processor(space, parent),
-	m_inputPort(new ImageData(ImageData::IMAGE_GRAY, this), Port::IN_PORT, "Gray Image"),
-	m_outputPort(new ImageData(ImageData::IMAGE_BINARY, this), Port::OUT_PORT, "Binary Image")
+	: DesignNet::Processor(space, parent)
 {
-	addPort(&m_inputPort);
-	addPort(&m_outputPort);
 	m_doubleRangeProperty = new DesignNet::DoubleRangeProperty("threshold", "threshold",this);
 	addProperty(m_doubleRangeProperty);
 	setName(tr("Binary Image"));
@@ -46,7 +48,7 @@ QString BinaryImage::category() const
 
 bool BinaryImage::process(QFutureInterface<ProcessResult> &future)
 {
-	ImageData *srcData = qobject_cast<ImageData*>(getData("Gray Image").at(0));
+	ImageData *srcData = (ImageData*)(getInputData(DATA_LABEL_GRAYIMAGE).at(0).variant.value<void*>());
 	cv::Mat mat = srcData->imageData();
 	double valueThreshold = m_doubleRangeProperty->value();///阈值
 	cv::Mat binaryImage;
@@ -56,7 +58,7 @@ bool BinaryImage::process(QFutureInterface<ProcessResult> &future)
 	ImageData data;
 	data.setImageData(binaryImage);
 	data.setIndex(srcData->index());
-	pushData(&data, "Binary Image");
+	pushData(10, DATA_LABEL_BINARYIMAGE);
 	return true;
 }
 
@@ -65,32 +67,24 @@ void BinaryImage::propertyChanged( DesignNet::Property *prop )
 
 }
 
-/**
- * \fn	bool BinaryImage::connectionTest( DesignNet::Port* src, DesignNet::Port* target )
- *
- * \brief	连接测试，只能接受灰度图.
- *
- * \author	Michael_BJFU
- * \date	2013/5/29
- *
- * \param [in,out]	src   	源端口.
- * \param [in,out]	target	目标端口.
- *
- * \return	如果源端口数据是灰度图返回true，否则false.
- */
-
-bool BinaryImage::connectionTest( DesignNet::Port* src, DesignNet::Port* target )
+QMap<QString, DesignNet::ProcessData> BinaryImage::dataProvided()
 {
-	if(target == &m_inputPort)
-	{
-		ImageData *srcData = qobject_cast<ImageData*>(src->data());
-		if (!srcData || srcData->imageType() != ImageData::IMAGE_GRAY)
-		{
-			return false;
-		}
-		return true;
-	}
-	return false;
+	QMap<QString, DesignNet::ProcessData> ret;
+	ProcessData pd;
+	pd.strLabel = DATA_LABEL_BINARYIMAGE;
+	pd.dataType = DATATYPE_MATRIX;
+	ret[DATA_LABEL_BINARYIMAGE] = pd;
+	return ;
+}
+
+QMultiMap<QString, ProcessData> BinaryImage::datasNeeded()
+{
+	QMultiMap<QString, ProcessData> ret;
+	ProcessData pd;
+	pd.strLabel = DATA_LABEL_GRAYIMAGE;
+	pd.dataType = DATATYPE_GRAYIMAGE;
+	ret.insert(DATA_LABEL_GRAYIMAGE, pd);
+	return ret;
 }
 
 

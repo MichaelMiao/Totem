@@ -71,6 +71,8 @@ public slots:
 	void onShowMessage(QString log);
 
 protected:
+	virtual QList<ProcessData> dataProvided() { return QList<ProcessData>(); }
+	
 	virtual void propertyChanged(Property *prop);
 	bool sortProcessors(QList<Processor*> &processors);// 拓扑排序
 

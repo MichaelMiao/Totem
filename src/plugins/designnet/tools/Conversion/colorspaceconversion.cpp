@@ -4,25 +4,22 @@
 #include "designnet/designnet_core/data/imagedata.h"
 #include <opencv2/imgproc/imgproc.hpp>
 using namespace DesignNet;
+
+#define DATA_LABEL_INPUTIMAGE "3 Channel Image"
+#define DATA_LABEL_OUTPUTIMAGE "3 Channel Image"
+
 namespace Conversion{
 class ColorSpaceConversionPrivate
 {
 public:
 	ColorSpaceConversionPrivate(ColorSpaceConversion * parent);
 	OptionProperty*			m_property;
-	Port					m_inputPort;
-	Port					m_outputPort;
 	ColorSpaceConversion *	m_conversion;
 };
-
 ColorSpaceConversionPrivate::ColorSpaceConversionPrivate( ColorSpaceConversion * parent )
-	: m_conversion(parent),
-	m_inputPort(new ImageData(ImageData::IMAGE_BGR, parent), Port::IN_PORT),
-	m_outputPort(new ImageData(ImageData::IMAGE_BGR, parent), Port::OUT_PORT)
+	: m_conversion(parent)
 {
 	m_property = new OptionProperty("ConversionOption", QLatin1String("ConversionOption"), parent);
-	m_inputPort.setName(QLatin1String("InputImage"));
-	m_outputPort.setName(QLatin1String("OutputImage"));
 }
 
 ColorSpaceConversion::ColorSpaceConversion( DesignNetSpace *space, QObject *parent /*= 0*/ )
@@ -42,9 +39,6 @@ ColorSpaceConversion::ColorSpaceConversion( DesignNetSpace *space, QObject *pare
 	d->m_property->setName(tr("Conversion"));
 	d->m_property->select(tr("BGR 2 HSV"));
 	addProperty(d->m_property);
-	//!< Ìí¼Ó¶Ë¿Ú
-	addPort(&d->m_inputPort);
-	addPort(&d->m_outputPort);
 	setName(tr("Color Space Conversion"));
 }
 
@@ -99,6 +93,16 @@ bool ColorSpaceConversion::connectionTest( DesignNet::Port* src, DesignNet::Port
 		return true;
 	}
 	return false;
+}
+
+QMultiMap<QString, DesignNet::ProcessData> ColorSpaceConversion::datasNeeded()
+{
+	return ;
+}
+
+QMap<QString, DesignNet::ProcessData> ColorSpaceConversion::dataProvided()
+{
+	return ;
 }
 
 }

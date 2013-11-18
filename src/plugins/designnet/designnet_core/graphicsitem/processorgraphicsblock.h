@@ -19,7 +19,7 @@ class XmlSerializer;
 }
 QT_BEGIN_NAMESPACE
 class QMenu;
-class QGraphicsBlurEffect;
+class QGraphicsDropShadowEffect;
 class  QGraphicsSceneMouseEvent;
 QT_END_NAMESPACE
 namespace GraphicsUI{
@@ -64,7 +64,7 @@ public:
 
 	enum{
 		DEFAULT_WIDTH	= 110, //!< 默认宽度
-		DEFAULT_HEIGHT	= 110,//!< 默认高度
+		DEFAULT_HEIGHT	= 80,//!< 默认高度
 		TITLE_HEIGHT	= 30,	 //!< title高度
 		ITEMSPACING		= 5,	 //!< spacing
 		STATUSBAR_HEIGHT = 15   //!< 状态栏高度
@@ -73,7 +73,8 @@ public:
 	enum State{
 		STATE_WORKING	= 0x000001,
 		STATE_MOUSEOVER = 0x000001 << 1,
-		STATE_SELECTED  = 0x000001 << 2
+		STATE_SELECTED  = 0x000001 << 2,
+		STATE_EMPHASIZE = 0x000001 << 3,
 	};
 
     int type() const;
@@ -90,9 +91,6 @@ public:
 		const QStyleOptionGraphicsItem *option,
 		QWidget* widget = 0 );
 
-
-    virtual void layoutItems(); //!< 布局所有的子Item，如Port
-
     Processor* processor();     //!< 返回Processor
 
 	virtual void propertyRemoving(Property* prop);
@@ -105,11 +103,18 @@ public:
 	Position originalPosition() const;
 	virtual void createContextMenu(QMenu *parentMenu);
 
-	void setState(const State &s, const bool &bAdd = false); //!< 设置状态，\e bAdd \e 表示是否以添加的形式添加属性。
+	
+	void setHover(bool bHovered = true);
+	bool isHover() { return testState(STATE_MOUSEOVER); }
+
+	void setEmphasized(bool bEmphasized = true);
+	bool isEmphasized() { return testState(STATE_EMPHASIZE); }
+
+	QPointF getCrossPoint(const QLineF &line);
 signals:
     void selectionChanged(bool bSelected);
-    
-signals:
+    void positionChanged();
+
 	void closed();
 	void processorLog(const QString &log);
 public slots:
@@ -118,7 +123,8 @@ public slots:
 	void configWidgetClosed();
 	void startDeserialize(Utils::XmlDeserializer& s);
 protected:
-
+	void setState(const State &s, const bool &bAdd = false); //!< 设置状态，\e bAdd \e 表示是否以添加的形式添加属性。
+	bool testState(const State &s) { return m_state & s; }
 	void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 	virtual void propertyChanged(Property *prop);
 
@@ -133,7 +139,7 @@ protected:
 	void setLayoutDirty(const bool &dirty = true);			//!< 设置是否需要重新计算布局
 	void showStatus(const QString &msg);
 
-	QGraphicsBlurEffect*					m_blurEffect;
+	QGraphicsDropShadowEffect*				m_dropdownShadowEffect;
 	GraphicsUI::GraphicsAutoShowHideItem*   m_closeItem;
 	BlockTextItem*							m_titleItem;
 	Position					m_pos;

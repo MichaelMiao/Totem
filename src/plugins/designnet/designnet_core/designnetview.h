@@ -2,6 +2,7 @@
 #define DESIGNNETVIEW_H
 
 #include "Utils/XML/xmlserializable.h"
+#include "designnetmainwindow.h"
 #include <QGraphicsView>
 #include <QList>
 QT_BEGIN_NAMESPACE
@@ -14,11 +15,8 @@ class XmlSerializer;
 }
 
 namespace DesignNet{
-class Port;
 class DesignNetViewPrivate;
 class DesignNetSpace;
-class PortArrowLinkItem;
-class PortGraphicsItem;
 class Processor;
 class ProcessorGraphicsBlock;
 /*!
@@ -36,6 +34,8 @@ class DesignNetView : public QGraphicsView
 public:
 	DesignNetView(DesignNetSpace *space, QWidget *parent = 0);
 	virtual ~DesignNetView();
+	void setEditState(EditState e);
+
 	void setDesignNetSpace(DesignNetSpace *space);
 	DesignNetSpace* getSpace() const;//!< 返回相应的Space
 
@@ -48,10 +48,15 @@ public:
 	void deserialize(Utils::XmlDeserializer &x);
 	void serialize(Utils::XmlSerializer &s);
 
+signals:
+	void showAvailiableData(Processor* processor);
+
 public slots:
 
 	void onProcessorAdded(Processor* processor);
 	void onProcessorRemoved(Processor* processor);
+	void onConnectionAdded(Processor* father, Processor* child);
+
 	void processorClosed();
 	void reloadSpace();
 	void OnShowMessage(const QString &strMessage);
@@ -68,6 +73,8 @@ protected:
 private:
 	DesignNetViewPrivate* d;
 	bool		m_bLinking;//!<		连接
+	EditState	m_eEditState;
+	bool		m_bPressed;
 };
 
 }

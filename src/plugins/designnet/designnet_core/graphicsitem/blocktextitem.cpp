@@ -28,7 +28,7 @@ void BlockTextItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * 
 
 	QString tempBlockName = fm.elidedText(m_blockName, Qt::ElideRight, qMin(rectF.width(), (qreal)m_maxWidth));
 	painter->drawText(rectF,  Qt::AlignCenter, tempBlockName);
-	painter->restore();	
+	painter->restore();
 }
 
 QRectF BlockTextItem::boundingRect() const
@@ -45,6 +45,7 @@ void BlockTextItem::setBlockName( const QString &blockName )
 {
 	m_blockName = blockName;
 	setToolTip(blockName);
+	setPlainText(m_blockName);
 }
 
 void BlockTextItem::setSize( const QSizeF &sz )

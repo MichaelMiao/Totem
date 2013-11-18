@@ -2,6 +2,7 @@
 #include "coreplugin/imode.h"
 #include "coreplugin/actionmanager/actioncontainer.h"
 #include "coreplugin/actionmanager/actionmanager.h"
+#include "coreplugin/editormanager.h"
 #include "coreplugin/coreconstants.h"
 #include "coreplugin/rightpane.h"
 #include "coreplugin/minisplitter.h"
@@ -14,6 +15,7 @@
 #include "tooldockwidget.h"
 #include "CustomUI/dockwindow.h"
 #include "coreplugin/editortoolbar.h"
+#include "availabledatawidget.h"
 
 #include <QVBoxLayout>
 #include <QStackedWidget>
@@ -26,14 +28,18 @@ namespace DesignNet{
 class DesignNetMainWindowPrivate
 {
 public:
-
+	DesignNetMainWindowPrivate() {
+		m_eEditState = EditState_Move;
+	}
 	Core::ActionContainer *	m_viewsMenu;
 	QStackedWidget*			m_statckedWidget;
 	QHash<QString, QVariant> m_dockWidgetStates;
 	QList<IEditor*>			m_editors;
 	ToolDockWidget*			m_toolDockWidget;   //!< 工具
+	AvailableDataWidget*	m_availableDataWidget;
 	QList<Command *>		m_cmdAboutToAdd;    //!< 要添加的菜单
 	EditorToolBar*			m_toolBar;
+	EditState				m_eEditState;
 };
 DesignNetMainWindow::DesignNetMainWindow(QWidget *parent)
 	: CustomUI::BaseMainWindow(parent),
@@ -97,22 +103,35 @@ void DesignNetMainWindow::titleChanged()
 
 void DesignNetMainWindow::initialize()
 {
+	d->m_viewsMenu = ActionManager::actionContainer(Core::Constants::M_VIEW);
+	
 	// Toolbar
 	// 工具栏
 	d->m_toolDockWidget = new ToolDockWidget(this);
-	d->m_toolDockWidget->show();
+	d->m_availableDataWidget = new AvailableDataWidget(this);
+	struct DockWidgetInfo{
+		QWidget*	pWidget;
+		QString		strTitle;
+		QString		strObjName;
 
-	d->m_toolDockWidget->setWindowTitle(tr("Tools"));
-	d->m_toolDockWidget->setObjectName(DesignNet::Constants::DESIGN_DOCKNAME_TOOL);
-	d->m_viewsMenu = ActionManager::actionContainer(Core::Constants::M_VIEW);
-	DockWindow *dock = createDockWidget(d->m_toolDockWidget);
-	connect(dock, SIGNAL(minMaxClicked(bool&)),
-		d->m_toolDockWidget, SLOT(onMinMax(bool&)));
+	}Infos[] = 
+	{
+		{ d->m_toolDockWidget, tr("Tools"), DesignNet::Constants::DESIGN_DOCKNAME_TOOL },
+		{ d->m_availableDataWidget, tr("Available Datas"), DesignNet::Constants::DESIGN_DOCKNAME_AVAILIABLEDATA },
+	};
+	int iCount = _countof(Infos);
+	for (int i = 0; i < iCount; i++)
+	{
+		Infos[i].pWidget->setWindowTitle(Infos[i].strTitle);
+		Infos[i].pWidget->setObjectName(Infos[i].strObjName);
+		DockWindow *dock = createDockWidget(Infos[i].pWidget);
+		connect(dock, SIGNAL(minMaxClicked(bool&)),
+			d->m_toolDockWidget, SLOT(onMinMax(bool&)));
 
-	connect(dock->toggleViewAction(),
-		SIGNAL(triggered(bool)),
-		this, SLOT(onDockVisibilityChange(bool)));
-
+		connect(dock->toggleViewAction(),
+			SIGNAL(triggered(bool)),
+			this, SLOT(onDockVisibilityChange(bool)));
+	}
 	addDelayedMenu();
 }
 
@@ -202,9 +221,48 @@ void DesignNetMainWindow::addDelayedMenu()
 	}
 }
 
+DesignNet::EditState DesignNetMainWindow::getEditState()
+{
+	return d->m_eEditState;
+}
+
 void DesignNetMainWindow::addCenterToolBar( QToolBar* pToolBar )
 {
 	d->m_toolBar->addCenterToolBar(pToolBar);
+}
+
+void DesignNetMainWindow::onConnectAction()
+{
+	setEditState(EditState_Link);
+}
+
+void DesignNetMainWindow::onMoveAction()
+{
+	setEditState(EditState_Move);
+}
+
+void DesignNetMainWindow::onEditorChanged( Core::IEditor* pEditor )
+{
+	if (d->m_eEditState == EditState_Move)
+		onMoveAction();
+	else if (d->m_eEditState == EditState_Link)
+		onConnectAction();
+	DesignNetEditor* pDesignNetEditor = qobject_cast<DesignNetEditor*>(EditorManager::currentEditor());
+	if (pDesignNetEditor)
+		connect(pDesignNetEditor->designNetView(), SIGNAL(showAvailiableData(Processor*)), this, SLOT(onShowAvailiableData(Processor*)));
+}
+
+void DesignNetMainWindow::setEditState( EditState eState )
+{
+	d->m_eEditState = eState;
+	DesignNetEditor* pDesignNetEditor = qobject_cast<DesignNetEditor*>(EditorManager::currentEditor());
+	if (pDesignNetEditor)
+		pDesignNetEditor->designNetView()->setEditState(d->m_eEditState);
+}
+
+void DesignNetMainWindow::onShowAvailiableData( Processor* processor )
+{
+	d->m_availableDataWidget->setAvailiableData(processor);
 }
 
 }

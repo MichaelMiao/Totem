@@ -59,9 +59,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_pluginloaderview.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\shared\totem_gui_pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\shared\qtsingleapplication\qtlocalpeer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -107,9 +104,6 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\totem_gui_pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\qtlockedfile\qtlockedfile.h">

@@ -1,9 +1,9 @@
 #ifndef PROCESSORCONFIGWIDGET_H
 #define PROCESSORCONFIGWIDGET_H
 
-#include <QWidget>
 #include "../designnet_core_global.h"
-#include <QList>
+#include <QWidget>
+
 QT_BEGIN_NAMESPACE
 class QTabWidget;
 QT_END_NAMESPACE

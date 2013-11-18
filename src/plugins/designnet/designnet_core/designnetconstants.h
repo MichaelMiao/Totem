@@ -25,6 +25,8 @@ const char DESIGNNET_PROCESS_ID[]   = "DesignNet.Process";
 /// DockWidget Name
 const char DESIGN_DOCKNAME_TOOL[]       = "DockName.Tools";
 const char DESIGN_DOCKNAME_PROPERTY[]   = "DockName.Properties";
+const char DESIGN_DOCKNAME_AVAILIABLEDATA[] = "DockName.AvailiableData";
+
 /// GraphicsItem Image
 const char ITEM_IMAGE_PORT_CONNECTED[]        = ":/media/port_connected.png";
 const char ITEM_IMAGE_PORT_NOTCONNECTED[]     = ":/media/port_notconnected.png";

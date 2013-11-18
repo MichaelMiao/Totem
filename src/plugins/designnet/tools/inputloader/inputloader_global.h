@@ -1,0 +1,12 @@
+#ifndef INPUTLOADER_GLOBAL_H
+#define INPUTLOADER_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#ifdef INPUTLOADER_LIB
+# define INPUTLOADER_EXPORT Q_DECL_EXPORT
+#else
+# define INPUTLOADER_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // INPUTLOADER_GLOBAL_H

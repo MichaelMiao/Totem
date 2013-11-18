@@ -2,11 +2,9 @@
 #include "utils/totemassert.h"
 #include "coreplugin/icore.h"
 #include "coreplugin/messagemanager.h"
-
 #include "Utils/XML/xmlserializer.h"
 #include "Utils/XML/xmldeserializer.h"
 #include "utils/runextensions.h"
-
 #include <QDebug>
 #include <QFutureSynchronizer>
 using namespace Utils;
@@ -62,9 +60,8 @@ void DesignNetSpace::addProcessor(Processor *processor, bool bNotifyModify)
 		int iUID = generateUID();
 		processor->setID(iUID);
 	}
-	
     m_processors.push_back(processor);
-    QObject::connect(processor, SIGNAL(connected(Processor*, Processor*)), this, SLOT(connectionAdded(Processor*, Processor*)));
+    QObject::connect(processor, SIGNAL(connected(Processor*, Processor*)), this, SIGNAL(connectionAdded(Processor*, Processor*)));
 	emit processorAdded(processor);
 	if (bNotifyModify)
 		emit modified();
@@ -107,7 +104,10 @@ QString DesignNetSpace::name() const
 bool DesignNetSpace::connectProcessor( Processor* father, Processor* child )
 {
 	if (!child->connectionTest(father))
+	{
+		emit logout(tr("Can't link the processors"));
 		return false;
+	}
 
 	return father->connectTo(child);//!< 发出connectAdd()信号
 }

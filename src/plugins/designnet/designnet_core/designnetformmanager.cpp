@@ -36,7 +36,6 @@ public:
 
 DesignNetFormManagerPrivate::DesignNetFormManagerPrivate()
 {
-	qDebug() << "form";
 	m_context.add(DesignNet::Constants::C_DESIGNNET);
 }
 
@@ -84,14 +83,13 @@ DesignNetEditor * DesignNetFormManager::createEditor( QWidget *parent )
 
 bool DesignNetFormManager::startInit()
 {
-	setupActions();
-
 	d->m_modeWidget = new QWidget();
 	d->m_modeWidget->setObjectName(QLatin1String("DesignNetModeWidget"));
 	d->m_designMode = DesignNetMode::instance();
 
 	d->m_mainWindow = new DesignNetMainWindow();
 	d->m_mainWindow->initialize();
+	setupActions();
 	d->m_mainWindow->addCenterToolBar(createEditorToolBar());
 	QVBoxLayout *layout = new QVBoxLayout;
 	layout->setMargin(0);
@@ -113,6 +111,7 @@ bool DesignNetFormManager::startInit()
 	QStringList strSuffix;
 	strSuffix << QLatin1String("txt");
 	designNetMode->registerDesignWidget(d->m_modeWidget, strSuffix, d->m_context);
+	connect(EditorManager::instance(), SIGNAL(currentEditorChanged(Core::IEditor *)), d->m_mainWindow, SLOT(onEditorChanged(Core::IEditor*)));
 	return true;
 }
 
@@ -141,19 +140,30 @@ void DesignNetFormManager::setupActions()
 {
 	d->m_toolActionIds.push_back(Core::Id("DesignNet.StartBuild"));
 	
-	QAction *pRunAction = new QAction(this);
-	Command *pCommand = Core::ActionManager::registerAction(pRunAction, d->m_toolActionIds.back(), d->m_context);
+	QAction *pAction = new QAction(this);
+	Command *pCommand = Core::ActionManager::registerAction(pAction, d->m_toolActionIds.back(), d->m_context);
 	pCommand->setAttribute(Core::Command::CA_Hide);
 	QIcon icon(":/media/start.png");
 	pCommand->action()->setIcon(icon);
-	QObject::connect(pRunAction, SIGNAL(triggered(bool)), this, SLOT(onRunDesignNet()));
-	
+	QObject::connect(pAction, SIGNAL(triggered(bool)), this, SLOT(onRunDesignNet()));
+
+	QActionGroup* pActionGroup = new QActionGroup(this);
+	pActionGroup->setExclusive(true);
+	d->m_toolActionIds.push_back(Core::Id("DesignNet.Arrow"));
+	pAction = pActionGroup->addAction(QIcon(":/media/cursor_arrow.png"), tr(""));
+	pAction->setCheckable(true);
+	pAction->setChecked(true);
+	pCommand = Core::ActionManager::registerAction(pAction, d->m_toolActionIds.back(), d->m_context);
+	pCommand->setAttribute(Core::Command::CA_Hide);
+	QObject::connect(pAction, SIGNAL(changed()), d->m_mainWindow, SLOT(onMoveAction()));
+
 	d->m_toolActionIds.push_back(Core::Id("DesignNet.Link"));
-	pRunAction = new QAction(this);
-	pCommand = Core::ActionManager::registerAction(pRunAction, d->m_toolActionIds.back(), d->m_context);
-	pCommand->action()->setIcon(QIcon(":/media/link.png"));
+	pAction = pActionGroup->addAction(QIcon(":/media/link.png"), tr(""));
+	pAction->setCheckable(true);
+	pCommand = Core::ActionManager::registerAction(pAction, d->m_toolActionIds.back(), d->m_context);
 	pCommand->setAttribute(Core::Command::CA_Hide);
 
+	QObject::connect(pAction, SIGNAL(changed()), d->m_mainWindow, SLOT(onConnectAction()));
 }
 
 void DesignNetFormManager::addToolAction( QAction* pAction, const Core::Context& context, const Core::Id &id, Core::ActionContainer *pContainer, const QString& keySequence )

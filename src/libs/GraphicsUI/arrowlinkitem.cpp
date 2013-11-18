@@ -7,7 +7,7 @@
 namespace GraphicsUI{
 
 ArrowLinkItem::ArrowLinkItem(QGraphicsItem *parent) :
-    QGraphicsPathItem(parent)
+    QGraphicsPathItem(parent), m_arrowLinkEndPoint(this)
 {
     m_controlPoint_1 = new ArrowLinkControlItem(this);
 
@@ -26,14 +26,6 @@ ArrowLinkItem::ArrowLinkItem(QGraphicsItem *parent) :
 
 ArrowLinkItem::~ArrowLinkItem()
 {
-	if (m_controlPoint_1)
-	{
-		delete m_controlPoint_1;
-	}
-	if (m_controlPoint_2)
-	{
-		delete m_controlPoint_2;
-	}
 }
 
 QPainterPath ArrowLinkItem::shape() const
@@ -132,8 +124,9 @@ void ArrowLinkItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
 void ArrowLinkItem::setStartPoint(QPointF point)
 {
-    m_startPoint = mapFromScene(point);
+    setPoint_Internal(point, true);
     updateGeometory();
+	
 }
 
 QPointF ArrowLinkItem::getStartPoint() const
@@ -143,7 +136,7 @@ QPointF ArrowLinkItem::getStartPoint() const
 
 void ArrowLinkItem::setEndPoint(QPointF point)
 {
-    m_endPoint = mapFromScene(point);;
+    setPoint_Internal(point, false);
     updateGeometory();
 }
 
@@ -172,6 +165,7 @@ QPointF ArrowLinkItem::getControlItemPosSecond() const
 void ArrowLinkItem::controlItemPositionChanged()
 {
     prepareGeometryChange();
+	onControlItemPostionChanged();
     update();
 }
 
@@ -200,12 +194,14 @@ void ArrowLinkItem::updateGeometory()
 void ArrowLinkItem::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
 {
 	m_bHoverOver = true;
+	m_arrowLinkEndPoint.setHover(true);
 	update();
 }
 
 void ArrowLinkItem::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
 {
 	m_bHoverOver = false;
+	m_arrowLinkEndPoint.setHover(false);
 	update();
 }
 
@@ -224,6 +220,19 @@ void ArrowLinkItem::setColor( const QColor &color, const int &state /*= NORMAL_S
 		break;
 	}
 	update();
+}
+
+void ArrowLinkItem::setPoint_Internal( const QPointF &pf, bool bStartPoint /*= false*/ )
+{
+	if (bStartPoint)
+	{
+		m_startPoint = mapFromScene(pf);
+		m_arrowLinkEndPoint.setPos(m_startPoint);
+	}
+	else
+	{
+		m_endPoint = mapFromScene(pf);
+	}
 }
 
 }

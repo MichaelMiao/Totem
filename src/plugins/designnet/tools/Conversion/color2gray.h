@@ -2,7 +2,6 @@
 #define COLOR2GRAY_H
 
 #include "designnet/designnet_core/graphicsitem/processorgraphicsblock.h"
-#include "designnet/designnet_core/designnetbase/port.h"
 #include "designnet/designnet_core/data/imagedata.h"
 #include <opencv2/core/core.hpp>
 namespace Conversion{
@@ -19,11 +18,10 @@ public:
 	virtual QString category() const;//!< 种类
 	virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);     //!< 处理函数
 protected:
+	virtual QMultiMap<QString, DesignNet::ProcessData> datasNeeded();
+	virtual QMap<QString, DesignNet::ProcessData> dataProvided();
 	virtual void propertyChanged(DesignNet::Property *prop);
-	virtual bool connectionTest(DesignNet::Port* src, DesignNet::Port* target);
-private:
-	DesignNet::Port m_outputPort;	//!< 输出端口
-	DesignNet::Port m_inputPort;	//!< 输入端口
+
 };
 
 }

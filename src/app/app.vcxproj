@@ -84,7 +84,6 @@
     <ClCompile Include="..\shared\qtsingleapplication\qtlocalpeer.cpp" />
     <ClCompile Include="..\shared\qtsingleapplication\qtsingleapplication.cpp" />
     <ClCompile Include="..\shared\qtsingleapplication\qtsinglecoreapplication.cpp" />
-    <ClCompile Include="..\shared\totem_gui_pch.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_mainapp.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -157,7 +156,6 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp" "-fStdAfx.h" "-f../../../shared/qtsingleapplication/qtsinglecoreapplication.h"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtNetwork" "-I.\%AMDAPPSDKROOT%include"</Command>
     </CustomBuild>
     <ClInclude Include="..\shared\qtlockedfile\qtlockedfile.h" />
-    <ClInclude Include="..\shared\totem_gui_pch.h" />
     <ClInclude Include="app_version.h" />
     <ClInclude Include="GeneratedFiles\ui_app.h" />
     <ClInclude Include="GeneratedFiles\ui_pluginloader.h" />

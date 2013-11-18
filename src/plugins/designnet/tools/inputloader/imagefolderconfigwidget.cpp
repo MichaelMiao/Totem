@@ -1,11 +1,16 @@
+#include "stdafx.h"
 #include "imagefolderconfigwidget.h"
-#include "widgets/processorconfigpage.h"
 #include "CustomUI/pathchooser.h"
-#include "designnetbase/processor.h"
+#include "designnet/designnet_core/widgets/processorconfigpage.h"
+#include "designnet/designnet_core/designnetbase/processor.h"
 #include "ImageFolderLoader.h"
+
+
 using namespace DesignNet;
 using namespace CustomUI;
 using namespace InputLoader;
+
+
 ImageFolderConfigListener::ImageFolderConfigListener( ImageFolderConfigWidget *widget, InputLoader::ImageFolderLoader *processor, QObject *parent )
 	: ProcessorConfigListener(parent)
 {

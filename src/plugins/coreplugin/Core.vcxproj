@@ -37,6 +37,7 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
     <Import Project="..\..\shared\properties\PluginConfigurationDebug.props" />
+    <Import Project="..\..\shared\properties\OpenCVConfigDebug.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
@@ -1164,6 +1165,9 @@ echo #include "totem_gui_pch.h"&gt;&gt;..\..\shared\totem_gui_pch.h.cpp</Command
   <ItemGroup>
     <ProjectReference Include="..\..\libs\CustomUI\CustomUI.vcxproj">
       <Project>{83e30e52-6085-3152-ba0d-a6fc8085ca77}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libs\extensionsystem\ExtensionSystem.vcxproj">
+      <Project>{f6cd9ab3-be34-3b66-8f91-4fe0ca6b04ec}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\libs\GraphicsUI\GraphicsUI.vcxproj">
       <Project>{ec895c56-9f64-4366-a9c0-5f395727a57d}</Project>

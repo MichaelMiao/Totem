@@ -9,6 +9,11 @@ class IEditor;
 
 namespace DesignNet{
 
+enum EditState
+{
+	EditState_Move,
+	EditState_Link,
+};
 /**
  * \class	DesignNetMainWindow
  *
@@ -18,6 +23,7 @@ namespace DesignNet{
  * \date	2013/6/3
  */
 class DesignNetMainWindowPrivate;
+class Processor;
 class DesignNetMainWindow : public CustomUI::BaseMainWindow
 {
 	Q_OBJECT
@@ -35,12 +41,18 @@ public:
 		Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
 	CustomUI::DockWindow *dockWindow(const QString &objectName);
 	void addDelayedMenu();
-	
+	EditState getEditState();
 public slots:
 
 	void updateDockWidgetSettings();
 	void onResetLayout();
 	void titleChanged();
+	void onConnectAction();	//!< 开始连接状态
+	void onMoveAction();	//!< 移动状态
+	void onEditorChanged(Core::IEditor* pEditor);
+	void onShowAvailiableData(Processor* processor);
+protected:
+	void setEditState(EditState eState);
 
 private:
 	DesignNetMainWindowPrivate *d;

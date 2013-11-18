@@ -1,8 +1,10 @@
 #ifndef IMAGEDATA_H
 #define IMAGEDATA_H
 
-#include "idata.h"
 #include "opencv2/core/core.hpp"
+#include "idata.h"
+
+
 namespace DesignNet {
 class ImageDataWidget;
 class DESIGNNET_CORE_EXPORT ImageData : public IData

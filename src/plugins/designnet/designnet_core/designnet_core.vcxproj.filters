@@ -539,6 +539,24 @@
     <ClCompile Include="GeneratedFiles\Release\moc_imagedata.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_processorarrowlink.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_processorarrowlink.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="graphicsitem\processorarrowlink.cpp">
+      <Filter>Source Files\graphicsitem</Filter>
+    </ClCompile>
+    <ClCompile Include="availabledatawidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_availabledatawidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_availabledatawidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="designnetcoreplugin.h">
@@ -564,6 +582,9 @@
     </ClInclude>
     <ClInclude Include="toolitem.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="data\datatype.h">
+      <Filter>Source Files\data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -776,6 +797,12 @@
     </CustomBuild>
     <CustomBuild Include="data\customdata.h">
       <Filter>Header Files\data</Filter>
+    </CustomBuild>
+    <CustomBuild Include="graphicsitem\processorarrowlink.h">
+      <Filter>Header Files\graphicsitem</Filter>
+    </CustomBuild>
+    <CustomBuild Include="availabledatawidget.h">
+      <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

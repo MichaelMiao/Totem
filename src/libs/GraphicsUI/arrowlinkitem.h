@@ -2,10 +2,38 @@
 #define ARROWLINKITEM_H
 
 #include <QGraphicsPathItem>
+#include <QGraphicsEllipseItem>
+#include <QBrush>
+#include <QPen>
+
 #include "graphicsui_global.h"
 namespace GraphicsUI{
 
 class ArrowLinkControlItem;
+class ArrowLinkEndPoint : public QGraphicsEllipseItem
+{
+public:
+	ArrowLinkEndPoint(QGraphicsItem* parent) : QGraphicsEllipseItem(parent), m_brushNormal(Qt::red), m_brushHover(QColor(Qt::red).lighter())
+	{
+		setRect(-4, -4, 8, 8);
+		setPen(QPen(Qt::white));
+		m_bHover = false;
+		setBrush(m_brushNormal);
+	}
+	void setHover(bool bHover)
+	{
+		m_bHover = bHover;
+		if (m_bHover)
+			setBrush(m_brushHover);
+		else
+			setBrush(m_brushNormal);
+	}
+protected:
+	bool	m_bHover;
+	QBrush	m_brushHover;
+	QBrush	m_brushNormal;
+};
+
 class TOTEM_GRAPHICSUI_EXPORT ArrowLinkItem : public QObject, public QGraphicsPathItem
 {
     Q_OBJECT
@@ -39,10 +67,15 @@ public:
 	virtual void	hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
 	virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
 
+	virtual void	onControlItemPostionChanged() { }
 	void setColor(const QColor &color, const int &state = NORMAL_STATE);
+
 public slots:
     void controlItemPositionChanged();
 protected:
+
+	void setPoint_Internal(const QPointF &pf, bool bStartPoint = false);
+	ArrowLinkEndPoint	m_arrowLinkEndPoint;
     ArrowLinkControlItem* m_controlPoint_1; //!< 控制点1
     ArrowLinkControlItem* m_controlPoint_2; //!< 控制点2
     QPointF m_startPoint;               //!< 开始点坐标

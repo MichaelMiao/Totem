@@ -19,5 +19,6 @@
         <file>media/pause.png</file>
         <file>media/start.png</file>
         <file>media/link.png</file>
+        <file>media/cursor_arrow.png</file>
     </qresource>
 </RCC>

@@ -2,6 +2,8 @@
 #include "designnet\designnet_core\designnetbase\processor.h"
 #include "designnet\designnet_core\data\imagedata.h"
 #include <QReadWriteLock>
+
+
 namespace DesignNet{
 class PathDialogProperty;
 }
@@ -25,6 +27,26 @@ public:
 	QString path() const;
 signals:
 protected:
+	
+	virtual QList<DesignNet::ProcessData> dataProvided();
+	void TestTrain();
+	void LoadLabel();
+	void PrepareData();
+
+	void LoadData();
+	void SaveBinary();
+	void SaveContours();
+	void SaveFinal();
+	
+	void SiftMat(cv::Mat &mat, cv::Mat& mask, cv::Mat &descriptor);
+	void MaskMat(cv::Mat &mat, cv::Mat& mask);
+
+	void BOWCluster();
+
+	void RepresentBOW();//!< ÓÃ×Öµä±íÊ¾
+	void SVMTrain();
+	void SVMTest();
+
 
 	QString			m_folderPath;
 	QStringList		m_filePaths;

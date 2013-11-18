@@ -5,7 +5,6 @@
 # include <limits.h>
 # undef _POSIX_
 #endif
-#include "opencv2/core/core.hpp"
 #include <QCoreApplication>
 #include <QList>
 #include <QVariant>

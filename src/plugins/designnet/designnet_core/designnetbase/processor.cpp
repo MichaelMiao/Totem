@@ -97,6 +97,8 @@ QString Processor::name() const
 void Processor::setID(const int &id)
 {
     m_id = id;
+	for (QList<ProcessData>::Iterator itr = m_outputDatas.begin(); itr != m_outputDatas.end(); itr++)
+		itr->processorID = id;
 }
 
 int Processor::id() const
@@ -104,31 +106,39 @@ int Processor::id() const
     return m_id;
 }
 
-void Processor::pushData(QVariant variant, const QString& dataLabel)
+void Processor::pushData(const ProcessData &pd)
 {
-	ProcessData data;
-	data.variant = variant;
-	data.processorID = m_id;
-    m_outputDatas.insert(dataLabel, data);
+	QList<ProcessData>::Iterator itr = m_outputDatas.begin();
+	for (; itr < m_outputDatas.end(); itr++)
+	{
+		if ((*itr).dataType == pd.dataType && pd.strLabel == (*itr).strLabel)
+			(*itr).variant = pd.variant;
+	}
 }
 
-QList<ProcessData> Processor::getOutputData( const QString& dataLabel )
+QList<ProcessData> Processor::getOutputData(DataType dt)
 {
-	// 现在自己里面找，没有的话向父亲要数据
-	if (m_outputDatas.contains(dataLabel))
-		return m_outputDatas.values(dataLabel);
-	
-	return getInputData(dataLabel);
+	QList<ProcessData> res;
+	QList<ProcessData>::Iterator itr = m_outputDatas.begin();
+	for (; itr < m_outputDatas.end(); itr++)
+	{
+		if ((*itr).dataType == dt || dt == DATATYPE_INVALID)
+			res << *itr;
+	}
+	return res;
 }
 
-QList<ProcessData> Processor::getInputData( const QString& dataLabel)
+QList<ProcessData> Processor::getInputData(DataType dt)
 {
 	QList<ProcessData> res;
 	foreach (Processor* father, m_fathers)
 	{
-		QList<ProcessData> &datas = father->getOutputData(dataLabel);
+		QList<ProcessData> &datas = father->getOutputData(dt);
 		for(QList<ProcessData>::iterator itr = datas.begin(); itr != datas.end(); itr++)
-			res << *itr;
+		{
+			if (dt ==  (*itr).dataType)
+				res << *itr;
+		}
 	}
 	return res;
 }
@@ -194,6 +204,24 @@ void Processor::waitForFinish()
 
 bool Processor::connectionTest(Processor* father)
 {
+	QList<ProcessData> datas = datasNeeded();
+	QList<ProcessData> datasProvided =  father->getOutputData();
+	foreach (const ProcessData &p, datas)
+	{
+		bool bFind = false;
+		foreach(const ProcessData &provide, datasProvided)
+		{
+			if ( p.strLabel == provide.strLabel &&
+				p.dataType == provide.dataType &&
+				(p.processorID != -1 && p.processorID == provide.processorID))
+			{
+				bFind = true;
+				break;
+			}
+		}
+		if (bFind == false)
+			return false;
+	}
 	return true;
 }
 

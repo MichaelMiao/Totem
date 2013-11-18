@@ -1,19 +1,15 @@
 #include "color2gray.h"
-#include "designnet/designnet_core/graphicsitem/portgraphicsitem.h"
 #include "designnet/designnet_core/data/imagedata.h"
 #include <opencv2/imgproc/imgproc.hpp>
 using namespace DesignNet;
 namespace Conversion{
+#define DATA_LABEL_COLORIMAGE	"ColorImage"
+#define DATA_LABEL_GRAYIMAGE	"GrayImage"
+
 
 Color2Gray::Color2Gray(DesignNet::DesignNetSpace *space, QObject *parent)
-	: Processor(space, parent),
-	m_outputPort(new ImageData(ImageData::IMAGE_GRAY, this), Port::OUT_PORT),
-	m_inputPort(new ImageData(ImageData::IMAGE_BGR, this),Port::IN_PORT)
+	: Processor(space, parent)
 {
-	m_inputPort.setName("InputColorImage");
-	m_outputPort.setName("grayImage");
-	addPort(&m_outputPort);
-	addPort(&m_inputPort);
 	setName(tr("Color 2 Gray"));
 }
 
@@ -34,19 +30,19 @@ QString Color2Gray::category() const
 
 bool Color2Gray::process(QFutureInterface<ProcessResult> &future)
 {
-	emit logout("Color2Gray::process()");
-	ImageData *idata = qobject_cast<ImageData *>(getData("InputColorImage").at(0));
-	if(idata)
-	{
-		cv::Mat mat;
-		cv::cvtColor(idata->imageData(), mat, CV_RGB2GRAY);
-		ImageData grayData;
-		grayData.setImageData(mat);
-		pushData(&grayData, "grayImage");
-		emit logout("Color2Gray::process() OK");
-		return true;
-	}
-	return false;
+ 	emit logout("Color2Gray::process()");
+// 	ImageData *idata = qobject_cast<ImageData *>(getData("InputColorImage").at(0));
+// 	if(idata)
+// 	{
+// 		cv::Mat mat;
+// 		cv::cvtColor(idata->imageData(), mat, CV_RGB2GRAY);
+// 		ImageData grayData;
+// 		grayData.setImageData(mat);
+// 		pushData(&grayData, "grayImage");
+// 		emit logout("Color2Gray::process() OK");
+// 		return true;
+// 	}
+ 	return false;
 }
 
 void Color2Gray::propertyChanged( Property *prop )
@@ -59,18 +55,24 @@ Processor* Color2Gray::create( DesignNetSpace *space /*= 0*/ ) const
 	return new Color2Gray(space);
 }
 
-bool Color2Gray::connectionTest( DesignNet::Port* src, DesignNet::Port* target )
+QMultiMap<QString, DesignNet::ProcessData> Color2Gray::datasNeeded()
 {
-	if(target == &m_inputPort)
-	{
-		ImageData *srcData = qobject_cast<ImageData*>(src->data());
-		if (!srcData || srcData->imageType() != ImageData::IMAGE_BGR)
-		{
-			return false;
-		}
-		return true;
-	}
-	return false;
+	QMultiMap<QString, ProcessData> ret;
+	ProcessData pd;
+	pd.strLabel = DATA_LABEL_COLORIMAGE;
+	pd.dataType = DATATYPE_8UC3IMAGE;
+	ret.insert(DATA_LABEL_COLORIMAGE, pd);
+	return ret;
+}
+
+QMap<QString, DesignNet::ProcessData> Color2Gray::dataProvided()
+{
+	QMap<QString, DesignNet::ProcessData> ret;
+	ProcessData pd;
+	pd.strLabel = DATA_LABEL_GRAYIMAGE;
+	pd.dataType = DATATYPE_MATRIX;
+	ret[DATA_LABEL_GRAYIMAGE] = pd;
+	return ret;
 }
 
 }

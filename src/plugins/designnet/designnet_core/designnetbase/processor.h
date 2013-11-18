@@ -13,8 +13,9 @@
 #include <QIcon>
 #include <QVariant>
 #include <QVector>
-#include <QMultiMap>
+#include <QMap>
 #include <QReadWriteLock>
+#include "../data/datatype.h"
 QT_BEGIN_NAMESPACE
 class QThread;
 QT_END_NAMESPACE
@@ -33,9 +34,10 @@ enum ProcessorType
 
 struct ProcessData
 {
-	ProcessData() { processorID = -1; }
-	QVariant variant;		//!< 真正的数据
-	int		 processorID;	//!< 产生该数据的处理器
+	QVariant	variant;		//!< 真正的数据
+	int			processorID;	//!< 产生该数据的处理器
+	DataType	dataType;		//!< 数据类型
+	QString		strLabel;		//!< 用于区分
 };
 
 class ProcessResult
@@ -71,7 +73,7 @@ class DESIGNNET_CORE_EXPORT Processor : public QObject, public PropertyOwner
 public:
     explicit Processor(DesignNetSpace *space = 0, QObject* parent = 0, ProcessorType processorType = ProcessorType_Once);
     virtual ~Processor();
-	virtual void init() {};
+	virtual void init() { m_outputDatas = dataProvided(); }
     virtual Processor* create(DesignNetSpace *space = 0) const = 0;  //!< 创建Processor
 
 	void waitForFinish();
@@ -89,9 +91,10 @@ public:
     virtual Core::Id typeID() const;			//!< 返回类型ID
     virtual QString category() const;			//!< 返回种类
     
-	void pushData(QVariant variant, const QString& dataLabel);
-	QList<ProcessData> getOutputData(const QString& dataLabel);
-	QList<ProcessData> getInputData(const QString& dataLabel);
+	void pushData(const ProcessData &pd);
+	
+	QList<ProcessData> getOutputData(DataType dt = DATATYPE_INVALID);
+	QList<ProcessData> getInputData(DataType dt = DATATYPE_INVALID);
 
 	DesignNetSpace *space() const{ return m_space; }
 	void setSpace(DesignNetSpace *space) ;
@@ -132,6 +135,9 @@ protected:
 	
 	virtual void propertyAdded(Property* prop);
 
+	virtual QList<ProcessData> datasNeeded() { QList<ProcessData> res; return res; }
+	virtual QList<ProcessData> dataProvided() = 0; //!< 仅在构造函数中调用
+
 	virtual bool beforeProcess(QFutureInterface<ProcessResult> &future);		//!< 处理之前的准备,这里会确保数据已经准备好了
 	virtual bool process(QFutureInterface<ProcessResult> &future) = 0;			//!< 正式处理
 	virtual void afterProcess(bool status = true);		//!< 完成处理
@@ -143,7 +149,7 @@ protected:
 	int				m_id;
 	ProcessorType	m_eType;
 
-	QMultiMap<QString, ProcessData>	m_outputDatas;	//!< 所有的输出数据
+	QList<ProcessData>	m_outputDatas;	//!< 所有的输出数据
 
 	QVector<Processor*> m_fathers;			//!< 所有的父亲Processor
 	QVector<Processor*> m_children;			//!< 所有的孩子
