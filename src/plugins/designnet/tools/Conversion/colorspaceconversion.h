@@ -20,10 +20,11 @@ public:
 	virtual QString category() const;//!< 种类
 	virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);     //!< 处理函数
 
+	bool connectionTest(DesignNet::Port* src, DesignNet::Port* target);
+
 public slots:
 	virtual void propertyChanged(DesignNet::Property *prop);
-	virtual QMultiMap<QString, DesignNet::ProcessData> datasNeeded();
-	virtual QMap<QString, DesignNet::ProcessData> dataProvided();
+
 private:
 	ColorSpaceConversionPrivate *d;
 };

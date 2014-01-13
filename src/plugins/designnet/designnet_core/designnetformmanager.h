@@ -33,6 +33,7 @@ public:
 	void createControlToolBar();
 
 public slots:
+
 	void onRunDesignNet();
 
 protected:

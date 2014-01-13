@@ -25,11 +25,14 @@ public:
 
 	void setPath(const QString &p);
 	QString path() const;
+
+	virtual void serialize(Utils::XmlSerializer& s) const;
+	virtual void deserialize(Utils::XmlDeserializer& s) ;
+
 signals:
 protected:
 	
-	virtual QList<DesignNet::ProcessData> dataProvided();
-	void TestTrain();
+	void LoadSiftFeature();
 	void LoadLabel();
 	void PrepareData();
 
@@ -39,13 +42,16 @@ protected:
 	void SaveFinal();
 	
 	void SiftMat(cv::Mat &mat, cv::Mat& mask, cv::Mat &descriptor);
-	void MaskMat(cv::Mat &mat, cv::Mat& mask);
+	int MaskMat(cv::Mat &mat, cv::Mat& mask);
 
 	void BOWCluster();
 
 	void RepresentBOW();//!< ÓÃ×Öµä±íÊ¾
 	void SVMTrain();
 	void SVMTest();
+	void SVM_C();
+	void SVM_SIFT();
+	void SVM_HOG();
 
 
 	QString			m_folderPath;

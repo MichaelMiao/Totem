@@ -50,16 +50,18 @@ public:
 
 signals:
 	void showAvailiableData(Processor* processor);
+	void editStateChanged(EditState eState);
 
 public slots:
 
 	void onProcessorAdded(Processor* processor);
 	void onProcessorRemoved(Processor* processor);
 	void onConnectionAdded(Processor* father, Processor* child);
-
+	void onConnectionRemoved(Processor* father, Processor* child);
 	void processorClosed();
 	void reloadSpace();
 	void OnShowMessage(const QString &strMessage);
+
 protected:
 
 	ProcessorGraphicsBlock *getGraphicsProcessor(const int &id);

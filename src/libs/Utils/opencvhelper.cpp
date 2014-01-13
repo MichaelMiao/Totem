@@ -31,4 +31,14 @@ QImage OpenCVHelper::Mat2QImage(const cv::Mat &mat)
     qDebug() << "ERROR: Mat could not be converted to QImage.";
     return QImage();
 }
+
+cv::Mat OpenCVHelper::QImage2Mat(QImage img)
+{
+	cv::Mat mat = cv::Mat(img.height(), img.width(), CV_8UC4, (uchar*)img.bits(), img.bytesPerLine()); 
+	cv::Mat mat2 = cv::Mat(mat.rows, mat.cols, CV_8UC3); 
+	int from_to[] = { 0, 0, 1, 1, 2, 2 }; 
+	cv::mixChannels( &mat, 1, &mat2, 1, from_to, 3 ); 
+	return mat2; 
+}
+
 }

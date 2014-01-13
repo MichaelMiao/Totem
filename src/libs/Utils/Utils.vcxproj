@@ -171,6 +171,7 @@
     </CustomBuild>
     <ClInclude Include="totemassert.h" />
     <ClInclude Include="treewidgetcolumnstretcher.h" />
+    <ClInclude Include="varianthelper.h" />
     <ClInclude Include="XML\xmldeserializer.h" />
     <ClInclude Include="XML\xmlserializable.h" />
     <CustomBuild Include="xml\xmlserializablefactory.h">

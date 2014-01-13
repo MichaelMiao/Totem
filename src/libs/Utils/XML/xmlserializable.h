@@ -20,6 +20,7 @@
 	{	\
 	return new T; \
 	}
+
 namespace Utils{
 class XmlDeserializer;
 class XmlSerializer;

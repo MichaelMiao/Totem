@@ -3,6 +3,7 @@
 #include "designnet/designnet_core/designnetbase/designnetspace.h"
 #include "designnet/designnet_core/data/imagedata.h"
 #include <opencv2/imgproc/imgproc.hpp>
+#include "Utils/varianthelper.h"
 using namespace DesignNet;
 
 #define DATA_LABEL_INPUTIMAGE "3 Channel Image"
@@ -39,6 +40,8 @@ ColorSpaceConversion::ColorSpaceConversion( DesignNetSpace *space, QObject *pare
 	d->m_property->setName(tr("Conversion"));
 	d->m_property->select(tr("BGR 2 HSV"));
 	addProperty(d->m_property);
+	addPort(Port::IN_PORT, DATATYPE_IMAGE, tr("ColorImage"));
+	addPort(Port::OUT_PORT, DATATYPE_IMAGE, tr("ColorImage"));
 	setName(tr("Color Space Conversion"));
 }
 
@@ -67,11 +70,12 @@ bool ColorSpaceConversion::process(QFutureInterface<ProcessResult> &future)
 	int iType = d->m_property->value().toInt(0);
 	if(iType != 0)
 	{
-		ImageData* imageData = qobject_cast<ImageData*>(getData("InputImage").at(0));
+		ImageData* imageData = qobject_cast<ImageData*>(getData(tr("ColorImage")).at(0)->variant.value<IData*>());
 		cv::Mat mat;
 		cv::cvtColor(imageData->imageData(), mat, iType);
 		imageData->setImageData(mat);
-		pushData(imageData, "OutputImage");
+		QVariant var = VariantPointCvt<ImageData>::fromPtr(imageData);
+		pushData(var, DATATYPE_IMAGE, "ColorImage");
 	}
 	return true;
 }
@@ -81,28 +85,12 @@ void ColorSpaceConversion::propertyChanged( Property *prop )
 
 }
 
-bool ColorSpaceConversion::connectionTest( DesignNet::Port* src, DesignNet::Port* target )
+bool ColorSpaceConversion::connectionTest(DesignNet::Port* src, DesignNet::Port* target)
 {
-	if(target == &d->m_inputPort)
-	{
-		ImageData *srcData = qobject_cast<ImageData*>(src->data());
-		if (!srcData || srcData->imageType() != ImageData::IMAGE_BGR)
-		{
-			return false;
-		}
-		return true;
-	}
-	return false;
-}
-
-QMultiMap<QString, DesignNet::ProcessData> ColorSpaceConversion::datasNeeded()
-{
-	return ;
-}
-
-QMap<QString, DesignNet::ProcessData> ColorSpaceConversion::dataProvided()
-{
-	return ;
+	ImageData *srcData = (ImageData*)src->data()->variant.value<void*>();
+	if (!srcData || srcData->imageType() != ImageData::IMAGE_BGR)
+		return false;
+	return true;
 }
 
 }

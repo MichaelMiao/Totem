@@ -24,6 +24,7 @@
 #include "extensionsystem/progressmanagerprivate.h"
 #include "newdialog.h"
 #include "iwizard.h"
+#include "icorelistener.h"
 #include <QFileInfo>
 #include <QMenu>
 #include <QMenuBar>
@@ -40,6 +41,8 @@
 using namespace Core;
 using namespace Core::Internal;
 using namespace ExtensionSystem;
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       m_coreImpl(new ICore(this)),
@@ -479,14 +482,11 @@ void MainWindow::writeSettings()
     DocumentManager::saveSettings();
     m_actionManager->d->saveSettings(m_settings);
     m_editorManager->saveSettings();
-//    m_navigationWidget->saveSettings(m_settings);
 }
 
 void MainWindow::aboutTotem()
 {
-    QMessageBox box;
-    box.exec();
-    //QMessageBox::about(this, tr("About %1").arg(i), tr("  By Michael_BJFU"));
+    QMessageBox::about(this, tr("About Totem"), tr("  By Michael_BJFU"));
 }
 
 void MainWindow::aboutPlugins()
@@ -556,9 +556,28 @@ void MainWindow::openFile()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    emit m_coreImpl->saveSettingsRequested();
+	bool cancelled;
+	QList<IDocument*> notSaved = DocumentManager::saveModifiedDocuments(DocumentManager::modifiedDocuments(), &cancelled);
+	if (cancelled || !notSaved.isEmpty())
+	{
+		event->ignore();
+		return;
+	}
 
-    writeSettings();
+	const QList<ICoreListener *> listeners =
+		ExtensionSystem::PluginManager::instance()->getObjects<ICoreListener>();
+	foreach (ICoreListener *listener, listeners)
+	{
+		if (!listener->coreAboutToClose())
+		{
+			event->ignore();
+			return;
+		}
+	}
+
+	emit m_coreImpl->coreAboutToClose();
+
+	writeSettings();
 
     event->accept();
 }

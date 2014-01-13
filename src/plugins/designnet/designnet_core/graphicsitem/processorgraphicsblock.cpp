@@ -61,12 +61,16 @@ ProcessorGraphicsBlock::ProcessorGraphicsBlock( Processor *processor /*= 0*/, QG
 	setFlag(ItemSendsGeometryChanges);
 	setAcceptHoverEvents(true);
 	setCacheMode(DeviceCoordinateCache);
+	//////////////////////////////////////////////////////////////////////////
+
 	m_dropdownShadowEffect = new QGraphicsDropShadowEffect(this);
 	m_dropdownShadowEffect->setBlurRadius(8);
-	m_dropdownShadowEffect->setOffset(0, 0);
+	m_dropdownShadowEffect->setOffset(2, 2);
 	m_dropdownShadowEffect->setColor(Qt::gray);
 	setGraphicsEffect(m_dropdownShadowEffect);
 	m_dropdownShadowEffect->setEnabled(false);
+
+
 	/// title
 	m_titleItem = new BlockTextItem(this);
 	m_titleItem->setBlockName(m_processor->name());
@@ -77,6 +81,26 @@ ProcessorGraphicsBlock::ProcessorGraphicsBlock( Processor *processor /*= 0*/, QG
 	m_closeItem->setPos(boundingRect().right() - m_closeItem->boundingRect().width() - ITEMSPACING, boundingRect().top());
 	m_closeItem->setPixmap(QPixmap(":/media/item-close.png"));
 	QObject::connect(m_closeItem, SIGNAL(clicked()), this, SIGNAL(closed()));
+	///
+	/// 端口
+	QList<Port*> tempPort = processor->getPorts(Port::IN_PORT);
+	for (QList<Port*>::iterator itr = tempPort.begin(); itr != tempPort.end(); itr++)
+	{
+		PortItem* portItem = new PortItem(*itr, this);
+		m_inputPorts.push_back(portItem);
+		portItem->setVisible(false);
+	}
+
+	tempPort = processor->getPorts(Port::OUT_PORT);
+	for (QList<Port*>::iterator itr = tempPort.begin(); itr != tempPort.end(); itr++)
+	{
+		PortItem* portItem = new PortItem(*itr, this);
+		m_outputPorts.push_back(portItem);
+		portItem->setVisible(false);
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+
 
 	QObject::connect(this, SIGNAL(processorLog(QString)),
 		Core::ICore::messageManager(),
@@ -92,11 +116,6 @@ ProcessorGraphicsBlock::ProcessorGraphicsBlock( Processor *processor /*= 0*/, QG
 	QFont font("Time", 10);
 	m_titleItem->setPos(boundingRect().left() + ITEMSPACING, boundingRect().top() + ITEMSPACING);
 	m_titleItem->setMaxWidth(boundingRect().width() - m_closeItem->boundingRect().width() - (ITEMSPACING<<1));
-	if (s)
-	{
-		s->addItem(this);
-		this->setPos(pos);
-	}
 	m_configWidget = 0;
 }
 
@@ -147,10 +166,16 @@ QVariant ProcessorGraphicsBlock::itemChange(QGraphicsItem::GraphicsItemChange ch
         {
             emit selectionChanged(false);
         }
+		setPortVisible(value.toBool());
     }
 	else if (change == ItemPositionChange && scene())
 	{
 		emit positionChanged();
+	}
+	else if (change == ItemChildRemovedChange && scene())
+	{
+		prepareGeometryChange();
+		update();
 	}
     return QGraphicsItem::itemChange(change,value);
 }
@@ -367,6 +392,29 @@ void ProcessorGraphicsBlock::setEmphasized( bool bEmphasized /*= true*/ )
 	setState(STATE_EMPHASIZE, bEmphasized);
 	m_dropdownShadowEffect->setBlurRadius(bEmphasized ? 35 : 0);
 	m_dropdownShadowEffect->setEnabled(bEmphasized);
+}
+
+void ProcessorGraphicsBlock::setPortVisible(bool bVisible /*= true*/)
+{
+	int iHeight = m_inputPorts.size() * (PORTITEM_WIDTH + 5);
+	int iTop	= boundingRect().top() + (boundingRect().height() - iHeight) / 2;
+	for (QList<PortItem*>::iterator itr = m_outputPorts.begin(); itr != m_outputPorts.end(); itr++)
+	{
+		PortItem* pItem = *itr;
+		QRectF rect = boundingRect();
+		pItem->setPos(rect.right() + PORTITEM_WIDTH, iTop);
+		pItem->setVisible(bVisible);
+	}
+
+	iHeight = m_outputPorts.size() * (PORTITEM_WIDTH + 5);
+	iTop	= boundingRect().top() + (boundingRect().height() - iHeight) / 2;
+	for (QList<PortItem*>::iterator itr = m_inputPorts.begin(); itr != m_inputPorts.end(); itr++)
+	{
+		PortItem* pItem = *itr;
+		QRectF rect = boundingRect();
+		pItem->setPos(rect.left() - PORTITEM_WIDTH, iTop);
+		pItem->setVisible(bVisible);
+	}
 }
 
 }

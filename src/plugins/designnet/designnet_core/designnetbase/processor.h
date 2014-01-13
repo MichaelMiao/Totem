@@ -1,21 +1,28 @@
 ﻿#ifndef PROCESSOR_H
 #define PROCESSOR_H
 
-#include <QObject>
-#include <QList>
 
 #include "../designnet_core_global.h"
 #include "../property/propertyowner.h"
+#include "../data/datatype.h"
 #include "Utils/XML/xmldeserializer.h"
+#include "port.h"
 #include <QFutureInterface>
 #include <QFutureWatcher>
 #include <QObject>
 #include <QIcon>
-#include <QVariant>
 #include <QVector>
+#include <QList>
 #include <QMap>
 #include <QReadWriteLock>
-#include "../data/datatype.h"
+
+#define DECLEAR_PROCESSOR(x) \
+	virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const \
+	{ \
+		return new x(space); \
+	}
+
+
 QT_BEGIN_NAMESPACE
 class QThread;
 QT_END_NAMESPACE
@@ -30,14 +37,6 @@ enum ProcessorType
 {
 	ProcessorType_Permanent,
 	ProcessorType_Once
-};
-
-struct ProcessData
-{
-	QVariant	variant;		//!< 真正的数据
-	int			processorID;	//!< 产生该数据的处理器
-	DataType	dataType;		//!< 数据类型
-	QString		strLabel;		//!< 用于区分
 };
 
 class ProcessResult
@@ -71,37 +70,58 @@ class DESIGNNET_CORE_EXPORT Processor : public QObject, public PropertyOwner
 	friend class ProcessorWorker;
 	Q_OBJECT
 public:
-    explicit Processor(DesignNetSpace *space = 0, QObject* parent = 0, ProcessorType processorType = ProcessorType_Once);
+    
+	explicit Processor(DesignNetSpace *space = 0, QObject* parent = 0, ProcessorType processorType = ProcessorType_Once);
     virtual ~Processor();
-	virtual void init() { m_outputDatas = dataProvided(); }
-    virtual Processor* create(DesignNetSpace *space = 0) const = 0;  //!< 创建Processor
+	
+	virtual void init() { }
+	virtual Processor* create(DesignNetSpace *space = 0) const = 0;  //!< 创建Processor
 
 	void waitForFinish();
 	ProcessResult result() { return m_watcher.result(); }
 
-	QIcon icon() const;
-	void setIcon(const QString &str);
-    
-    void    setName(const QString& name);//!< set name
-    QString name() const;        //!< get name
+	int indegree(QList<Processor*> exclusions = QList<Processor*>()) const; //!< 计算入度
+	virtual bool connectionTest(Port* pOutput, Port* pInput);
+	virtual bool connectionTest(Processor* father);
 
-    void    setID(const int &id);       //!< 在一个DesignNetSpace中的唯一ID
-    int     id() const;                 //!< getter
+	QList<Processor*> getInputProcessor() const;
+	QList<Processor*> getOutputProcessor() const;
 
-    virtual Core::Id typeID() const;			//!< 返回类型ID
-    virtual QString category() const;			//!< 返回种类
+	//////////////////////////////////////////////////////////////////////////
+
+	QIcon	icon() const;
+	void	setIcon(const QString &str);
     
-	void pushData(const ProcessData &pd);
+    void    setName(const QString& name);	//!< set name
+    QString name() const;					//!< get name
+
+    void    setID(const int &id);			//!< 在一个DesignNetSpace中的唯一ID
+    int     id() const;						//!< getter
+
+	DesignNetSpace *space() const{ return m_space; }
+	void	setSpace(DesignNetSpace *space) ;
+
+    virtual Core::Id typeID() const;		//!< 返回类型ID
+    virtual QString category() const;		//!< 返回种类
+    
+	//////////////////////////////////////////////////////////////////////////
+
+	bool	addPort(Port::PortType pt, DataType dt, QString sLabel);
+	Port*	getPort(Port::PortType pt, DataType dt);
+	Port*	getPort(Port::PortType pt, QString sLabel);
+	QList<Port*> getPorts(Port::PortType pt) const;
 	
+	
+	QList<ProcessData*> getData(QString sLabel);
+
+	void pushData(const ProcessData &pd, QString strLabel);
+	void pushData(QVariant &var, DataType dataType, QString strLabel = "", int iProcessId = -1);
+	void pushData(IData* data, QString strLabel = "", int iProcessId = -1);
+
 	QList<ProcessData> getOutputData(DataType dt = DATATYPE_INVALID);
 	QList<ProcessData> getInputData(DataType dt = DATATYPE_INVALID);
 
-	DesignNetSpace *space() const{ return m_space; }
-	void setSpace(DesignNetSpace *space) ;
-
-	virtual bool connectionTest(Processor* father);
-
-    int indegree(QList<Processor*> exclusions = QList<Processor*>()) const; //!< 计算入度
+	//////////////////////////////////////////////////////////////////////////
 
 	void start();
 
@@ -116,6 +136,7 @@ public:
 
 	bool connectTo(Processor* child);
 	bool disconnect(Processor* pChild);
+	void detach();
 
 	QReadWriteLock m_workingLock;
 
@@ -131,28 +152,24 @@ public slots:
 	void onPropertyChanged_internal();
 
 protected:
-	virtual void propertyChanged(Property *prop);
-	
-	virtual void propertyAdded(Property* prop);
 
-	virtual QList<ProcessData> datasNeeded() { QList<ProcessData> res; return res; }
-	virtual QList<ProcessData> dataProvided() = 0; //!< 仅在构造函数中调用
+	virtual void propertyChanged(Property *prop);
+	virtual void propertyAdded(Property* prop);
 
 	virtual bool beforeProcess(QFutureInterface<ProcessResult> &future);		//!< 处理之前的准备,这里会确保数据已经准备好了
 	virtual bool process(QFutureInterface<ProcessResult> &future) = 0;			//!< 正式处理
 	virtual void afterProcess(bool status = true);		//!< 完成处理
 	virtual bool finishProcess() { return true; }
+	
+	//////////////////////////////////////////////////////////////////////////
 
-
-    QIcon			m_icon;
+	QIcon			m_icon;
 	QString			m_title;				//!< 种类title
 	int				m_id;
 	ProcessorType	m_eType;
 
-	QList<ProcessData>	m_outputDatas;	//!< 所有的输出数据
-
-	QVector<Processor*> m_fathers;			//!< 所有的父亲Processor
-	QVector<Processor*> m_children;			//!< 所有的孩子
+	QList<Port*>	m_outputPort;			//!< 所有的输出端口
+	QList<Port*>	m_inputPort;			//!< 输入端口
 
 	ProcessorWorker m_worker;
 	DesignNetSpace* m_space;				//!< DesignNetSpace

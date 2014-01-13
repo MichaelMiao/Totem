@@ -50,6 +50,7 @@ ProcessorConfigWidget* ImageFolderConfigWidget::create( DesignNet::Processor * p
 	page->setApplyButtonEnabled(false);
 	
 	connect(m_pathChooser, SIGNAL(validChanged(bool)), page, SLOT(setApplyButtonEnabled(bool)));
+	connect(m_pathChooser, SIGNAL(changed(QString)), page, SIGNAL(configFinished()));
 	page->addRegion(tr("Image Folder Path"), m_pathChooser);
 	widget->addPage(page);	
 	ImageFolderLoader *loader = (ImageFolderLoader *)processor;

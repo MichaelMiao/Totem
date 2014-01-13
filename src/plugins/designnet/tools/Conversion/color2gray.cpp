@@ -1,6 +1,7 @@
 #include "color2gray.h"
 #include "designnet/designnet_core/data/imagedata.h"
 #include <opencv2/imgproc/imgproc.hpp>
+#include "Utils/varianthelper.h"
 using namespace DesignNet;
 namespace Conversion{
 #define DATA_LABEL_COLORIMAGE	"ColorImage"
@@ -11,6 +12,8 @@ Color2Gray::Color2Gray(DesignNet::DesignNetSpace *space, QObject *parent)
 	: Processor(space, parent)
 {
 	setName(tr("Color 2 Gray"));
+	addPort(Port::IN_PORT, DATATYPE_IMAGE, DATA_LABEL_COLORIMAGE);
+	addPort(Port::OUT_PORT, DATATYPE_GRAYIMAGE, DATA_LABEL_GRAYIMAGE);
 }
 
 Color2Gray::~Color2Gray()
@@ -30,18 +33,17 @@ QString Color2Gray::category() const
 
 bool Color2Gray::process(QFutureInterface<ProcessResult> &future)
 {
- 	emit logout("Color2Gray::process()");
-// 	ImageData *idata = qobject_cast<ImageData *>(getData("InputColorImage").at(0));
-// 	if(idata)
-// 	{
-// 		cv::Mat mat;
-// 		cv::cvtColor(idata->imageData(), mat, CV_RGB2GRAY);
-// 		ImageData grayData;
-// 		grayData.setImageData(mat);
-// 		pushData(&grayData, "grayImage");
-// 		emit logout("Color2Gray::process() OK");
-// 		return true;
-// 	}
+	Port* port = getPort(Port::IN_PORT, DATA_LABEL_COLORIMAGE);
+	ImageData *idata = qobject_cast<ImageData *>(getData(DATA_LABEL_COLORIMAGE).at(0)->variant.value<IData*>());
+	if (idata)
+	{
+		cv::Mat mat;
+		cv::cvtColor(idata->imageData(), mat, CV_RGB2GRAY);
+		m_grayData.setImageData(mat);
+		pushData(&m_grayData, DATA_LABEL_GRAYIMAGE);
+		emit logout("Color2Gray::process() OK");
+		return true;
+	}
  	return false;
 }
 
@@ -53,26 +55,6 @@ void Color2Gray::propertyChanged( Property *prop )
 Processor* Color2Gray::create( DesignNetSpace *space /*= 0*/ ) const
 {
 	return new Color2Gray(space);
-}
-
-QMultiMap<QString, DesignNet::ProcessData> Color2Gray::datasNeeded()
-{
-	QMultiMap<QString, ProcessData> ret;
-	ProcessData pd;
-	pd.strLabel = DATA_LABEL_COLORIMAGE;
-	pd.dataType = DATATYPE_8UC3IMAGE;
-	ret.insert(DATA_LABEL_COLORIMAGE, pd);
-	return ret;
-}
-
-QMap<QString, DesignNet::ProcessData> Color2Gray::dataProvided()
-{
-	QMap<QString, DesignNet::ProcessData> ret;
-	ProcessData pd;
-	pd.strLabel = DATA_LABEL_GRAYIMAGE;
-	pd.dataType = DATATYPE_MATRIX;
-	ret[DATA_LABEL_GRAYIMAGE] = pd;
-	return ret;
 }
 
 }

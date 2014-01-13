@@ -252,7 +252,7 @@ void DesignNetMainWindow::onEditorChanged( Core::IEditor* pEditor )
 		connect(pDesignNetEditor->designNetView(), SIGNAL(showAvailiableData(Processor*)), this, SLOT(onShowAvailiableData(Processor*)));
 }
 
-void DesignNetMainWindow::setEditState( EditState eState )
+void DesignNetMainWindow::setEditState(EditState eState)
 {
 	d->m_eEditState = eState;
 	DesignNetEditor* pDesignNetEditor = qobject_cast<DesignNetEditor*>(EditorManager::currentEditor());
@@ -260,7 +260,7 @@ void DesignNetMainWindow::setEditState( EditState eState )
 		pDesignNetEditor->designNetView()->setEditState(d->m_eEditState);
 }
 
-void DesignNetMainWindow::onShowAvailiableData( Processor* processor )
+void DesignNetMainWindow::onShowAvailiableData(Processor* processor)
 {
 	d->m_availableDataWidget->setAvailiableData(processor);
 }

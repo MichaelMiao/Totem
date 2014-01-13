@@ -97,8 +97,6 @@ QString Processor::name() const
 void Processor::setID(const int &id)
 {
     m_id = id;
-	for (QList<ProcessData>::Iterator itr = m_outputDatas.begin(); itr != m_outputDatas.end(); itr++)
-		itr->processorID = id;
 }
 
 int Processor::id() const
@@ -106,37 +104,55 @@ int Processor::id() const
     return m_id;
 }
 
-void Processor::pushData(const ProcessData &pd)
+void Processor::pushData(const ProcessData &pd, QString strLabel)
 {
-	QList<ProcessData>::Iterator itr = m_outputDatas.begin();
-	for (; itr < m_outputDatas.end(); itr++)
+	QList<Port*>::Iterator itr = m_outputPort.begin();
+	for (; itr < m_outputPort.end(); itr++)
 	{
-		if ((*itr).dataType == pd.dataType && pd.strLabel == (*itr).strLabel)
-			(*itr).variant = pd.variant;
+		if ((*itr)->data()->dataType == pd.dataType && (*itr)->name() == strLabel)
+		{
+			(*itr)->data()->variant = pd.variant;
+			break;
+		}
 	}
+}
+
+void Processor::pushData(QVariant &var, DataType dataType, QString strLabel /*= ""*/, int iProcessId /*= -1*/)
+{
+	ProcessData pd(dataType);
+	pd.variant	= var;
+	pd.processorID = iProcessId == -1 ? m_id : iProcessId;
+	pushData(pd, strLabel);
+}
+
+void Processor::pushData(IData* data, QString strLabel /*= ""*/, int iProcessId /*= -1*/)
+{
+	Port* pPort = getPort(Port::OUT_PORT, strLabel);
+	if (pPort)
+		pPort->data()->variant.setValue<IData*>(data);
 }
 
 QList<ProcessData> Processor::getOutputData(DataType dt)
 {
 	QList<ProcessData> res;
-	QList<ProcessData>::Iterator itr = m_outputDatas.begin();
-	for (; itr < m_outputDatas.end(); itr++)
-	{
-		if ((*itr).dataType == dt || dt == DATATYPE_INVALID)
-			res << *itr;
-	}
+	QList<Port*>::Iterator itr = m_outputPort.begin();
+	for (; itr < m_outputPort.end(); itr++)
+		if ((*itr)->data()->dataType == dt || dt == DATATYPE_INVALID)
+			res << *((*itr)->data());
+
 	return res;
 }
 
 QList<ProcessData> Processor::getInputData(DataType dt)
 {
 	QList<ProcessData> res;
-	foreach (Processor* father, m_fathers)
+	QList<Processor*> fathers = getInputProcessor();
+	foreach (Processor* father, fathers)
 	{
 		QList<ProcessData> &datas = father->getOutputData(dt);
 		for(QList<ProcessData>::iterator itr = datas.begin(); itr != datas.end(); itr++)
 		{
-			if (dt ==  (*itr).dataType)
+			if (dt ==  (*itr).dataType || dt == DATATYPE_INVALID)
 				res << *itr;
 		}
 	}
@@ -146,7 +162,7 @@ QList<ProcessData> Processor::getInputData(DataType dt)
 int Processor::indegree(QList<Processor *> exclusions) const
 {
     int degree = 0;
-	QVector<Processor*> processors = m_fathers;
+	const QList<Processor*> processors = getInputProcessor();
 
 	foreach(Processor *processor, processors)
 	{
@@ -158,6 +174,10 @@ int Processor::indegree(QList<Processor *> exclusions) const
 
 bool Processor::beforeProcess(QFutureInterface<ProcessResult> &future)
 {
+	ProcessResult pr;
+	pr.m_bNeedLoop = false;
+	pr.m_bSucessed = true;
+	future.reportResult(pr, 0);
 	return true;
 }
 
@@ -169,14 +189,15 @@ void Processor::afterProcess(bool status)
 void Processor::run( QFutureInterface<ProcessResult> &future )
 {
 	ProcessResult pr;
-	future.reportResult(pr);
+	future.reportResult(pr, 0);
 	if(!beforeProcess(future) || !process(future))
 	{
-		pr.m_bNeedLoop = future.future().result().m_bNeedLoop;
+		pr = future.future().result();
 		pr.m_bSucessed = false;
-		future.reportResult(pr);
+		future.reportResult(pr, 0);
 	}
-	afterProcess(pr.m_bSucessed);
+	pr = future.future().resultAt(0);
+	afterProcess(future.future().resultAt(0).m_bSucessed);
 }
 
 void Processor::start()
@@ -202,27 +223,24 @@ void Processor::waitForFinish()
 	}
 }
 
+bool Processor::connectionTest(Port* pOutput, Port* pInput)
+{
+	return pOutput->data()->dataType == pInput->data()->dataType;
+}
+
 bool Processor::connectionTest(Processor* father)
 {
-	QList<ProcessData> datas = datasNeeded();
-	QList<ProcessData> datasProvided =  father->getOutputData();
-	foreach (const ProcessData &p, datas)
+	QList<Port*> portsNeed		= getPorts(Port::IN_PORT);
+	QList<Port*> fatherProvided	= father->getPorts(Port::OUT_PORT);
+	foreach (Port* p, portsNeed)
 	{
-		bool bFind = false;
-		foreach(const ProcessData &provide, datasProvided)
+		foreach(Port* provide, fatherProvided)
 		{
-			if ( p.strLabel == provide.strLabel &&
-				p.dataType == provide.dataType &&
-				(p.processorID != -1 && p.processorID == provide.processorID))
-			{
-				bFind = true;
-				break;
-			}
+			if (p->data()->dataType == provide->data()->dataType)
+				return true;//!< 有可以提供的数据
 		}
-		if (bFind == false)
-			return false;
 	}
-	return true;
+	return false;//!< 如果有提供的数据早就返回了
 }
 
 void Processor::serialize( Utils::XmlSerializer& s ) const
@@ -299,29 +317,122 @@ void Processor::onPropertyChanged_internal()
 		propertyChanged(prop);
 }
 
-bool Processor::connectTo( Processor* child )
+bool Processor::connectTo(Processor* child)
 {
 	if (!child->connectionTest(this))
 		return false;
-	
-	if (m_children.contains(child) || m_fathers.contains(child)) // 不能连接两次
-		return false;
 
-	m_children.append(child);
+	QList<Port*> ports = child->getPorts(Port::IN_PORT);
+	foreach (Port* pOutput, m_outputPort)
+	{
+		foreach(Port* pInput, ports)
+		{
+			if (pOutput->data()->dataType == pInput->data()->dataType)
+				pOutput->connect(pInput);
+		}
+	}
+
 	emit connected(this, child);
 	return true;
 }
 
-bool Processor::disconnect( Processor* pChild )
+bool Processor::disconnect(Processor* pChild)
 {
-	if (!m_children.contains(pChild)) // 不能连接两次
-		return false;
-	int iIndex = m_children.indexOf(pChild, 0);
-	if (iIndex > 0)
-		m_children.remove(iIndex);
-
+	foreach (Port* portOut, m_outputPort)
+	{
+		QList<Port*> ports = portOut->connectedPorts();
+		foreach (Port* p, ports)
+		{
+			if (p->processor() == pChild)
+				portOut->disconnect(p);
+		}
+		qDebug() << portOut->connectedPorts().size();
+	}
+	
 	emit disconnected(this, pChild);
 	return true;
+}
+
+void Processor::detach()
+{
+	QList<Processor*> inputProcessors = getInputProcessor();
+	QList<Processor*> outputProcessors = getOutputProcessor();
+
+	foreach(Processor* p, inputProcessors)
+		p->disconnect(this);
+
+	foreach(Processor* p, outputProcessors)
+		disconnect(p);
+}
+
+bool Processor::addPort(Port::PortType pt, DataType dt, QString sLabel)
+{
+	Port *pPort = new Port(pt, dt, sLabel, this);
+	pPort->setProcessor(this);
+	if (pt == Port::IN_PORT)
+		m_inputPort.push_back(pPort);
+	else if (pt == Port::OUT_PORT)
+		m_outputPort.push_back(pPort);
+
+	return true;
+}
+
+Port* Processor::getPort(Port::PortType pt, DataType dt)
+{
+	QList<Port*> &ports = pt == Port::IN_PORT ? m_inputPort : m_outputPort;
+	foreach (Port* p, ports)
+	{
+		if (p->data()->dataType == dt)
+			return p;
+	}
+	return NULL;
+}
+
+Port* Processor::getPort(Port::PortType pt, QString sLabel)
+{
+	QList<Port*> &ports = pt == Port::IN_PORT ? m_inputPort : m_outputPort;
+	foreach (Port* p, ports)
+	{
+		if (p->name() == sLabel)
+			return p;
+	}
+	return NULL;
+}
+
+QList<DesignNet::ProcessData*> Processor::getData(QString sLabel)
+{
+	QList<DesignNet::ProcessData*> res;
+	Port *pPort = getPort(Port::IN_PORT, sLabel);
+	if (pPort)
+	{
+		QList<Port*> portsConnected = pPort->connectedPorts();
+		for (int i = 0; i < portsConnected.size(); i++)
+			res << portsConnected[i]->data();
+	}
+	return res;
+}
+
+QList<Port*> Processor::getPorts(Port::PortType pt) const
+{
+	return pt == Port::IN_PORT ? m_inputPort : m_outputPort;
+}
+
+QList<Processor*> Processor::getInputProcessor() const
+{
+	QList<Port*> ports = getPorts(Port::IN_PORT);
+	QList<Processor*> res;
+	foreach(Port* p, ports)
+		res << p->connectedProcessors();
+	return res;
+}
+
+QList<Processor*> Processor::getOutputProcessor() const
+{
+	QList<Port*> ports = getPorts(Port::OUT_PORT);
+	QList<Processor*> res;
+	foreach(Port* p, ports)
+		res << p->connectedProcessors();
+	return res;
 }
 
 }

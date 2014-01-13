@@ -6,7 +6,7 @@
 #include "../designnetbase/processor.h"
 #include "../designnetconstants.h"
 #include "Utils/XML/xmlserializable.h"
-
+#include "portitem.h"
 #include <QList>
 #include <QIcon>
 #include <QGraphicsObject>
@@ -111,18 +111,26 @@ public:
 	bool isEmphasized() { return testState(STATE_EMPHASIZE); }
 
 	QPointF getCrossPoint(const QLineF &line);
+
+	void setPortVisible(bool bVisible = true);
+
 signals:
-    void selectionChanged(bool bSelected);
+    
+	void selectionChanged(bool bSelected);
     void positionChanged();
 
 	void closed();
 	void processorLog(const QString &log);
+
 public slots:
+	
 	void onPropertyChanged_internal();
 	void onShowLog(const QString &log);
 	void configWidgetClosed();
 	void startDeserialize(Utils::XmlDeserializer& s);
+
 protected:
+	
 	void setState(const State &s, const bool &bAdd = false); //!< 设置状态，\e bAdd \e 表示是否以添加的形式添加属性。
 	bool testState(const State &s) { return m_state & s; }
 	void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
@@ -142,6 +150,9 @@ protected:
 	QGraphicsDropShadowEffect*				m_dropdownShadowEffect;
 	GraphicsUI::GraphicsAutoShowHideItem*   m_closeItem;
 	BlockTextItem*							m_titleItem;
+	QList<PortItem*>						m_outputPorts;
+	QList<PortItem*>						m_inputPorts;
+
 	Position					m_pos;
 	mutable bool				m_layoutDirty;	//!< 是否需要重新计算布局
 	mutable QSizeF				m_mainSize;		//!< main区域的size

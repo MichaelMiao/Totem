@@ -12,6 +12,7 @@ class TOTEM_UTILS_EXPORT OpenCVHelper
 public:
     OpenCVHelper();
     static QImage Mat2QImage(const cv::Mat& mat);
+	static cv::Mat QImage2Mat(QImage img);
 };
 }
 

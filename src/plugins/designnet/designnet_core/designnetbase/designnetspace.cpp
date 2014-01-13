@@ -13,28 +13,21 @@ namespace DesignNet{
 void Connection::serialize( XmlSerializer& s ) const
 {
 	if (m_srcProcessor == -1 || -1 == m_targetProcessor)
-	{
 		return;
-	}
+
 	s.serialize("src_processor", m_srcProcessor);
-	s.serialize("src_port", m_srcPort);
 	s.serialize("target_processor", m_targetProcessor);
-	s.serialize("target_port", m_targetPort);
 }
 
 void Connection::deserialize( XmlDeserializer& s )
 {
 	s.deserialize("src_processor", m_srcProcessor);
-	s.deserialize("src_port", m_srcPort);
 	s.deserialize("target_processor", m_targetProcessor);
-	s.deserialize("target_port", m_targetPort);
 }
 
 Connection::Connection( const Connection &c )
 {
-	m_srcPort		= c.m_srcPort;
 	m_srcProcessor	= c.m_srcProcessor;
-	m_targetPort	= c.m_targetPort;
 	m_targetProcessor	= c.m_targetProcessor;
 }
 
@@ -61,7 +54,10 @@ void DesignNetSpace::addProcessor(Processor *processor, bool bNotifyModify)
 		processor->setID(iUID);
 	}
     m_processors.push_back(processor);
-    QObject::connect(processor, SIGNAL(connected(Processor*, Processor*)), this, SIGNAL(connectionAdded(Processor*, Processor*)));
+	
+	QObject::connect(processor, SIGNAL(connected(Processor*, Processor*)), this, SIGNAL(connectionAdded(Processor*, Processor*)));
+	QObject::connect(processor, SIGNAL(disconnected(Processor*, Processor*)), this, SIGNAL(connectionRemoved(Processor*, Processor*)));
+	
 	emit processorAdded(processor);
 	if (bNotifyModify)
 		emit modified();
@@ -75,14 +71,15 @@ void DesignNetSpace::removeProcessor(Processor *processor, bool bNotifyModify)
 			removeProcessor(processor, bNotifyModify);
 		return ;
 	}
+	processor->detach();
 	QList<Processor*>::const_iterator itr = (qFind(m_processors, processor));
-	TOTEM_ASSERT(itr != m_processors.end(), qDebug()<< "can't not remove the processor");
+	TOTEM_ASSERT(itr != m_processors.end(), qDebug()<< "can't remove the processor");
 	m_processors.removeOne(processor);
 	emit processorRemoved(processor);
+	delete processor;
 
 	if (bNotifyModify)
 		emit modified();
-	delete processor;
 }
 
 bool DesignNetSpace::contains(Processor *processor)
@@ -99,22 +96,6 @@ Processor *DesignNetSpace::create(DesignNetSpace *space) const
 QString DesignNetSpace::name() const
 {
     return QString("DesignNetSpace");
-}
-
-bool DesignNetSpace::connectProcessor( Processor* father, Processor* child )
-{
-	if (!child->connectionTest(father))
-	{
-		emit logout(tr("Can't link the processors"));
-		return false;
-	}
-
-	return father->connectTo(child);//!< 发出connectAdd()信号
-}
-
-bool DesignNetSpace::disconnectProcessor(Processor* father, Processor* child)
-{
-    return false;
 }
 
 int DesignNetSpace::generateUID()
@@ -191,7 +172,9 @@ bool DesignNetSpace::process(QFutureInterface<ProcessResult> &future)
 			foreach(Processor* processor, processors)
 			{
 				processor->waitForFinish();
-				if (!processor->result().m_bSucessed)
+				ProcessResult pr = processor->result();
+				qDebug() << pr.m_bSucessed << pr.m_bNeedLoop;
+				if (!pr.m_bSucessed)
 				{
 					emit logout(tr("Processor %d run faild").arg(processor->id()));
 					return false;
@@ -248,11 +231,55 @@ void DesignNetSpace::propertyAdded( Property* prop )
 void DesignNetSpace::serialize( Utils::XmlSerializer& s ) const
 {
 	Processor::serialize(s);
+	s.serialize("processors", m_processors, "processor");
 }
 
 void DesignNetSpace::deserialize( Utils::XmlDeserializer& s )
 {
 	Processor::deserialize(s);
+	QList<Processor*> processors;
+	s.deserializeCollection("processors", processors, "processor");
+	foreach(Processor* p, processors)
+	{
+		p->init();
+		addProcessor(p);
+	}
+	QList<Connection> connections;
+	s.deserializeCollection("Connections", connections, "Connection");
+	foreach(Connection c, connections)
+	{
+		Processor *srcProcessor = findProcessor(c.m_srcProcessor);
+		Processor *targetProcessor = findProcessor(c.m_targetProcessor);
+		if (!srcProcessor || !targetProcessor)
+		{
+			emit logout(tr("Cannot add the connection from processor %1 to processor %2").arg(c.m_srcProcessor).arg(c.m_targetProcessor));
+			continue;
+		}
+		else
+		{
+
+// 			Port *srcPort = srcProcessor->getPort(c);
+// 			Port *targetPort = targetProcessor->getPort(c.m_targetPort);
+// 			if (!srcPort)
+// 			{
+// 				emit logout(tr("Cannot add the connection from port [%1] to port [%2] because source port is empty.")
+// 					.arg(c.m_srcPort).arg(c.m_targetPort));
+// 				continue;
+// 			}
+// 			if (!targetPort)
+// 			{
+// 				emit logout(tr("Cannot add the connection from port [%1] to port [%2]  because target port is empty")
+// 					.arg(c.m_srcPort).arg(c.m_targetPort));
+// 				continue;
+// 			}
+// 			if(!connectPort(targetPort, srcPort))
+// 			{
+// 				emit logout(tr("Cannot add the connection from port [%1] to port [%2] ")
+// 					.arg(c.m_srcPort).arg(c.m_targetPort));
+// 				continue;
+// 			}
+		}
+	}
 }
 
 QList<Processor*> DesignNetSpace::processors()
@@ -271,15 +298,14 @@ Processor* DesignNetSpace::findProcessor( const int &id )
 	return 0;
 }
 
-void DesignNetSpace::detachProcessor( Processor* processor )
+void DesignNetSpace::detachProcessor(Processor* processor)
 {
 	QList<Processor*>::const_iterator itr = (qFind(m_processors, processor));
-	TOTEM_ASSERT(itr != m_processors.end(), qDebug()<< "can't not remove the processor");
-	m_processors.removeOne(processor);
-	emit processorRemoved(processor);
+	TOTEM_ASSERT(itr != m_processors.end(), qDebug()<< "can't not detach the processor");
+	processor->detach();
 }
 
-bool DesignNetSpace::sortProcessors( QList<Processor*> &processors )
+bool DesignNetSpace::sortProcessors(QList<Processor*> &processors)
 {
 	Q_ASSERT(processors.size() == 0);
 
@@ -288,10 +314,11 @@ bool DesignNetSpace::sortProcessors( QList<Processor*> &processors )
 	while(dirty)
 	{
 		dirty = false;
-		foreach(Processor* processor, tempNet)
+		for(int i = 0; i < tempNet.size(); i++)
 		{
-			int indegree = processor->indegree(processors);
-			if(indegree == 0)
+			Processor* processor = tempNet.at(i);
+			int iTemp = processor->indegree(processors);
+			if(iTemp == 0)
 			{
 				processors.append(processor);
 				tempNet.removeOne(processor);

@@ -15,6 +15,7 @@
 #include <QWriteLocker>
 #include <QtDebug>
 #include <QTimer>
+#include "..\src\gui\dialogs\qmessagebox.h"
 using namespace ExtensionSystem;
 using namespace ExtensionSystem::Internal;
 
@@ -215,7 +216,10 @@ void PluginManagerPrivate::loadPlugin(PluginSpec *spec, PluginSpec::State destSt
     {
     case PluginSpec::Loaded:
         profilingReport(">loadLibrary", spec);
-        spec->d->loadLibrary();
+        if(!spec->d->loadLibrary())
+		{
+			QMessageBox::warning(NULL, spec->errorString(), spec->filePath(), QMessageBox::Yes);
+		}
         profilingReport("<loadLibrary", spec);
         break;
     case PluginSpec::Initialized:

@@ -71,9 +71,12 @@ public:
 	void setColor(const QColor &color, const int &state = NORMAL_STATE);
 
 public slots:
+
     void controlItemPositionChanged();
+
 protected:
 
+	QVariant itemChange(GraphicsItemChange change, const QVariant &v);
 	void setPoint_Internal(const QPointF &pf, bool bStartPoint = false);
 	ArrowLinkEndPoint	m_arrowLinkEndPoint;
     ArrowLinkControlItem* m_controlPoint_1; //!< 控制点1

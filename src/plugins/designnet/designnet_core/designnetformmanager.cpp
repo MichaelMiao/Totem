@@ -78,6 +78,7 @@ DesignNetEditor * DesignNetFormManager::createEditor( QWidget *parent )
 {
 	DesignNetEditor *pEditor = new DesignNetEditor(parent);
 	d->m_mainWindow->addEditor(pEditor);
+
 	return pEditor;
 }
 
@@ -138,7 +139,7 @@ void DesignNetFormManager::createControlToolBar()
 
 void DesignNetFormManager::setupActions()
 {
-	d->m_toolActionIds.push_back(Core::Id("DesignNet.StartBuild"));
+	d->m_toolActionIds.push_back(Core::Id(Constants::DESIGNNET_PROCESS_ID));
 	
 	QAction *pAction = new QAction(this);
 	Command *pCommand = Core::ActionManager::registerAction(pAction, d->m_toolActionIds.back(), d->m_context);
@@ -149,7 +150,7 @@ void DesignNetFormManager::setupActions()
 
 	QActionGroup* pActionGroup = new QActionGroup(this);
 	pActionGroup->setExclusive(true);
-	d->m_toolActionIds.push_back(Core::Id("DesignNet.Arrow"));
+	d->m_toolActionIds.push_back(Core::Id(Constants::DESIGNNET_EDITSTATE_MOVE_ACTION));
 	pAction = pActionGroup->addAction(QIcon(":/media/cursor_arrow.png"), tr(""));
 	pAction->setCheckable(true);
 	pAction->setChecked(true);
@@ -157,7 +158,7 @@ void DesignNetFormManager::setupActions()
 	pCommand->setAttribute(Core::Command::CA_Hide);
 	QObject::connect(pAction, SIGNAL(changed()), d->m_mainWindow, SLOT(onMoveAction()));
 
-	d->m_toolActionIds.push_back(Core::Id("DesignNet.Link"));
+	d->m_toolActionIds.push_back(Core::Id(Constants::DESIGNNET_EDITSTATE_LINK_ACTION));
 	pAction = pActionGroup->addAction(QIcon(":/media/link.png"), tr(""));
 	pAction->setCheckable(true);
 	pCommand = Core::ActionManager::registerAction(pAction, d->m_toolActionIds.back(), d->m_context);
@@ -177,5 +178,4 @@ void DesignNetFormManager::onRunDesignNet()
 	if (pEditor)
 		pEditor->run();
 }
-
 }

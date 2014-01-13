@@ -22,6 +22,10 @@ const char DESIGNNET_ICON[]         = ":/media/DesignNet.png";
 const char DESIGNNET_MODE_DISPLAYNAME[] = QT_TRANSLATE_NOOP("DesignNet", "DesignNet");
 
 const char DESIGNNET_PROCESS_ID[]   = "DesignNet.Process";
+
+const char DESIGNNET_EDITSTATE_MOVE_ACTION[]	= "DesignNet.EditState.Move";
+const char DESIGNNET_EDITSTATE_LINK_ACTION[]	= "DesignNet.EditState.Link";
+
 /// DockWidget Name
 const char DESIGN_DOCKNAME_TOOL[]       = "DockName.Tools";
 const char DESIGN_DOCKNAME_PROPERTY[]   = "DockName.Properties";
@@ -73,6 +77,9 @@ const int PortGraphicsItemType = 1;         //!< 端口类型
 const int PortArrowLinkItemType = 2;        //!< 端口箭头类型
 const int ProcessorGraphicsBlockType = 3;   //!< 处理器类型
 }//namespace DesignNet
+
+
 #define _T(x) QLatin1String(x)
+#define PORTITEM_WIDTH		10
 
 #endif // DESIGNNETCONSTANTS_H

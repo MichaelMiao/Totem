@@ -55,6 +55,8 @@ void XmlSerializableFactory::registerSerializable( const XmlSerializable* serial
 XmlSerializable* XmlSerializableFactory::createSerialzable( const QString &serialzableType ) 
 {
 	XmlSerializable* ret = d->m_serializables.value(serialzableType);
+	if (!ret)
+		return 0;
 	return ret->createSerializable();
 }
 

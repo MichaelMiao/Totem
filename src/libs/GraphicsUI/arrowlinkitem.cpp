@@ -2,8 +2,12 @@
 #include "arrowlinkcontrolitem.h"
 #include <QPainter>
 #include <qmath.h>
+#include <QGraphicsScene>
 #include <QStyleOptionGraphicsItem>
 #include <QPainterPathStroker>
+#include <QGraphicsItem>
+#include "ArrowLinkControlItem.h"
+
 namespace GraphicsUI{
 
 ArrowLinkItem::ArrowLinkItem(QGraphicsItem *parent) :
@@ -26,6 +30,8 @@ ArrowLinkItem::ArrowLinkItem(QGraphicsItem *parent) :
 
 ArrowLinkItem::~ArrowLinkItem()
 {
+	if (m_controlPoint_1) delete m_controlPoint_1;
+	if (m_controlPoint_2) delete m_controlPoint_2;
 }
 
 QPainterPath ArrowLinkItem::shape() const
@@ -233,6 +239,20 @@ void ArrowLinkItem::setPoint_Internal( const QPointF &pf, bool bStartPoint /*= f
 	{
 		m_endPoint = mapFromScene(pf);
 	}
+}
+
+QVariant ArrowLinkItem::itemChange(GraphicsItemChange change, const QVariant &v)
+{
+	if (change == QGraphicsItem::ItemSceneHasChanged && !scene())
+	{
+		if (m_controlPoint_1->scene())
+			m_controlPoint_1->scene()->removeItem(m_controlPoint_1);
+		if (m_controlPoint_2->scene())
+			m_controlPoint_2->scene()->removeItem(m_controlPoint_2);
+		m_controlPoint_1->setParentItem(NULL);
+		m_controlPoint_2->setParentItem(NULL);
+	}
+	return v;
 }
 
 }

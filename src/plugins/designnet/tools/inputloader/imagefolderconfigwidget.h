@@ -41,6 +41,7 @@ public:
 	~ImageFolderConfigWidget();
 	virtual ProcessorConfigWidget* create(DesignNet::Processor * processor, QWidget *parent = 0);
 	QString getPath();
+
 private:
 	DesignNet::ProcessorConfigListener *m_listener;
 	CustomUI::PathChooser *				m_pathChooser;

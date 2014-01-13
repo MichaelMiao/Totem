@@ -16,6 +16,9 @@ public:
 	~ProcessorArrowLink();
 
 	void connectProcessor(ProcessorGraphicsBlock* pSrc, ProcessorGraphicsBlock* pTarget);
+	ProcessorGraphicsBlock* getSrc() { return m_srcProcessor; }
+	ProcessorGraphicsBlock* getTarget() { return m_targetProcessor; }
+
 	void onControlItemPostionChanged();
 	void updatePosition();
 

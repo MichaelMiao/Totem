@@ -557,6 +557,30 @@
     <ClCompile Include="GeneratedFiles\Release\moc_availabledatawidget.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="data\datatype.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetbase\port.cpp">
+      <Filter>Source Files\designnetbase</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_port.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_port.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="graphicsitem\portitem.cpp">
+      <Filter>Source Files\graphicsitem</Filter>
+    </ClCompile>
+    <ClCompile Include="graphicsitem\portarrowlink.cpp">
+      <Filter>Source Files\graphicsitem</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_portarrowlink.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_portarrowlink.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="designnetcoreplugin.h">
@@ -584,7 +608,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="data\datatype.h">
-      <Filter>Source Files\data</Filter>
+      <Filter>Header Files\data</Filter>
+    </ClInclude>
+    <ClInclude Include="graphicsitem\portitem.h">
+      <Filter>Header Files\graphicsitem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -803,6 +830,12 @@
     </CustomBuild>
     <CustomBuild Include="availabledatawidget.h">
       <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetbase\port.h">
+      <Filter>Header Files\designnetbase</Filter>
+    </CustomBuild>
+    <CustomBuild Include="graphicsitem\portarrowlink.h">
+      <Filter>Header Files\graphicsitem</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

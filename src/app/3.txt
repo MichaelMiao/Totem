@@ -1,20 +1,10 @@
 <XML XMLVersion="0.0.1">
     <DesignNetSpace Name="DesignNetSpace" type="DesignNetSpace" ID="-1">
-        <Processors>
-            <Processor Name="Join" type="Operations/Join" ID="0"/>
-            <Processor Name="Buffer" type="Operations/Buffer" ID="1">
-                <Property typeID="PropertyType/DoubleRange" Name="BufferSize" value="10" type="PropertyType/DoubleRange" ID="BufferSize"/>
-            </Processor>
-            <Processor Name="Centroid" type="FeatureExtraction/Centroid" ID="3"/>
-        </Processors>
-        <Connections>
-            <Connection src_processor="3" target_processor="1" target_port="Input Buffer" src_port="centroid"/>
-        </Connections>
+        <processors>
+            <processor type="Labs/AdaboostSVM"/>
+        </processors>
     </DesignNetSpace>
     <Positions>
-        <Position X="-325" Y="-114" type="Position" id="0"/>
-        <Position X="-34" Y="-68" type="Position" id="1"/>
-        <Position X="-252" Y="53" type="Position" id="473460962"/>
-        <Position X="-277" Y="60" type="Position" id="3"/>
+        <Position X="-143" Y="-49" type="Position" id="2"/>
     </Positions>
 </XML>

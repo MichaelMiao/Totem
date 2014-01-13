@@ -29,6 +29,12 @@ void XmlSerializer::setFilePath( const QString &filepath /*= QLatin1String("")*/
 	m_filepath = filepath;
 }
 
+void XmlSerializer::createElement(const QString &key)
+{
+	QDomElement parentItem = m_doc.createElement(key);
+	m_currentElement.appendChild(parentItem);
+}
+
 void XmlSerializer::serialize( const QString &key, const XmlSerializable& data )
 {
 	QDomElement elem = m_doc.createElement(key);

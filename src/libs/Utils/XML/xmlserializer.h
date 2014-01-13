@@ -1,3 +1,4 @@
+#pragma once
 #ifndef XMLSERIALIZER_H
 #define XMLSERIALIZER_H
 
@@ -5,6 +6,23 @@
 #include <QString>
 #include <QtXml/QDomDocument>
 #include <QtXml/QDomNode>
+
+
+#define BEGIN_SERIALIZE_LIST(xmlserializer, x) \
+	{ \
+		XmlSerializer &_xml = xmlserializer; \
+		_xml.createElement(x);
+
+#define SERIALIZE_OBJ(x, label) \
+	_xml.serialize(x, label);
+
+#define END_SERIALIZE_LIST() \
+	}
+
+
+
+
+
 namespace Utils{
 class XmlSerializable;
 class TOTEM_UTILS_EXPORT XmlSerializer
@@ -15,6 +33,11 @@ public:
 
 	void setFilePath(const QString &filepath = QLatin1String(""));
 	QString filePath() const;
+
+	void createElement(const QString &key);
+
+	//////////////////////////////////////////////////////////////////////////
+
 	void serialize(const QString &key, const int &data);
 	void serialize(const QString &key, const bool &data);
 	void serialize(const QString &key, const float &data);
@@ -31,8 +54,10 @@ public:
 	void serialize(const QString &key, const QList<T*> &datas, const QString &items) ;
 
 	void write(const QString &filePath);
+
 protected:
-	QString			m_filepath;			//!< 文件路径
+
+	QString					m_filepath;			//!< 文件路径
 	mutable QDomElement		m_root;				//!< 根节点
 	mutable QDomDocument	m_doc;				//!<	file对应的doc变量
 	mutable QDomElement		m_currentElement;	//!< 当前操作的节点

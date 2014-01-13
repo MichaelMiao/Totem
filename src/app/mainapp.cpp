@@ -192,11 +192,12 @@ int loadPluginThread(MainApp *receiver)
         }
     }
     int status;
+	qDebug() << "checking core...";
     if( status = checkPlugin(coreplugin, QLatin1String(corePluginNameC)))//如果核心插件检查有问题
     {
         return status;
     }
-
+	qDebug() << "Loading Skin";
     //载入皮肤
     receiver->loadSkin(defaultQssFileC);
     QList<ExtensionSystem::PluginSpec *> queue = pm->loadQueue();

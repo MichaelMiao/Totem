@@ -80,6 +80,8 @@ void XmlDeserializer::deserializeCollection( const QString &key, QVector<T*>&dat
 		}
 		m_currentElement = childElement;
 		T *tempData = (T*)XmlSerializableFactory::instance()->createSerialzable(type);
+		if (!tempData)
+			return;
 		deserialize(itemKey, *tempData);
 		data.append(tempData);
 		childElement = childElement.nextSiblingElement(itemKey);
@@ -105,6 +107,9 @@ void XmlDeserializer::deserializeCollection( const QString &key, QList<T*>&data,
 		}
 		m_currentElement = childElement;
 		T *tempData = (T*)XmlSerializableFactory::instance()->createSerialzable(type);
+		if (!tempData)
+			return;
+
 		tempData->deserialize(*this);
 		data.append(tempData);
 		childElement = childElement.nextSiblingElement(itemKey);

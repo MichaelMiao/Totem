@@ -32,23 +32,27 @@ public:
 
 	DesignNetMainWindow(QWidget *parent = 0);
 	~DesignNetMainWindow();
-	void initialize();
-	void resetToDefaultLayout();
+	
+	void		initialize();
+	void		resetToDefaultLayout();
 
-	void addEditor(Core::IEditor *pEditor);
-	void addCenterToolBar(QToolBar* pToolBar);
+	void		addEditor(Core::IEditor *pEditor);
+	void		addCenterToolBar(QToolBar* pToolBar);
 	CustomUI::DockWindow *createDockWidget(QWidget *widget,
 		Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
 	CustomUI::DockWindow *dockWindow(const QString &objectName);
-	void addDelayedMenu();
-	EditState getEditState();
+	void		addDelayedMenu();
+	EditState	getEditState();
+
 public slots:
 
 	void updateDockWidgetSettings();
 	void onResetLayout();
 	void titleChanged();
+
 	void onConnectAction();	//!< 开始连接状态
 	void onMoveAction();	//!< 移动状态
+
 	void onEditorChanged(Core::IEditor* pEditor);
 	void onShowAvailiableData(Processor* processor);
 protected:
