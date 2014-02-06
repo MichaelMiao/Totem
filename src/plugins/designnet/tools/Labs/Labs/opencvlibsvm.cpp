@@ -15,7 +15,7 @@ OpenCVLibSVM::OpenCVLibSVM() : m_pModel(0)
 	m_param.svm_type = C_SVC;
 	m_param.kernel_type = RBF;
 	m_param.degree = 3;
-	m_param.gamma = 1.5;	// 1/num_features
+	m_param.gamma = 0.1;	// 1/num_features
 	m_param.coef0 = 0;
 	m_param.nu = 0.5;
 	m_param.cache_size = 100;
@@ -35,7 +35,7 @@ OpenCVLibSVM::~OpenCVLibSVM()
 	svm_free_and_destroy_model(&m_pModel);
 }
 
-void OpenCVLibSVM::train(cv::Mat &mat, cv::Mat &labelMat)
+void OpenCVLibSVM::train(cv::Mat &mat, cv::Mat &labelMat, char* strFileName)
 {
 	m_prob.l = mat.rows;						//!< 样本个数
 	m_prob.x = Malloc(struct svm_node*, m_prob.l);
@@ -75,12 +75,12 @@ void OpenCVLibSVM::train(cv::Mat &mat, cv::Mat &labelMat)
 		x_memory[iPos].value = 0;
 		++iPos;
 	}
-	m_param.gamma = 1.5;
+	m_param.gamma = 0.1;
 	
 	const char *error_msg;
 	error_msg = svm_check_parameter(&m_prob, &m_param);
 	m_pModel = svm_train(&m_prob, &m_param);
-	svm_save_model("I:/data/svm.model", m_pModel);
+	svm_save_model(strFileName, m_pModel);
 	crossValidation();
 }
 
@@ -92,10 +92,10 @@ void OpenCVLibSVM::crossValidation()
 	float c_min = 1, c_max = 30;
 	float g = g_min, c = c_min;
 	float f = 0, c_best = c, g_best = g_min;
-	while (g < g_max)
+//	while (g < g_max)
 	{
 		c = c_min;
-		while (c < c_max)
+//		while (c < c_max)
 		{
 // 			m_param.C = c;
 // 			m_param.gamma = g;
@@ -111,7 +111,7 @@ void OpenCVLibSVM::crossValidation()
 					++total_correct;
 			}
 			float corr = 100.0 * total_correct/m_prob.l;
-			qDebug() << QString("Cross Validation Accuracy = %1%%\n").arg(100.0 * total_correct/m_prob.l);
+			qDebug() << QString("Cross Validation Accuracy = %1%\n").arg(100.0 * total_correct/m_prob.l);
 			if (corr > f)
 			{
 				c_best = c;
@@ -130,7 +130,7 @@ void OpenCVLibSVM::crossValidation()
 
 void OpenCVLibSVM::loadModel()
 {
-	m_pModel = svm_load_model("I:/data/svm.model");
+	m_pModel = svm_load_model("I:/data/svm.xml");
 }
 
 int comp(const void *a, const void *b)
@@ -270,8 +270,55 @@ void OpenCVLibSVM::predict_values(cv::Mat &mat, int *labelVoted)
 		plv[i].iValue = labelVoted[i];
 	}
 	qsort(plv, m_pModel->nr_class, sizeof(LabelVote), comp);
+
+	for (int i = 0; i < m_pModel->nr_class; i++)
+		labelVoted[i] = m_pModel->label[plv[i].iIndex];
+	free(x_memory);
+}
+
+void OpenCVLibSVM::predict_probility(cv::Mat &mat, int *labelVoted, double* probility)
+{
+	int iSize = 0;
+	for (int c = 0; c < mat.cols; c++)
+	{
+		if (mat.at<float>(0, c) != 0)
+			++iSize;
+	}
+	struct svm_node* x_memory = NULL;			//!< 所有Node
+	x_memory = Malloc(struct svm_node, iSize + 1);
+	int iPos = 0;
+	for (int c = 0; c < mat.cols; c++)
+	{
+		float f = mat.at<float>(0, c);
+		if (mat.at<float>(0, c) != 0)
+		{
+			x_memory[iPos].index = c + 1;
+			x_memory[iPos++].value = mat.at<float>(0, c);
+		}
+	}
+	x_memory[iPos].index = -1;
+	x_memory[iPos].value = 0;
+	memset((void*)labelVoted, 0, sizeof(int) * m_pModel->nr_class);
+	int res = svm_check_probability_model(m_pModel);
+	double *dec_values = new double[m_pModel->nr_class * (m_pModel->nr_class - 1) / 2];
+	double m = svm_predict_values(m_pModel, x_memory, dec_values, labelVoted);
+	delete []dec_values;
+	LabelVote *plv = new LabelVote[m_pModel->nr_class];
 	for (int i = 0; i < m_pModel->nr_class; i++)
 	{
+		plv[i].iIndex = i;
+		plv[i].iValue = labelVoted[i];
+	}
+	qsort(plv, m_pModel->nr_class, sizeof(LabelVote), comp);
+
+	int iCount = m_pModel->nr_class * (m_pModel->nr_class - 1) / 2;
+	
+	for (int i = 0; i < m_pModel->nr_class; i++)
+	{
+		probility[i] = plv[i].iValue * 1.0 / iCount;
 		labelVoted[i] = m_pModel->label[plv[i].iIndex];
 	}
+
+	free(x_memory);
+	delete []plv;
 }

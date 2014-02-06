@@ -97,7 +97,7 @@ ProcessorGraphicsBlock::ProcessorGraphicsBlock( Processor *processor /*= 0*/, QG
 		PortItem* portItem = new PortItem(*itr, this);
 		m_outputPorts.push_back(portItem);
 		portItem->setVisible(false);
-	}
+	} 
 
 	//////////////////////////////////////////////////////////////////////////
 

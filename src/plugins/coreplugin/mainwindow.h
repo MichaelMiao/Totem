@@ -74,6 +74,7 @@ signals:
     void windowActivated();
 
 private slots:
+
     void aboutTotem();
     void aboutPlugins();
 
@@ -83,6 +84,11 @@ private slots:
                            QWidget *parent = 0);
     void newFile();
     void openFile();
+
+	void openRecentFile();
+
+	void addRecentFileMenu();	//!< 添加最近文件到菜单 
+
 protected:
     virtual void closeEvent(QCloseEvent *event);
     void openFiles(const QStringList &fileNames);

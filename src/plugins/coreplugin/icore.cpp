@@ -38,6 +38,13 @@ ICore *ICore::instance()
     return m_instance;
 }
 
+void Core::ICore::saveSettings()
+{
+	emit m_instance->saveSettingsRequested();
+	ICore::settings(QSettings::SystemScope)->sync();
+	ICore::settings(QSettings::UserScope)->sync();
+}
+
 QSettings *ICore::settings(QSettings::Scope scope)
 {
     return m_mainwindow->settings(scope);

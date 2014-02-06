@@ -277,6 +277,8 @@ void Processor::setSpace( DesignNetSpace *space )
 
 QIcon Processor::icon() const
 {
+	if (m_icon.isNull())
+		return QIcon(":/media/default_processor.png");
 	return m_icon;
 }
 

@@ -21,11 +21,20 @@ public:
 	float contrast(const cv::Mat &glcm);//!<  计算对比度
 	float homogeneity(const cv::Mat &glcm);//!< 计算同质性，GLCM中元素对角线分布的控件紧密度的度量
 
+	cv::Mat extractShape(cv::Mat matBinary);
+	cv::Mat extractShape2(cv::Mat matBinary);
+	cv::Mat getGradient();
+	cv::Mat extractGLCM();
+	cv::Mat extractColor();
+
 private:
 
-	cv::Mat m_srcMat;
-	cv::Mat m_grayMat;
-	cv::Mat m_binaryMat;
-	cv::Mat m_glcm;					//!< 灰度共生矩阵
-	cv::Mat m_glcm_sobel;			//!< sobel滤波后的灰度共生矩阵
+	cv::Mat		m_srcMat;
+	cv::Mat		m_grayMat;
+	cv::Mat		m_binaryMat;
+	cv::Mat		m_hsvMat;
+	cv::Mat		m_glcm;					//!< 灰度共生矩阵
+	cv::Mat		m_glcm_sobel;			//!< sobel滤波后的灰度共生矩阵
+	cv::Rect	m_rect;
+	cv::Point	m_centroid;
 };

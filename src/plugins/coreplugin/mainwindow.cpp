@@ -1,43 +1,45 @@
 #include "mainwindow.h"
-#include "settingsdatabase.h"
-#include "extensionsystem/pluginmanager.h"
-#include "actionmanager/actionmanager.h"
-#include "actionmanager/actionmanagerprivate.h"
-#include "coreconstants.h"
-#include "actionmanager/actioncontainerprivate.h"
-#include "plugindialog.h"
-#include "outputpanemanager.h"
-#include "statusbarmanager.h"
-#include "statusbarwidget.h"
-#include "messagemanager.h"
-#include "minisplitter.h"
-#include "outputpaneplaceholder.h"
-#include "dialogs/settingsdialog.h"
-#include "shortcutsettings.h"
-#include "rightpane.h"
-#include "modewidget.h"
-#include "modemanager.h"
-#include "utils/stylehelper.h"
-#include "editormanager.h"
-#include "documentmanager.h"
-#include "progressview.h"
-#include "extensionsystem/progressmanagerprivate.h"
-#include "newdialog.h"
-#include "iwizard.h"
-#include "icorelistener.h"
+#include <QApplication>
+#include <QCloseEvent>
+#include <QFileDialog>
 #include <QFileInfo>
+#include <QListView>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QSplitter>
-#include <QTreeView>
-#include <QListView>
 #include <QStatusBar>
-#include <QVBoxLayout>
-#include <QCloseEvent>
-#include <QFileDialog>
-#include <QApplication>
 #include <QToolBar>
+#include <QTreeView>
+#include <QVBoxLayout>
+#include "actionmanager/actioncontainerprivate.h"
+#include "actionmanager/actionmanager.h"
+#include "actionmanager/actionmanagerprivate.h"
+#include "dialogs/settingsdialog.h"
+#include "extensionsystem/pluginmanager.h"
+#include "extensionsystem/progressmanagerprivate.h"
+#include "utils/stylehelper.h"
+#include "coreconstants.h"
+#include "documentmanager.h"
+#include "editormanager.h"
+#include "icorelistener.h"
+#include "iwizard.h"
+#include "messagemanager.h"
+#include "minisplitter.h"
+#include "modemanager.h"
+#include "modewidget.h"
+#include "newdialog.h"
+#include "outputpanemanager.h"
+#include "outputpaneplaceholder.h"
+#include "plugindialog.h"
+#include "progressview.h"
+#include "rightpane.h"
+#include "settingsdatabase.h"
+#include "shortcutsettings.h"
+#include "statusbarmanager.h"
+#include "statusbarwidget.h"
+
+
 using namespace Core;
 using namespace Core::Internal;
 using namespace ExtensionSystem;
@@ -77,8 +79,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_modeManager = new ModeManager(this, m_modeStack);
     this->setCentralWidget(m_modeStack);
 
-    m_statusBarManager  = new StatusBarManager(this);//初始化状态栏
-    m_messageManager    = new MessageManager();      //消息管理器，outputpane
+    m_statusBarManager  = new StatusBarManager(this);//���������
+    m_messageManager    = new MessageManager();      //娑��绠＄����outputpane
     m_editorManager = new EditorManager(this);
     m_editorManager->hide();
 
@@ -288,7 +290,7 @@ void MainWindow::updateContext()
         contexts.add(m_activeContext->context());
 
     contexts.add(m_additionalContexts);
-    //删除重复的
+    //��������
     Context uniquecontexts;
     for (int i = 0; i < contexts.size(); ++i)
     {
@@ -363,7 +365,7 @@ void MainWindow::registerDefaultActions()
     Context globalContext(Constants::C_GLOBAL);
     //------------File menu---------------
     ActionContainer *mFile = am->actionContainer(Constants::M_FILE);
-        // New
+    // New
     QIcon icon(Constants::ICON_NEW_FILE);
     tmpAction = new QAction(icon, tr("New File"), mFile);
     Core::Command *cmdNew = am->registerAction(tmpAction,
@@ -399,6 +401,12 @@ void MainWindow::registerDefaultActions()
 	cmdSaveAs->setDescription(tr("Save As..."));
 	mFile->addAction(cmdSaveAs, Constants::G_FILE_SAVE);
 
+	// 最近打开文件
+	ActionContainer* pRecentFiles = ActionManager::createMenu(Constants::RECENT_FILES);
+	pRecentFiles->menu()->setTitle(tr("Recent Files"));
+	mFile->addMenu(pRecentFiles, Constants::G_FILE_OPEN);
+	pRecentFiles->setOnAllDisabledBehavior(ActionContainer::Show);
+	connect(mFile->menu(), SIGNAL(aboutToShow()), this, SLOT(addRecentFileMenu()));
 
     //------------help menu---------------
     ActionContainer *mHelp = am->actionContainer(Constants::M_HELP);
@@ -456,7 +464,7 @@ void MainWindow::readSettings()
 
     if (!restoreGeometry(m_settings->value(QLatin1String(windowGeometryKey)).toByteArray()))
     {
-        resize(1008, 700); // 大小没有保存的情况下
+        resize(1008, 700);
     }
     restoreState(m_settings->value(QLatin1String(windowStateKey)).toByteArray());
 
@@ -554,8 +562,35 @@ void MainWindow::openFile()
     openFiles(fileNames);
 }
 
+
+void Core::Internal::MainWindow::addRecentFileMenu()
+{
+	ActionContainer* pContainter = ActionManager::actionContainer(Constants::RECENT_FILES);
+	pContainter->menu()->clear();
+	bool bHasRencentFile = false;
+	foreach (const DocumentManager::RecentFile &file, DocumentManager::recentFiles())
+	{
+		QAction* pAction = pContainter->menu()->addAction(QDir::toNativeSeparators(file.first));
+		pAction->setData(qVariantFromValue(file));
+		connect(pAction, SIGNAL(triggered()), this, SLOT(openRecentFile()));
+		bHasRencentFile = true;
+	}
+	pContainter->menu()->setEnabled(bHasRencentFile);
+}
+
+void Core::Internal::MainWindow::openRecentFile()
+{
+	if (const QAction *action = qobject_cast<const QAction*>(sender()))
+	{
+		const DocumentManager::RecentFile file = action->data().value<DocumentManager::RecentFile>();
+		EditorManager::openEditor(file.first, file.second);
+	}
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+	ICore::saveSettings();
+
 	bool cancelled;
 	QList<IDocument*> notSaved = DocumentManager::saveModifiedDocuments(DocumentManager::modifiedDocuments(), &cancelled);
 	if (cancelled || !notSaved.isEmpty())

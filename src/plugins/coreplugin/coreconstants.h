@@ -29,7 +29,7 @@ const char G_VIEW[]                = "Totem.Group.View";
 const char G_HELP[]                = "Totem.Group.Help";
 const char G_WINDOW[]              = "Totem.Group.Window";
 const char G_TOOLS[]                = "Totem.Group.Tool";
-const char G_FILE_SAVE[]			= "Tote.Group.Save";
+const char G_FILE_SAVE[]			= "Totem.Group.Save";
 //SubMenuBar IDs
 const char M_FILE[]                = "Totem.Menu.File";
 const char M_VIEW[]                = "Totem.Menu.View";
@@ -74,6 +74,7 @@ const char OPTIONS[]               = "Totem.Options";
 const char CLOSE[]				   = "Totem.CloseDocument";
 const char SAVE[]				   = "Totem.Save";
 const char SAVEAS[]				   = "Totem.SaveAs";
+const char RECENT_FILES[]		   = "Totem.RecentFiles";
 // Contexts
 const char C_GLOBAL[]              = "Global Context";
 const char C_GENERAL_OUTPUT_PANE[] = "Core.GeneralOutputPane";

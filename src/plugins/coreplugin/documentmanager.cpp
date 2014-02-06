@@ -242,6 +242,8 @@ DocumentManager::DocumentManager(QMainWindow *mw)
             this, SLOT(mainWindowActivated()));
     connect(Core::ICore::instance(), SIGNAL(contextChanged(Core::IContext*,Core::Context)),
             this, SLOT(syncWithEditor(Core::IContext*)));
+
+	readSettings();
 }
 
 DocumentManager::~DocumentManager()
@@ -857,6 +859,25 @@ void DocumentManager::saveSettings()
     s->setValue(QLatin1String(filesKeyC), recentFiles);
     s->setValue(QLatin1String(editorsKeyC), recentEditorIds);
     s->endGroup();
+}
+
+void DocumentManager::readSettings()
+{
+	QSettings* pSettings = Core::ICore::settings();
+	d->m_recentFiles.clear();
+	pSettings->beginGroup(QLatin1String(settingsGroupC));
+	QStringList files = pSettings->value(filesKeyC).toStringList();
+	QStringList editors = pSettings->value(editorsKeyC).toStringList();
+	pSettings->endGroup();
+	QStringListIterator itrId(editors);
+	foreach(QString f, files)
+	{
+		QString editorId;
+		if (itrId.hasNext())
+			editorId = itrId.next();
+		if (QFileInfo(f).isFile())
+			d->m_recentFiles.append(Core::DocumentManager::RecentFile(QDir::fromNativeSeparators(f), Core::Id(editorId)));
+	}
 }
 
 void DocumentManager::setCurrentFile(const QString &filePath)

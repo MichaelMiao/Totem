@@ -10,11 +10,12 @@ public:
 	~OpenCVLibSVM();
 
 	void loadModel();
-	void train(cv::Mat &mat, cv::Mat &labelMat); //!< 每行是一个样本
+	void train(cv::Mat &mat, cv::Mat &labelMat, char* strFileName = ""); //!< 每行是一个样本
 	void crossValidation();
 	double test(cv::Mat &mat);
 	double* predict(cv::Mat &mat);
 	void predict_values(cv::Mat &mat, int *labelVoted);
+	void predict_probility(cv::Mat &mat, int *labelVoted, double* probility);
 	int getClassCount();
 
 

@@ -12,7 +12,7 @@
 #include "opencvlibsvm.h"
 #include "opencv2/nonfree/ocl.hpp"
 #include "opencv2/nonfree/features2d.hpp"
-
+#include "MultiLabelKNN.h"
 
 #define TEST_PATH		"I:/data/_test/"
 #define TRAIN_PATH		"I:/data/_train/"
@@ -23,9 +23,12 @@
 #define LABEL_FILE		"I:/data/labels.txt"
 #define TYPE_NAME		"I:/data/typename.txt"
 #define SVM_MODEL_FILE	"I:/data/svm.xml"
-#define SVM_MODEL_FILE2	"I:/data/svm_normalize.xml"
+#define SVM_MODEL_FILE2	"I:/data/svm2.xml"
+#define SVM_MODEL_FILE_NORM	"I:/data/svm_normalize.xml"
+#define SVM_MODEL_FILE_NORM2	"I:/data/svm_normalize2.xml"
 #define SVM_BOW_FILE	"I:/data/bow.xml"
 #define BOW_MAT_NAME	"bow"
+#define SVM_PREDICT_LABEL "I:/data/predictlabel.xml"
 
 AdaboostSVMProcessor::AdaboostSVMProcessor(DesignNet::DesignNetSpace *space, QObject *parent /*= 0*/)
 {
@@ -115,6 +118,33 @@ void AdaboostSVMProcessor::prepareData()
 	fileLabel.close();
 }
 
+void AdaboostSVMProcessor::createBowSiftData()
+{
+	QDir dir(TRAIN_PATH);
+	QStringList filters;
+	filters << "*.bmp";
+	cv::SIFT sift(100);
+	QFileInfoList fileList = dir.entryInfoList(filters, QDir::Files);
+	cv::Mat features;
+	for (int i = 0; i < fileList.size(); i++)
+	{
+		QString filePath = fileList.at(i).filePath();
+		QString fileName = fileList.at(i).baseName();
+		cv::Mat mat = cv::imread(filePath.toLocal8Bit().data());
+		std::vector<cv::KeyPoint> keys;
+		sift.detect(mat, keys);
+		cv::Mat desc;
+		sift.compute(mat, keys, desc);
+		features.push_back(desc);
+	}
+	int iDictionarySize = 100;
+	cv::BOWKMeansTrainer bowTrainer(iDictionarySize, cv::TermCriteria(CV_TERMCRIT_ITER, 20,0.001), 3, cv::KMEANS_PP_CENTERS);
+	cv::Mat dictionary = bowTrainer.cluster(features);
+	cv::FileStorage fs(SVM_BOW_FILE, cv::FileStorage::WRITE);
+	fs << BOW_MAT_NAME << dictionary;
+	fs.release();
+}
+
 void normalizeFeature(cv::Mat &mat, cv::Mat &matMaxMin)
 {
 	if (matMaxMin.rows == 0)
@@ -146,7 +176,8 @@ bool AdaboostSVMProcessor::process(QFutureInterface<DesignNet::ProcessResult> &f
 {
 //	prepareData();
 	train();
-//	test();
+	test();
+//	createBowSiftData();
 	return true;
 }
 
@@ -182,6 +213,50 @@ void AdaboostSVMProcessor::LoadLabel(QMap<int, int> &imgLabel)
 	fileLabel.close();
 }
 
+// void testSift
+// {
+// 	cv::SIFT sift;
+// 	cv::Mat mat = cv::imread("I:/0271.bmp");
+// 	cv::Mat mat1 = cv::imread("I:/0272.bmp");
+// 	cv::Mat desc, desc1;
+// 	std::vector<cv::KeyPoint> keys, keys1;
+// 	sift.detect(mat, keys);
+// 	sift.detect(mat1, keys1);
+// 	sift.compute(mat, keys, desc);
+// 	sift.compute(mat1, keys1, desc1);
+// 	cv::drawKeypoints(mat, keys, mat);
+// 	cv::drawKeypoints(mat1, keys1, mat1);
+// 	std::vector<cv::DMatch> matches;
+// 	cv::Ptr<cv::DescriptorMatcher> descriptor_matcher = cv::DescriptorMatcher::create( "BruteForce" );//创建特征匹配器  
+// 	descriptor_matcher->match(desc, desc1, matches);
+// 	//计算匹配结果中距离的最大和最小值  
+// 	//距离是指两个特征向量间的欧式距离，表明两个特征的差异，值越小表明两个特征点越接近  
+// 	double max_dist = 0;  
+// 	double min_dist = 100;  
+// 	for(int i=0; i<matches.size(); i++)  
+// 	{  
+// 		double dist = matches[i].distance;  
+// 		if(dist < min_dist) min_dist = dist;  
+// 		if(dist > max_dist) max_dist = dist;  
+// 	}  
+// 	//筛选出较好的匹配点  
+// 	std::vector<cv::DMatch> goodMatches;  
+// 	for(int i=0; i<matches.size(); i++)  
+// 	{  
+// 		if(matches[i].distance <= 0.31 * max_dist)  
+// 		{  
+// 			goodMatches.push_back(matches[i]);  
+// 		}  
+// 	}
+// 	//画出匹配结果  
+// 	cv::Mat img_matches;  
+// 	//红色连接的是匹配的特征点对，绿色是未匹配的特征点  
+// 	cv::drawMatches(mat,keys,mat1,keys1,goodMatches,img_matches,  
+// 		cv::Scalar::all(-1)/*CV_RGB(255,0,0)*/,CV_RGB(0,255,0), cv::Mat(),2);  
+// 	cv::imwrite("I:/match.bmp", img_matches);
+// 	return;
+// };
+
 void AdaboostSVMProcessor::train()
 {
 	QString strTrain = TRAIN_PATH;
@@ -193,12 +268,9 @@ void AdaboostSVMProcessor::train()
 	cv::Mat labels;
 	cv::Mat trainData;
 	QFileInfoList fileList = dir.entryInfoList(filters, QDir::Files);
-	cv::SIFT sift(100);
-	cv::Mat dictionary;
-	int iDictionarySize = 100;
+	
+	int iDictionarySize = 500;
 	cv::BOWKMeansTrainer bowTrainer(iDictionarySize, cv::TermCriteria(CV_TERMCRIT_ITER, 20,0.001), 3, cv::KMEANS_PP_CENTERS);
-	cv::Mat siftFeatures;
-	std::vector<cv::Mat> vecMat;
 	for (int i = 0; i < fileList.size(); i++)
 	{
 		QString filePath = fileList.at(i).filePath();
@@ -208,42 +280,54 @@ void AdaboostSVMProcessor::train()
 		labels.push_back(iLabel);
 		emit logout(fileName);
 		cv::Mat mat = cv::imread(filePath.toLocal8Bit().data());
-		std::vector<cv::KeyPoint> vecKeypoint;
-		cv::Mat desc;
-		sift.detect(mat, vecKeypoint);
-		sift.compute(mat, vecKeypoint, desc);
-		vecMat.push_back(mat);
-		siftFeatures.push_back(desc);
- 		FlowerFeatureExtractor f;
-		trainData.push_back(f.extractFeature(mat));
+		FlowerFeatureExtractor f;
+		cv::Mat feature = f.extractFeature(mat);
+		trainData.push_back(feature);
 	}
-// 	cv::FileStorage fs(SVM_BOW_FILE, cv::FileStorage::WRITE);
-// 	dictionary = bowTrainer.cluster(siftFeatures);
-// 	fs << BOW_MAT_NAME << dictionary;
-// 	fs.release();
-	cv::Ptr<cv::DescriptorMatcher> matcher(new cv::FlannBasedMatcher);
-	cv::Ptr<cv::FeatureDetector> detector(new cv::SiftFeatureDetector);
-	cv::Ptr<cv::DescriptorExtractor> extractor(new cv::SiftDescriptorExtractor);    
-	cv::BOWImgDescriptorExtractor bowDE(extractor, matcher);
-	bowDE.setVocabulary(dictionary);
-	for (size_t i = 0; i < vecMat.size(); i++)
-	{
-		std::vector<cv::KeyPoint> vecKeypoint;
-		cv::Mat m = vecMat.at(i);
-		cv::Mat mdesc;
-		sift.detect(m, vecKeypoint);
-		bowDE.compute(m, vecKeypoint, mdesc);
-	}
+	trainData.convertTo(trainData, CV_32F);
 	cv::Mat matNormalize;
 	emit logout("normalizeFeature..");
 	normalizeFeature(trainData, matNormalize);
-	cv::FileStorage fsfesture(SVM_MODEL_FILE2, cv::FileStorage::WRITE);
+	cv::FileStorage fsfesture(SVM_MODEL_FILE_NORM, cv::FileStorage::WRITE);
 	fsfesture << "minmax" << matNormalize;
-	fsfesture << "test" << trainData;
 	fsfesture.release();
 	emit logout("train..");
 	OpenCVLibSVM svm;
-	svm.train(trainData, labels);
+	svm.train(trainData, labels, SVM_MODEL_FILE);
+	return;
+	int *labelVoted = new int[svm.getClassCount()];
+	double *probility = new double[svm.getClassCount()];
+	cv::Mat labelMat;
+	cv::Mat probMat;
+	for (int i = 0; i < fileList.size(); i++)
+	{
+		QString filePath = fileList.at(i).filePath();
+		QString fileName = fileList.at(i).baseName();
+		emit logout(fileName);
+		cv::Mat mat = cv::imread(filePath.toLocal8Bit().data());
+		FlowerFeatureExtractor f;
+		cv::Mat imageFeature = trainData.row(i);
+		cv::Mat featureLabel(1, 6, CV_32SC1);
+		cv::Mat prob(1, 6, CV_32FC1);
+		svm.predict_probility(imageFeature, labelVoted, probility);
+		for (int i = 0; i < 6; i++)
+		{
+			featureLabel.at<int>(0, i) = labelVoted[i];
+			prob.at<float>(0, i) = probility[i];
+		}
+		probMat.push_back(prob);
+		labelMat.push_back(featureLabel);
+	}
+	
+	delete []labelVoted;
+	delete []probility;
+
+//	MultiLabelKNN knn;
+//	knn.train2(labels, labelMat, svm.getClassCount());
+//	knn.save("I:/data/knn.xml");
+// 	cv::FileStorage fsfesture(SVM_PREDICT_LABEL, cv::FileStorage::WRITE);
+// 	fsfesture << "predict" << labelMat;
+// 	fsfesture.release();
 // 	cv::SVMParams param;
 // 	param.kernel_type = CvSVM::RBF;
 // 	param.degree = 3;
@@ -257,6 +341,11 @@ void AdaboostSVMProcessor::train()
 
 void AdaboostSVMProcessor::test()
 {
+	cv::Mat labelMat;
+	cv::FileStorage fsfesture(SVM_PREDICT_LABEL, cv::FileStorage::READ);
+	fsfesture["predict"] >> labelMat;
+	fsfesture.release();
+
 	QString strTest = TEST_PATH;
 	QDir dir(strTest);
 	QStringList filters;
@@ -265,7 +354,7 @@ void AdaboostSVMProcessor::test()
 	LoadLabel(imgLabel);
 	OpenCVLibSVM svm;
 	svm.loadModel();
-	cv::FileStorage fsMinMax(SVM_MODEL_FILE2, cv::FileStorage::READ);
+	cv::FileStorage fsMinMax(SVM_MODEL_FILE_NORM, cv::FileStorage::READ);
 	cv::FileNode node = fsMinMax.root();
 	cv::FileNodeIterator itr = node.begin();
 	cv::Mat featureMinMax;
@@ -276,9 +365,12 @@ void AdaboostSVMProcessor::test()
 			(*itr) >> featureMinMax;
 		itr++;
 	}
-
+	MultiLabelKNN knn;
+//	knn.load("I:/data/knn.xml");
+	knn.LoadData();
 	QFileInfoList fileList = dir.entryInfoList(filters, QDir::Files);
 	double fSum = 0;
+	double fSum5 = 0;
 	for (int i = 0; i < fileList.size(); i++)
 	{
 		QString filePath = fileList.at(i).filePath();
@@ -288,32 +380,43 @@ void AdaboostSVMProcessor::test()
 		cv::Mat mat = cv::imread(filePath.toLocal8Bit().data());
 		FlowerFeatureExtractor f;
 		cv::Mat feature = f.extractFeature(mat);
+		feature.convertTo(feature, CV_32F);
 		for (int c = 0; c < feature.cols; c++)
 		{
 			float fMin = featureMinMax.at<float>(0, c);
 			float fMax = featureMinMax.at<float>(1, c);
 			feature.at<float>(0, c) = (feature.at<float>(0, c) - fMin) / (fMax - fMin);
 		}
-		int nr_class = svm.getClassCount();
-		int* mm = new int[nr_class];
-		svm.predict_values(feature, mm);
-		//int iPredictLabel = (int)svm.test(feature);
-		qDebug() << tr("%1---%2 (%3, %4, %5, %6, %7)").arg(fileName).arg(iLabel).arg(mm[0]).arg(mm[1]).arg(mm[2]).arg(mm[3]).arg(mm[4]);
+		int *labelVoted = new int[svm.getClassCount()];
+		double *probility = new double[svm.getClassCount()];
+		svm.predict_probility(feature, labelVoted, probility);
+		cv::Mat labelF(1, 6, CV_32SC1);
+		cv::Mat prob(1, 6, CV_32FC1);
+		for (int i = 0; i < 6; i++)
+		{
+			labelF.at<int>(0, i) = labelVoted[i];
+			prob.at<float>(0, i) = probility[i];
+		}
+		int iPredictLabel = knn.predict2(labelF, prob);
+		qDebug() << iLabel << "-->" << labelVoted[0] << "---" << iPredictLabel;
+//		qDebug() << iLabel << "-->" << knn.predict(labelF, prob);
 		for (int i = 0; i < 5; i++)
 		{
-			if (mm[i] == iLabel)
-			{
-				fSum++;
-				break;
-			}
+			if (labelVoted[i] == iLabel)
+				fSum5 += 1;
 		}
-		delete []mm;
-// 		if (iLabel == iPredictLabel)
-// 			fSum += 1;
-// 		else
-// 		{
-// 			emit logout(tr("error: fileName: (%1, %2) -> %3  ").arg(fileName).arg(iLabel).arg(iPredictLabel));
-// 		}
+ 		if (iLabel == labelVoted[0])
+		{
+			fSum += 1;
+		}
+		else
+		{
+			qDebug() << "==========";
+			emit logout(tr("error: fileName: (%1, %2) -> %3  ").arg(fileName).arg(iLabel).arg(iPredictLabel));
+		}
+		delete []labelVoted;
+		delete []probility;
 	}
-	emit logout(tr("Accurrate %1%").arg(fSum / fileList.size() * 100));
+	emit logout(tr("Top1 Accurrate %1%").arg(fSum / fileList.size() * 100));
+	emit logout(tr("Top5 Accurrate %1%").arg(fSum5 / fileList.size() * 100));
 }

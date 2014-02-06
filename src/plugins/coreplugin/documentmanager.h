@@ -79,6 +79,7 @@ public:
     static QList<RecentFile> recentFiles();
 
     static void saveSettings();
+	static void readSettings();
 
     // current file
     static void setCurrentFile(const QString &filePath);
@@ -143,5 +144,7 @@ private:
 
 };
 }
+
+Q_DECLARE_METATYPE(Core::DocumentManager::RecentFile)
 
 #endif // DOCUMENTMANAGER_H

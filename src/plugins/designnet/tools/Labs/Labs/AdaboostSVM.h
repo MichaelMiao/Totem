@@ -24,8 +24,13 @@ public:
 	virtual void deserialize(Utils::XmlDeserializer& s) ;
 
 	void prepareData();
+	void createBowSiftData();
+
 	void LoadLabel(QMap<int, int> &imgLabel);
 
 	void train();
 	void test();
+
+private:
+
 };

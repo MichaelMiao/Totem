@@ -68,6 +68,15 @@
     <ClCompile Include="SVMBoostClassifier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MultiLabelKNN.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PolorLBP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PolorHOG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -86,6 +95,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SVMBoostClassifier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiLabelKNN.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PolorLBP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PolorHOG.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

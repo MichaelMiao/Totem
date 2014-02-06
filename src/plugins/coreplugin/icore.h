@@ -49,6 +49,8 @@ public:
 
     static QSettings *settings(QSettings::Scope scope = QSettings::UserScope);
     static SettingsDatabase *settingsDatabase();
+	static void saveSettings();
+
 
     static QString resourcePath();
     static QString userResourcePath();

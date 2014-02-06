@@ -70,6 +70,7 @@ DesignNetView::DesignNetView(DesignNetSpace *space, QWidget *parent)
 	QGraphicsScene *scene = new QGraphicsScene(this);
 	scene->setBackgroundBrush(Qt::gray);
 	setScene(scene);
+	d->m_lineItem->setVisible(false);
 	scene->addItem(d->m_lineItem);
 	setAcceptDrops(true);
 	if (space)
