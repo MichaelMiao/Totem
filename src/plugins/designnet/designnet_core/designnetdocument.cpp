@@ -134,11 +134,12 @@ void DesignNetDocument::onModified()
 
 bool DesignNetDocument::open( QString *errorString, const QString &fileName, const QString &realFileName )
 {
+	bool bRet = IDocument::open(errorString, fileName, realFileName);
 	d->space->setObjectName(realFileName);
 	Utils::XmlDeserializer deserializer(realFileName);
 	deserializer.deserialize("DesignNetSpace", *(d->space));
 	emit deserialized(deserializer);
-	return IDocument::open(errorString, fileName, realFileName);
+	return bRet;
 }
 
 }//namespace DesignNet

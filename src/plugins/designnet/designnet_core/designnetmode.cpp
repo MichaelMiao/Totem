@@ -20,7 +20,10 @@ class DesignNetModeCoreListener : public Core::ICoreListener
 {
 public:
     DesignNetModeCoreListener(DesignNetMode* mode);
-    bool coreAboutToClose();
+    
+	bool coreAboutToClose();
+	bool editorAboutToClose(IEditor * editor) override;
+
 private:
     DesignNetMode *m_mode;
 };
@@ -34,6 +37,11 @@ bool DesignNetModeCoreListener::coreAboutToClose()
 {
     m_mode->currentEditorChanged(0);
     return true;
+}
+
+bool DesignNetModeCoreListener::editorAboutToClose(IEditor * editor)
+{
+	return true;
 }
 
 }//namespace Internal

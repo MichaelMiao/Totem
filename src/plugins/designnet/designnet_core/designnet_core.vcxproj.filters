@@ -581,11 +581,23 @@
     <ClCompile Include="GeneratedFiles\Release\moc_portarrowlink.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_portitem.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_portitem.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designnetcoreplugin.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designnetcoreplugin.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="minimapnavigator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="designnetcoreplugin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="designnet_core_global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -610,8 +622,11 @@
     <ClInclude Include="data\datatype.h">
       <Filter>Header Files\data</Filter>
     </ClInclude>
-    <ClInclude Include="graphicsitem\portitem.h">
+    <ClInclude Include="graphicsitem\designnet_define.h">
       <Filter>Header Files\graphicsitem</Filter>
+    </ClInclude>
+    <ClInclude Include="minimapnavigator.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -836,6 +851,12 @@
     </CustomBuild>
     <CustomBuild Include="graphicsitem\portarrowlink.h">
       <Filter>Header Files\graphicsitem</Filter>
+    </CustomBuild>
+    <CustomBuild Include="graphicsitem\portitem.h">
+      <Filter>Header Files\graphicsitem</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetcoreplugin.h">
+      <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

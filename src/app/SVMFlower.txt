@@ -1,0 +1,10 @@
+<XML XMLVersion="0.0.1">
+    <DesignNetSpace Name="DesignNetSpace" type="DesignNetSpace" ID="-1">
+        <processors>
+            <processor path="" Name="Image Folder Loader" type="Loader/Image Folder Loader" ID="0"/>
+        </processors>
+    </DesignNetSpace>
+    <Positions>
+        <Position X="-428" Y="-115" type="Position" id="0"/>
+    </Positions>
+</XML>

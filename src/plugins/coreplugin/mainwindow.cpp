@@ -79,8 +79,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_modeManager = new ModeManager(this, m_modeStack);
     this->setCentralWidget(m_modeStack);
 
-    m_statusBarManager  = new StatusBarManager(this);//���������
-    m_messageManager    = new MessageManager();      //娑��绠＄����outputpane
+    m_statusBarManager  = new StatusBarManager(this);//锟斤拷锟斤拷锟斤拷锟斤拷锟�
+    m_messageManager    = new MessageManager();      //濞�拷锟界�锛�拷锟斤拷锟�utputpane
     m_editorManager = new EditorManager(this);
     m_editorManager->hide();
 
@@ -290,7 +290,7 @@ void MainWindow::updateContext()
         contexts.add(m_activeContext->context());
 
     contexts.add(m_additionalContexts);
-    //��������
+    //锟斤拷锟斤拷锟斤拷锟斤拷
     Context uniquecontexts;
     for (int i = 0; i < contexts.size(); ++i)
     {
@@ -401,7 +401,7 @@ void MainWindow::registerDefaultActions()
 	cmdSaveAs->setDescription(tr("Save As..."));
 	mFile->addAction(cmdSaveAs, Constants::G_FILE_SAVE);
 
-	// 最近打开文件
+	// ��������欢
 	ActionContainer* pRecentFiles = ActionManager::createMenu(Constants::RECENT_FILES);
 	pRecentFiles->menu()->setTitle(tr("Recent Files"));
 	mFile->addMenu(pRecentFiles, Constants::G_FILE_OPEN);

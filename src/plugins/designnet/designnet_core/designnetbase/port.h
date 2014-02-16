@@ -12,9 +12,11 @@
 namespace DesignNet{
 
 
-struct ProcessData
+class DESIGNNET_CORE_EXPORT ProcessData
 {
-	ProcessData(DataType dt = DATATYPE_INVALID) : dataType(dt) {}
+public:
+
+	ProcessData(DataType dt = DATATYPE_INVALID);
 	QVariant	variant;		//!< 真正的数据
 	int			processorID;	//!< 产生该数据的处理器
 	DataType	dataType;		//!< 数据类型
@@ -50,7 +52,7 @@ public:
      * \param[in] port 当前端口所要连接的目标端口
      * \return 是否连接成功，函数内部通过canConnectTo()判断
      */
-    bool connect(Port* port);//!< 当前端口将会作为输出端口连接到\e inputPort.
+    bool connect(Port* inputPort);//!< 当前端口将会作为输出端口连接到\e inputPort.
 
     bool disconnect(Port* port = 0);
     bool canConnectTo(Port* inputPort);     //!< 判断是否能够连接到\e inputPort
@@ -83,15 +85,15 @@ public:
     QString name() const;
     void setName(const QString &name);
 
-    void notifyStateChanged();  //!< 端口状态改变
-    //////////////////////////////////////////////////////
     ///
     ///
     void addData(ProcessData* data);  //!< 向端口添加数据
     ProcessData* data();        //!< 端口中存放的数据
 
 signals:
-	void disconnectFromPort(Port* port);
+
+	void connectPort(Port* src, Port* target);
+	void disconnectPort(Port* src, Port* target);
 
 protected:
 

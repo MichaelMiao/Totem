@@ -65,6 +65,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_imagefolderconfigwidget.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_resource.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -76,6 +79,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="inputloader.pluginspec" />
+    <None Include="images\NormalImageLoader.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\add_folder.png">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="inputloader.h">
@@ -86,6 +95,9 @@
     </CustomBuild>
     <CustomBuild Include="imagefolderconfigwidget.h">
       <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource.qrc">
+      <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

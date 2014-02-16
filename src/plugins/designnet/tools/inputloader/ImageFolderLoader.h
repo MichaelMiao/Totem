@@ -13,6 +13,7 @@ class ImageFolderLoader : public DesignNet::Processor
 {
 	Q_OBJECT
 public:
+
 	ImageFolderLoader(DesignNet::DesignNetSpace *space, QObject *parent = 0);
 	virtual ~ImageFolderLoader(void);
 	virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const;
@@ -27,7 +28,7 @@ public:
 	QString path() const;
 
 	virtual void serialize(Utils::XmlSerializer& s) const;
-	virtual void deserialize(Utils::XmlDeserializer& s) ;
+	virtual void deserialize(Utils::XmlDeserializer& s);
 
 signals:
 protected:

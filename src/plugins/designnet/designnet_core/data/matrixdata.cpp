@@ -6,7 +6,7 @@ namespace DesignNet{
 MatrixData::MatrixData(QObject *parent)
 	: IData(parent)
 {
-	m_image.load(QLatin1String(Constants::DATA_IMAGE_MATRIX));
+//	m_image.load(QLatin1String(Constants::DATA_IMAGE_MATRIX));
 }
 
 MatrixData::~MatrixData()

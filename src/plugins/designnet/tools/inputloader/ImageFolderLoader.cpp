@@ -1,22 +1,23 @@
 #include "stdafx.h"
 #include "ImageFolderLoader.h"
-#include "../../designnet_core/designnetconstants.h"
-#include "designnet/designnet_core/property/pathdialogproperty.h"
-#include "designnet/designnet_core/data/imagedata.h"
-#include "designnet/designnet_core/data/intdata.h"
-#include "Utils/fileutils.h"
-#include <QIcon>
 #include <QDir>
 #include <QFile>
-#include <QTextStream>
-#include <QMultiMap>
+#include <QIcon>
 #include <QMovie>
-#include "Utils/opencvhelper.h"
+#include <QMultiMap>
+#include <QTextStream>
+#include "../../../designnet/designnet_core/data/imagedata.h"
+#include "../../../designnet/designnet_core/data/intdata.h"
+#include "../../../designnet/designnet_core/property/pathdialogproperty.h"
+#include "../../designnet_core/designnetconstants.h"
+#include "opencv2/features2d/features2d.hpp"
+#include "opencv2/ml/ml.hpp"
+#include "opencv2/nonfree/features2d.hpp"
 #include "opencv2/nonfree/ocl.hpp"
 #include "opencv2/ocl/ocl.hpp"
-#include "opencv2/features2d/features2d.hpp"
-#include "opencv2/nonfree/features2d.hpp"
-#include "opencv2/ml/ml.hpp"
+#include "Utils/fileutils.h"
+#include "Utils/opencvhelper.h"
+
 
 using namespace DesignNet;
 #define SIFTFEATURE_COUNT		100
@@ -36,7 +37,7 @@ ImageFolderLoader::ImageFolderLoader( DesignNet::DesignNetSpace *space, QObject 
 	m_iCurIndex(0)
 {
 	setName(tr("Image Folder Loader"));
-	setIcon((QLatin1String(ImageFolderIcon)));
+	setIcon(QLatin1String(ImageFolderIcon));
 	addPort(Port::OUT_PORT, DATATYPE_IMAGE, OUTPUT_IMAGE);
 	addPort(Port::OUT_PORT, DATATYPE_STRING, OUTPUT_FILE_PATH);
 }

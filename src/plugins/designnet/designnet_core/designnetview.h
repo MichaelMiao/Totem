@@ -19,6 +19,8 @@ class DesignNetViewPrivate;
 class DesignNetSpace;
 class Processor;
 class ProcessorGraphicsBlock;
+class PortItem;
+class Port;
 /*!
  * \brief The DesignView class
  *
@@ -48,6 +50,9 @@ public:
 	void deserialize(Utils::XmlDeserializer &x);
 	void serialize(Utils::XmlSerializer &s);
 
+	ProcessorGraphicsBlock *getGraphicsProcessor(const int &id);
+	PortItem*	getPortItem(Port* port);
+
 signals:
 	void showAvailiableData(Processor* processor);
 	void editStateChanged(EditState eState);
@@ -59,12 +64,13 @@ public slots:
 	void onConnectionAdded(Processor* father, Processor* child);
 	void onConnectionRemoved(Processor* father, Processor* child);
 	void processorClosed();
+	void processorPortVisibleChanged(bool bVisible, int iType);
+
 	void reloadSpace();
 	void OnShowMessage(const QString &strMessage);
 
 protected:
 
-	ProcessorGraphicsBlock *getGraphicsProcessor(const int &id);
 	virtual void mouseMoveEvent ( QMouseEvent * event );
 	virtual void mousePressEvent ( QMouseEvent * event );
 	virtual void mouseReleaseEvent ( QMouseEvent * event );
@@ -72,6 +78,7 @@ protected:
 	void removeItems(QList<QGraphicsItem*> items);//!< É¾³ýItem
 	void addProcessor(ProcessorGraphicsBlock *processor);
 	void removeProcessor(ProcessorGraphicsBlock *processor);
+
 private:
 	DesignNetViewPrivate* d;
 	bool		m_bLinking;//!<		Á¬½Ó

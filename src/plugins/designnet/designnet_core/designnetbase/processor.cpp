@@ -325,16 +325,18 @@ bool Processor::connectTo(Processor* child)
 		return false;
 
 	QList<Port*> ports = child->getPorts(Port::IN_PORT);
-	foreach (Port* pOutput, m_outputPort)
+	QList<Port*>::iterator itr = m_outputPort.begin();
+	while (itr != m_outputPort.end())
 	{
-		foreach(Port* pInput, ports)
+		QList<Port*>::iterator itrInput = ports.begin();
+		while (itrInput != ports.end())
 		{
-			if (pOutput->data()->dataType == pInput->data()->dataType)
-				pOutput->connect(pInput);
+			if ((*itr)->data()->dataType == (*itrInput)->data()->dataType)
+				(*itr)->connect(*itrInput);
+			itrInput++;
 		}
+		itr++;
 	}
-
-	emit connected(this, child);
 	return true;
 }
 
@@ -351,8 +353,19 @@ bool Processor::disconnect(Processor* pChild)
 		qDebug() << portOut->connectedPorts().size();
 	}
 	
-	emit disconnected(this, pChild);
 	return true;
+}
+
+bool Processor::isConnectTo(Processor* pChild)
+{
+	QList<Port*>::iterator itr = m_outputPort.begin();
+	while (itr != m_outputPort.end())
+	{
+		if ((*itr)->connectedProcessors().contains(pChild))
+			return true;
+		itr++;
+	}
+	return false;
 }
 
 void Processor::detach()
@@ -435,6 +448,16 @@ QList<Processor*> Processor::getOutputProcessor() const
 	foreach(Port* p, ports)
 		res << p->connectedProcessors();
 	return res;
+}
+
+void Processor::onPortConnected(Port* src, Port* target)
+{
+	
+}
+
+void Processor::onPortDisconnected(Port* src, Port* target)
+{
+
 }
 
 }

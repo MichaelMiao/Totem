@@ -50,12 +50,20 @@ public slots:
 	void onResetLayout();
 	void titleChanged();
 
-	void onConnectAction();	//!< 开始连接状态
-	void onMoveAction();	//!< 移动状态
+	void onConnectAction(bool bChecked);	//!< 开始连接状态
+	void onMoveAction(bool bChecked);	//!< 移动状态
 
 	void onEditorChanged(Core::IEditor* pEditor);
+	void onEditorClosed(Core::IEditor* pEditor);
 	void onShowAvailiableData(Processor* processor);
+
+	void onTabChanged(int iIndex);
+	void onTabClose(int iIndex);
+
+	void resizeEvent(QResizeEvent* event) override;
+
 protected:
+
 	void setEditState(EditState eState);
 
 private:

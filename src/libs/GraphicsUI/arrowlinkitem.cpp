@@ -30,8 +30,10 @@ ArrowLinkItem::ArrowLinkItem(QGraphicsItem *parent) :
 
 ArrowLinkItem::~ArrowLinkItem()
 {
-	if (m_controlPoint_1) delete m_controlPoint_1;
-	if (m_controlPoint_2) delete m_controlPoint_2;
+	delete m_controlPoint_1;
+	m_controlPoint_1 = 0;
+	delete m_controlPoint_2;
+	m_controlPoint_2 = 0;
 }
 
 QPainterPath ArrowLinkItem::shape() const
@@ -251,6 +253,11 @@ QVariant ArrowLinkItem::itemChange(GraphicsItemChange change, const QVariant &v)
 			m_controlPoint_2->scene()->removeItem(m_controlPoint_2);
 		m_controlPoint_1->setParentItem(NULL);
 		m_controlPoint_2->setParentItem(NULL);
+	}
+	else if (change == QGraphicsItem::ItemVisibleChange)
+	{
+		m_controlPoint_1->setVisible(v.toBool());
+		m_controlPoint_2->setVisible(v.toBool());
 	}
 	return v;
 }

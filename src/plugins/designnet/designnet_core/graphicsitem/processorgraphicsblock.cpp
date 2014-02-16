@@ -1,38 +1,40 @@
-﻿#include "../designnetbase/designnetspace.h"
+﻿#include "processorgraphicsblock.h"
+#include "../designnetbase/designnetspace.h"
+#include <QApplication>
+#include <QBrush>
+#include <QDebug>
+#include <QFont>
+#include <QGraphicsBlurEffect>
+#include <QGraphicsDropShadowEffect>
+#include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
+#include <QMenu>
+#include <QMessageBox>
+#include <QPainter>
+#include <QParallelAnimationGroup>
+#include <QPropertyAnimation>
+#include <QStyleOptionGraphicsItem>
+#include <QTime>
+#include <QTimer>
+#include "../../../coreplugin/icore.h"
+#include "../../../coreplugin/messagemanager.h"
 #include "../data/matrixdata.h"
 #include "../designnetbase/processorconfigmanager.h"
+#include "../graphicsitem/blocktextitem.h"
+#include "../property/property.h"
 #include "../widgets/processorconfigwidget.h"
-#include "processorgraphicsblock.h"
-#include "property/property.h"
-#include "coreplugin/icore.h"
-#include "coreplugin/messagemanager.h"
+#include "../designnetconstants.h"
 #include "GraphicsUI/graphicsautoshowhideitem.h"
 #include "GraphicsUI/graphicstoolbutton.h"
 #include "GraphicsUI/textanimationblock.h"
-#include "designnetconstants.h"
-#include "graphicsitem/blocktextitem.h"
+#include "Utils/XML/xmldeserializer.h"
 #include "Utils/XML/xmlserializable.h"
 #include "Utils/XML/xmlserializer.h"
-#include "Utils/XML/xmldeserializer.h"
+#include "portarrowlink.h"
+#include "portitem.h"
+#include "designnetview.h"
 
 
-#include <QApplication>
-#include <QPainter>
-#include <QBrush>
-#include <QGraphicsDropShadowEffect>
-#include <QGraphicsSceneMouseEvent>
-#include <QStyleOptionGraphicsItem>
-#include <QDebug>
-#include <QGraphicsScene>
-#include <QMenu>
-#include <QFont>
-#include <QTimer>
-#include <QTime>
-#include <QGraphicsBlurEffect>
-#include <QGraphicsSceneMouseEvent>
-#include <QMessageBox>
-#include <QParallelAnimationGroup>
-#include <QPropertyAnimation>
 using namespace GraphicsUI;
 namespace DesignNet{
 const int PORT_MARGIN = 15;
@@ -53,8 +55,9 @@ void Position::deserialize(Utils::XmlDeserializer& s)
 	s.deserialize("Y", m_y);
 }
 
-ProcessorGraphicsBlock::ProcessorGraphicsBlock( Processor *processor /*= 0*/, QGraphicsScene *s /*= 0*/, const QPointF &pos /*= QPointF(0, 0)*/, QGraphicsItem *parent /*= 0*/ )
-	: QGraphicsObject(parent), m_processor(processor)
+ProcessorGraphicsBlock::ProcessorGraphicsBlock(Processor *processor /*= 0*/, QGraphicsScene *s /*= 0*/, DesignNetView* pView /*= 0*/,
+	const QPointF &pos /*= QPointF(0, 0)*/, QGraphicsItem *parent /*= 0*/)
+	: QGraphicsObject(parent), m_processor(processor), m_pNetView(pView), m_bInputPortVisible(false), m_bOutputPortVisible(false)
 {
 	setFlag(ItemIsMovable);
 	setFlag(ItemIsSelectable);
@@ -70,22 +73,27 @@ ProcessorGraphicsBlock::ProcessorGraphicsBlock( Processor *processor /*= 0*/, QG
 	setGraphicsEffect(m_dropdownShadowEffect);
 	m_dropdownShadowEffect->setEnabled(false);
 
-
 	/// title
 	m_titleItem = new BlockTextItem(this);
 	m_titleItem->setBlockName(m_processor->name());
 	///
-	/// close按钮
+	/// close
 	m_closeItem = new GraphicsAutoShowHideItem(this);
 	m_closeItem->setSize(QSize(16, 16));
 	m_closeItem->setPos(boundingRect().right() - m_closeItem->boundingRect().width() - ITEMSPACING, boundingRect().top());
 	m_closeItem->setPixmap(QPixmap(":/media/item-close.png"));
 	QObject::connect(m_closeItem, SIGNAL(clicked()), this, SIGNAL(closed()));
 	///
-	/// 端口
+	/// 显示端口按钮
+	m_btnShowPort = new GraphicsToolButton(this);
+	m_btnShowPort->setPos(boundingRect().right() - m_btnShowPort->boundingRect().width() - ITEMSPACING, boundingRect().bottom() + m_btnShowPort->boundingRect().width());
+	m_btnShowPort->setPixmap(QPixmap(":/media/showport.png"));
+	QObject::connect(m_btnShowPort, SIGNAL(clicked()), this, SLOT(onSetPortVisible()));
 	QList<Port*> tempPort = processor->getPorts(Port::IN_PORT);
 	for (QList<Port*>::iterator itr = tempPort.begin(); itr != tempPort.end(); itr++)
 	{
+		QObject::connect(*itr, SIGNAL(connectPort(Port*, Port*)), this, SLOT(onPortConnected(Port*, Port*)));
+		QObject::connect(*itr, SIGNAL(disconnectPort(Port*, Port*)), this, SLOT(onPortDisconnected(Port*, Port*)));
 		PortItem* portItem = new PortItem(*itr, this);
 		m_inputPorts.push_back(portItem);
 		portItem->setVisible(false);
@@ -163,10 +171,7 @@ QVariant ProcessorGraphicsBlock::itemChange(QGraphicsItem::GraphicsItemChange ch
     if(change == ItemSelectedHasChanged && scene())
     {
         if(value.toBool() == false)
-        {
             emit selectionChanged(false);
-        }
-		setPortVisible(value.toBool());
     }
 	else if (change == ItemPositionChange && scene())
 	{
@@ -177,12 +182,8 @@ QVariant ProcessorGraphicsBlock::itemChange(QGraphicsItem::GraphicsItemChange ch
 		prepareGeometryChange();
 		update();
 	}
+	
     return QGraphicsItem::itemChange(change,value);
-}
-
-int ProcessorGraphicsBlock::type() const
-{
-    return ProcessorGraphicsBlock::Type;
 }
 
 void ProcessorGraphicsBlock::propertyAdded( Property* prop )
@@ -206,10 +207,10 @@ void ProcessorGraphicsBlock::paint( QPainter* painter, const QStyleOptionGraphic
 {
 	prepareGeometryChange();
 	
-	QRectF rectF = boundingRect();
+	QRectF rcBounding = boundingRect();
 	painter->setPen(Qt::NoPen);
 
-	painter->fillRect(rectF, QColor(102, 175,253));
+	painter->fillRect(rcBounding, QColor(102, 175,253));
 	if(isSelected())
 	{
 		painter->save();
@@ -219,8 +220,7 @@ void ProcessorGraphicsBlock::paint( QPainter* painter, const QStyleOptionGraphic
 		painter->drawRect(rect);
 
 		painter->setPen(QPen(Qt::darkBlue, 2));
-		rect = boundingRect();
-		painter->drawRect(rect);
+		painter->drawRect(rcBounding);
 		painter->restore();
 		this->setZValue(DesignNet::Constants::ZValue_GraphicsBlock_Emphasize);
 	}
@@ -230,19 +230,23 @@ void ProcessorGraphicsBlock::paint( QPainter* painter, const QStyleOptionGraphic
 	}
 	painter->save();
 	painter->setPen(QPen(Qt::white, 1));
-	painter->drawLine(QPointF(rectF.left(), rectF.top() + TITLE_HEIGHT), QPointF(rectF.right(), rectF.top() + TITLE_HEIGHT));
+	painter->drawLine(QPointF(rcBounding.left(), rcBounding.top() + TITLE_HEIGHT),
+		QPointF(rcBounding.right(), rcBounding.top() + TITLE_HEIGHT));
 	int index = m_processor->id();
 	QFont font("Time", 10);
 	QFontMetrics fm(font);
 	QRectF indexRect = fm.boundingRect(tr("%1").arg(index));
 	qreal tempWidth = qMax(indexRect.width(), indexRect.height());
-	QRectF e(rectF.right() - tempWidth - ITEMSPACING, rectF.bottom() - tempWidth - ITEMSPACING, 
+	QRectF rcIndex(rcBounding.right() - tempWidth - ITEMSPACING, rcBounding.bottom() - tempWidth - ITEMSPACING, 
 		tempWidth, tempWidth);
 	painter->setBrush(Qt::black);
-	painter->drawEllipse(e);
-	painter->drawText(e, Qt::AlignCenter, tr("%1").arg(index));
+	painter->drawEllipse(rcIndex);
+	painter->drawText(rcIndex, Qt::AlignCenter, tr("%1").arg(index));
 	painter->setRenderHints(QPainter::Antialiasing);
 	painter->restore();
+	QPixmap iconPixmap = m_processor->icon().pixmap(16, 16);
+	QRectF rcIcon(rcBounding.left() + ITEMSPACING, rcBounding.bottom() - ITEMSPACING - iconPixmap.height(), iconPixmap.width(), iconPixmap.height());
+	painter->drawImage(rcIcon, iconPixmap.toImage());
 }
 
 void ProcessorGraphicsBlock::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
@@ -359,7 +363,6 @@ void ProcessorGraphicsBlock::setHover( bool bHovered /*= true*/ )
 	setState(STATE_MOUSEOVER, bHovered);
 	m_dropdownShadowEffect->setColor(bHovered ? Qt::yellow : Qt::gray);
 	m_dropdownShadowEffect->setEnabled(bHovered);
-	qDebug() << bHovered << " ";
 }
 
 QPointF ProcessorGraphicsBlock::getCrossPoint( const QLineF &line )
@@ -394,27 +397,130 @@ void ProcessorGraphicsBlock::setEmphasized( bool bEmphasized /*= true*/ )
 	m_dropdownShadowEffect->setEnabled(bEmphasized);
 }
 
-void ProcessorGraphicsBlock::setPortVisible(bool bVisible /*= true*/)
+void ProcessorGraphicsBlock::setPortVisible(bool bVisible, int iType)
 {
-	int iHeight = m_inputPorts.size() * (PORTITEM_WIDTH + 5);
-	int iTop	= boundingRect().top() + (boundingRect().height() - iHeight) / 2;
-	for (QList<PortItem*>::iterator itr = m_outputPorts.begin(); itr != m_outputPorts.end(); itr++)
+	int iHeight = 0;
+	int iTop	= 0;
+	if ((iType > 0 && m_bOutputPortVisible == bVisible) || (iType < 0 && m_bInputPortVisible == bVisible)
+		|| (iType == 0 && m_bInputPortVisible == bVisible && m_bOutputPortVisible == bVisible))
 	{
-		PortItem* pItem = *itr;
-		QRectF rect = boundingRect();
-		pItem->setPos(rect.right() + PORTITEM_WIDTH, iTop);
-		pItem->setVisible(bVisible);
+		return;
 	}
+	if (iType >= 0)
+		m_bOutputPortVisible = bVisible;
+	if (iType <= 0)
+		m_bInputPortVisible = bVisible;
 
-	iHeight = m_outputPorts.size() * (PORTITEM_WIDTH + 5);
-	iTop	= boundingRect().top() + (boundingRect().height() - iHeight) / 2;
-	for (QList<PortItem*>::iterator itr = m_inputPorts.begin(); itr != m_inputPorts.end(); itr++)
+	int iInputCount = m_inputPorts.size();
+	if (iInputCount > 0 && iType <= 0)
 	{
-		PortItem* pItem = *itr;
-		QRectF rect = boundingRect();
-		pItem->setPos(rect.left() - PORTITEM_WIDTH, iTop);
-		pItem->setVisible(bVisible);
+		iHeight = iInputCount * (PORTITEM_WIDTH + PORTITEM_SPACE) - PORTITEM_SPACE;
+		iTop	= boundingRect().top() + (boundingRect().height() - iHeight) / 2;
+		for (QList<PortItem*>::iterator itr = m_inputPorts.begin(); itr != m_inputPorts.end(); itr++)
+		{
+			PortItem* pItem = *itr;
+			QRectF rect = boundingRect();
+			pItem->setPos(rect.left() - PORTITEM_WIDTH, iTop);
+			pItem->setVisible(bVisible);
+			iTop += PORTITEM_WIDTH + PORTITEM_SPACE;
+		}
+		m_bInputPortVisible = bVisible;
+		emit portVisibleChanged(bVisible, -1);
 	}
+	
+	if (m_outputPorts.size() > 0 && iType >= 0)
+	{
+		iHeight = m_outputPorts.size() * (PORTITEM_WIDTH + PORTITEM_SPACE) - PORTITEM_SPACE;
+		iTop = boundingRect().top() + (boundingRect().height() - iHeight) / 2;
+		for (QList<PortItem*>::iterator itr = m_outputPorts.begin(); itr != m_outputPorts.end(); itr++)
+		{
+			PortItem* pItem = *itr;
+			QRectF rect = boundingRect();
+			pItem->setPos(rect.right() + PORTITEM_WIDTH, iTop);
+			pItem->setVisible(bVisible);
+			iTop += PORTITEM_WIDTH + PORTITEM_SPACE;
+		}
+		emit portVisibleChanged(bVisible, 1);
+	}
+}
+
+bool ProcessorGraphicsBlock::isPortVisible(int iType)
+{
+	return iType < 0 ? m_bInputPortVisible : (iType == 0 ? m_bInputPortVisible && m_bOutputPortVisible : m_bOutputPortVisible);
+}
+
+void ProcessorGraphicsBlock::onSetPortVisible()
+{
+	setPortVisible(!m_bInputPortVisible || !m_bOutputPortVisible, 0);
+}
+
+void ProcessorGraphicsBlock::onPortConnected(Port* src, Port* target)
+{
+	if (scene())
+	{
+		PortArrowLink* pLink = new PortArrowLink(this);
+		PortItem* pSrcPortItem = m_pNetView->getPortItem(src);
+		PortItem* pTargetPortItem = m_pNetView->getPortItem(target);
+		QObject::connect(pSrcPortItem, SIGNAL(visibleChanged()), pLink, SLOT(onPortVisibleChanged()));
+		pLink->connectPort(pSrcPortItem, pTargetPortItem);
+		m_portArrowLinks.append(pLink);
+		scene()->addItem(pLink);
+		if (src->processor() == this->processor() && m_bOutputPortVisible
+			|| target->processor() == this->processor() && m_bInputPortVisible)
+		{
+			pLink->setVisible(true);
+		}
+		else
+			pLink->setVisible(false);
+	}
+}
+
+void ProcessorGraphicsBlock::onPortDisconnected(Port* src, Port* target)
+{
+	if (scene())
+	{
+		QList<PortArrowLink*>::iterator itr = m_portArrowLinks.begin();
+		PortArrowLink* pLink = 0;
+		while (itr != m_portArrowLinks.end())
+		{
+			if ((*itr)->getSrc()->port() == src && (*itr)->getTarget()->port() == target)
+			{
+				pLink = (*itr);
+				break;
+			}
+			itr++;
+		}
+		if (pLink)
+		{
+			m_portArrowLinks.erase(itr);
+			delete pLink;
+		}
+	}
+}
+
+PortItem* ProcessorGraphicsBlock::cvtPortItem(Port* p)
+{
+	if (p->portType() == Port::IN_PORT)
+	{
+		QList<PortItem*>::iterator itr = m_inputPorts.begin();
+		while (itr != m_inputPorts.end())
+		{
+			if ((*itr)->port() == p)
+				return *itr;
+			itr++;
+		}
+	}
+	else
+	{
+		QList<PortItem*>::iterator itr = m_outputPorts.begin();
+		while (itr != m_outputPorts.end())
+		{
+			if ((*itr)->port() == p)
+				return *itr;
+			itr++;
+		}
+	}
+	return 0;
 }
 
 }

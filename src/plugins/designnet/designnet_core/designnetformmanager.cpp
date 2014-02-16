@@ -156,7 +156,7 @@ void DesignNetFormManager::setupActions()
 	pAction->setChecked(true);
 	pCommand = Core::ActionManager::registerAction(pAction, d->m_toolActionIds.back(), d->m_context);
 	pCommand->setAttribute(Core::Command::CA_Hide);
-	QObject::connect(pAction, SIGNAL(changed()), d->m_mainWindow, SLOT(onMoveAction()));
+	QObject::connect(pAction, SIGNAL(triggered(bool)), d->m_mainWindow, SLOT(onMoveAction(bool)));
 
 	d->m_toolActionIds.push_back(Core::Id(Constants::DESIGNNET_EDITSTATE_LINK_ACTION));
 	pAction = pActionGroup->addAction(QIcon(":/media/link.png"), tr(""));
@@ -164,7 +164,7 @@ void DesignNetFormManager::setupActions()
 	pCommand = Core::ActionManager::registerAction(pAction, d->m_toolActionIds.back(), d->m_context);
 	pCommand->setAttribute(Core::Command::CA_Hide);
 
-	QObject::connect(pAction, SIGNAL(changed()), d->m_mainWindow, SLOT(onConnectAction()));
+	QObject::connect(pAction, SIGNAL(triggered(bool)), d->m_mainWindow, SLOT(onConnectAction(bool)));
 }
 
 void DesignNetFormManager::addToolAction( QAction* pAction, const Core::Context& context, const Core::Id &id, Core::ActionContainer *pContainer, const QString& keySequence )

@@ -136,11 +136,15 @@ public:
 
 	bool connectTo(Processor* child);
 	bool disconnect(Processor* pChild);
+	bool isConnectTo(Processor* pChild);
 	void detach();
+
+
 
 	QReadWriteLock m_workingLock;
 
 signals:
+
 	void logout(QString log);
 	void connected(Processor* father, Processor* pChild);
 	void disconnected(Processor* father, Processor* pChild);
@@ -150,6 +154,10 @@ public slots:
 	void run(QFutureInterface<ProcessResult> &future);//!< 线程执行该函数
 
 	void onPropertyChanged_internal();
+
+	void onPortConnected(Port* src, Port* target);
+	void onPortDisconnected(Port* src, Port* target);
+
 
 protected:
 
@@ -176,6 +184,8 @@ protected:
 
 	QFutureWatcher<ProcessResult> m_watcher;	//!< 用于控制进度
 	QThread*  m_thread;
+
+	friend class Port;
 };
 }
 

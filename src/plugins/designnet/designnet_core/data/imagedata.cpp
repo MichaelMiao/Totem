@@ -10,17 +10,17 @@ ImageData::ImageData(int type, QObject *parent) :
 	switch (m_type){
 	case IMAGE_BGR:
 		{
-			m_image.load(QLatin1String(Constants::DATA_IMAGE_COLOR_IMAGE));
+//			m_image.load(QLatin1String(Constants::DATA_IMAGE_COLOR_IMAGE));
 			break;
 		}
 	case IMAGE_GRAY:
 		{
-			m_image.load(QLatin1String(Constants::DATA_IMAGE_GRAY_IMAGE));
+//			m_image.load(QLatin1String(Constants::DATA_IMAGE_GRAY_IMAGE));
 			break;
 		}
 	case IMAGE_BINARY:
 		{
-			m_image.load(QLatin1String(Constants::DATA_IMAGE_BINARY_IMAGE));
+//			m_image.load(QLatin1String(Constants::DATA_IMAGE_BINARY_IMAGE));
 			break;
 		}
 	}

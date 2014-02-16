@@ -71,12 +71,13 @@ bool IDocument::open(QString *errorString, const QString &fileName, const QStrin
     {
         const QFileInfo fi(fileName);
         m_bReadOnly = !fi.isWritable();
+		title = fi.fileName();
         m_fileName = QDir::cleanPath(fi.absoluteFilePath());
 
         m_document->setModified(false);
 
         m_document->setModified(fileName != realFileName);
-		emit titleChanged(m_fileName);
+		emit titleChanged(title);
         emit changed();
     }
     return true;

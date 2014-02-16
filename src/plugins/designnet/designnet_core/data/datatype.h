@@ -8,10 +8,17 @@ enum DataType
 	DATATYPE_IMAGE,
 	DATATYPE_GRAYIMAGE,
 	DATATYPE_8UC3IMAGE,
+	DATATYPE_BINARYIMAGE,
 	DATATYPE_STRING,
 	DATATYPE_USERTYPE,
 	DATATYPE_INVALID,
 };
+
+struct InnerDataType{
+	DataType	dt;
+	char*		strFile;
+};
+extern const InnerDataType g_InnerDataType[];
 
 enum ERROR_CODE
 {

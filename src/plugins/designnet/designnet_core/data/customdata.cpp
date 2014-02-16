@@ -44,7 +44,7 @@ bool CustomData::isValid() const
 
 QImage CustomData::image()
 {
-	m_image.load(Constants::DATA_IMAGE_INT);
+//	m_image.load(Constants::DATA_IMAGE_INT);
 	return m_image;
 }
 

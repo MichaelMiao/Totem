@@ -2,8 +2,10 @@
 
 
 #include "GraphicsUI/arrowlinkitem.h"
+#include "../designnetconstants.h"
 #include <QObject>
 #include <QGraphicsItem>
+
 
 namespace DesignNet
 {
@@ -14,10 +16,13 @@ class PortArrowLink : public GraphicsUI::ArrowLinkItem
 
 public:
 
+	TYPE(PortArrowLink, GraphicsItemType_PortConnect);
+
 	PortArrowLink(QGraphicsItem* parent);
 	~PortArrowLink();
 
 	void connectPort(PortItem* pSrc, PortItem* pTarget);
+
 	PortItem* getSrc() { return m_srcPortItem; }
 	PortItem* getTarget() { return m_targetPortItem; }
 
@@ -26,7 +31,8 @@ public:
 
 protected slots:
 	
-	void onProcessorPosChanged();
+	void onPortPosChanged();
+	void onPortVisibleChanged();
 
 protected:
 

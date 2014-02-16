@@ -15,10 +15,19 @@ public:
     virtual QRectF	boundingRect () const ;
     virtual void paint(QPainter * painter,
                        const QStyleOptionGraphicsItem * option,
-                       QWidget * widget = 0 );
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant & value );
+                       QWidget * widget = 0);
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant & value);
+
+	void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+	void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+
 signals:
     void positionChanged();
+
+private:
+		
+	bool m_bPressed;
 };
 }
 

@@ -81,7 +81,7 @@ Core::IDocument * DesignNetEditor::document()
 
 Core::Id DesignNetEditor::id() const
 {
-	return DesignNet::Constants::GRAPHICS_DESIGNNET_ID;
+	return DesignNet::Constants::NETEDITOR_ID;
 }
 
 QString DesignNetEditor::displayName() const

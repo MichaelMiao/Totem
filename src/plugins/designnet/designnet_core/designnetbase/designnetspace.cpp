@@ -154,38 +154,44 @@ bool DesignNetSpace::process(QFutureInterface<ProcessResult> &future)
         emit logout(tr("The designnet space can't be processed. Maybe there are some circle relationships in the space."));
 		return false;
     }
-	bool bNeedLoop = true;
-	while (bNeedLoop)
+	QList<Processor*> tempNet;
+	foreach(Processor* processor, exclusions)
 	{
-		bNeedLoop = false;
 
-		QList<Processor*> tempNet;
-		foreach(Processor* processor, exclusions)
-		{
-			QList<Processor*> processors;
-			if(processor->indegree(tempNet) == 0)
-			{
-				processor->start();
-				processors.push_back(processor);
-				tempNet.push_back(processor);
-			}
-			foreach(Processor* processor, processors)
-			{
-				processor->waitForFinish();
-				ProcessResult pr = processor->result();
-				qDebug() << pr.m_bSucessed << pr.m_bNeedLoop;
-				if (!pr.m_bSucessed)
-				{
-					emit logout(tr("Processor %d run faild").arg(processor->id()));
-					return false;
-				}
-				else
-				{
-					bNeedLoop |= processor->result().m_bNeedLoop;
-				}
-			}
-		}
 	}
+
+// 	bool bNeedLoop = true;
+// 	while (bNeedLoop)
+// 	{
+// 		bNeedLoop = false;
+// 
+// 		QList<Processor*> tempNet;
+// 		foreach(Processor* processor, exclusions)
+// 		{
+// 			QList<Processor*> processors;
+// 			if(processor->indegree(tempNet) == 0)
+// 			{
+// 				processor->start();
+// 				processors.push_back(processor);
+// 				tempNet.push_back(processor);
+// 			}
+// 			foreach(Processor* processor, processors)
+// 			{
+// 				processor->waitForFinish();
+// 				ProcessResult pr = processor->result();
+// 				qDebug() << pr.m_bSucessed << pr.m_bNeedLoop;
+// 				if (!pr.m_bSucessed)
+// 				{
+// 					emit logout(tr("Processor %d run faild").arg(processor->id()));
+// 					return false;
+// 				}
+// 				else
+// 				{
+// 					bNeedLoop |= processor->result().m_bNeedLoop;
+// 				}
+// 			}
+// 		}
+// 	}
 	
 	emit logout(tr("The designnet space has been processed."));
 	return true;

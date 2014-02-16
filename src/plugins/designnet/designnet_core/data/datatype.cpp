@@ -1,21 +1,18 @@
 #pragma once
 #include "datatype.h"
 #include <QtCore/QtCore>
+#include "designnetconstants.h"
+using namespace DesignNet;
 
-struct DataTypeInfo
+/// Data Type Image
+const InnerDataType g_InnerDataType[] =
 {
-	DataType	eDataType;
-	QString		strDataTypeName;
-};
-
-const DataTypeInfo g_DataTypeInfo[] =
-{
-	{ DATATYPE_INT, QLatin1String("int") },
-	{ DATATYPE_MATRIX, QLatin1String("matrix") },
-	{ DATATYPE_HISTOGRAM, QLatin1String("histogram") },
-	{ DATATYPE_GRAYIMAGE, QLatin1String("grayimage") },
-	{ DATATYPE_8UC3IMAGE, QLatin1String("image_8uc3") },
-	{ DATATYPE_STRING, QLatin1String("string") },
-	{ DATATYPE_USERTYPE, QLatin1String("usertype") },
-	{ DATATYPE_INVALID, QLatin1String("invalid") },
+	{ DATATYPE_INT, ":/media/intdata.png" },
+	{ DATATYPE_MATRIX, ":/media/matrix.jpg" },
+	{ DATATYPE_HISTOGRAM, ":/media/histogramimage.png" },
+	{ DATATYPE_IMAGE, ":/media/colorimage.png" },
+	{ DATATYPE_GRAYIMAGE, ":/media/grayimages.jpg" },
+	{ DATATYPE_8UC3IMAGE, ":/media/colorimage.png" },
+	{ DATATYPE_BINARYIMAGE, ":/media/binaryimage.png" },
+	{ DATATYPE_STRING, ":/media/textimage.png" },
 };

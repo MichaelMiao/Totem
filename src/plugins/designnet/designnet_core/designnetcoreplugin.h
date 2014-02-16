@@ -7,6 +7,7 @@ namespace DesignNet{
 class DesignNetCorePluginPrivate;
 class DESIGNNET_CORE_EXPORT DesignNetCorePlugin : public ExtensionSystem::IPlugin
 {
+	Q_OBJECT
 public:
 	DesignNetCorePlugin();
 	~DesignNetCorePlugin();

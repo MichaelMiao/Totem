@@ -2,6 +2,7 @@
 #define PROCESSORARROWLINK_H
 
 #include "GraphicsUI/arrowlinkitem.h"
+#include "../designnetconstants.h"
 #include <QObject>
 
 namespace DesignNet{
@@ -12,6 +13,9 @@ class ProcessorArrowLink : public GraphicsUI::ArrowLinkItem
 	Q_OBJECT
 
 public:
+
+	TYPE(ProcessorArrowLink, GraphicsItemType_ProcessConnect);
+
 	ProcessorArrowLink(QGraphicsItem *parent);
 	~ProcessorArrowLink();
 
@@ -23,9 +27,13 @@ public:
 	void updatePosition();
 
 protected slots:
+
 	void onProcessorPosChanged();
+
 protected:
-	virtual QVariant itemChange(GraphicsItemChange change, const QVariant & value );
+	
+	QVariant	itemChange(GraphicsItemChange change, const QVariant & value) override;
+
 private:
 	ProcessorGraphicsBlock* m_srcProcessor;
 	ProcessorGraphicsBlock* m_targetProcessor;

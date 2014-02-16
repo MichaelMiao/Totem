@@ -45,7 +45,16 @@ ProcessorArrowLink::ProcessorArrowLink(QGraphicsItem *parent)
 
 ProcessorArrowLink::~ProcessorArrowLink()
 {
-
+	if (m_srcProcessor)
+	{
+		m_srcProcessor->setEmphasized(false);
+		m_srcProcessor = 0;
+	}
+	if (m_targetProcessor)
+	{
+		m_targetProcessor->setEmphasized(false);
+		m_targetProcessor = 0;
+	}
 }
 
 void ProcessorArrowLink::connectProcessor( ProcessorGraphicsBlock* pSrc, ProcessorGraphicsBlock* pTarget )

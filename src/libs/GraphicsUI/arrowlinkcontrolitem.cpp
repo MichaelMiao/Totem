@@ -1,6 +1,9 @@
 #include "arrowlinkcontrolitem.h"
 #include <QPainterPath>
 #include <QPainter>
+#include <QGraphicsSceneMouseEvent>
+
+
 namespace GraphicsUI{
 const int AC_WIDTH = 12;
 const int AC_HEIGHT = 12;
@@ -8,8 +11,8 @@ ArrowLinkControlItem::ArrowLinkControlItem(QGraphicsItem *parent) :
     QGraphicsObject(parent)
 {
     setAcceptHoverEvents(true);
-    setFlags(ItemIsMovable
-             | ItemSendsScenePositionChanges
+	m_bPressed = false;
+    setFlags(ItemSendsScenePositionChanges
              | ItemIgnoresTransformations);
 }
 
@@ -49,6 +52,31 @@ QVariant ArrowLinkControlItem::itemChange(QGraphicsItem::GraphicsItemChange chan
 ArrowLinkControlItem::~ArrowLinkControlItem()
 {
 
+}
+
+void ArrowLinkControlItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+	if (!m_bPressed)
+		return;
+
+	QPointF pt = event->scenePos();
+	QPointF ptItem = pt;
+	if (parentItem())
+		ptItem = parentItem()->mapFromScene(pt);
+	setPos(ptItem);
+	event->accept();
+}
+
+void ArrowLinkControlItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+	grabMouse();
+	m_bPressed = true;
+}
+
+void ArrowLinkControlItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+	ungrabMouse();
+	m_bPressed = false;
 }
 
 }

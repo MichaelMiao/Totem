@@ -1,9 +1,12 @@
 #include "port.h"
-#include "utils/totemassert.h"
-#include "coreplugin/icore.h"
-#include "coreplugin/messagemanager.h"
-#include "processor.h"
 #include <QWriteLocker>
+#include "../../../coreplugin/icore.h"
+#include "../../../coreplugin/messagemanager.h"
+#include "../designnetconstants.h"
+#include "utils/totemassert.h"
+#include "processor.h"
+
+
 namespace DesignNet{
 
 Port::Port(PortType portType, DataType dt, const QString &name, QObject *parent) :
@@ -19,42 +22,52 @@ Port::Port(PortType portType, DataType dt, const QString &name, QObject *parent)
  * \brief Port::connect
  *
  * 1、自己不能连接自己
- * 2、要么this可以和port连接，要么port可以和this连接
  * \param[in] port 要连接的端口
  * \return 是否连接成功
  *
  */
 bool Port::connect(Port *port)
 {
-    TOTEM_ASSERT(port != 0, return false);
     if(port == this)
         return false;
     if(!canConnectTo(port))
         return false;
+	bool bConnected = m_processor->isConnectTo(port->processor());
     m_portsConnected.push_back(port);
     port->addConnectedPort(this);/// 直接将自己放到inputPort的列表中
-    ///
-    /// 两端口通知状态改变
-    this->notifyStateChanged();
-    port->notifyStateChanged();
+	if (!bConnected)
+		emit m_processor->connected(m_processor, port->processor());
+	
     return true;
 }
 
-bool Port::disconnect(Port *port)
+bool Port::disconnect(Port *inputport)
 {
-    if(port == 0)/// 移除所有链接的端口
+	QList<Processor*> procConnectedOld = connectedProcessors();
+
+    if(inputport == 0)/// 移除所有链接的端口
     {
         foreach(Port* p, m_portsConnected)
         {
            p->removeConnectedPort(this);
+		   emit disconnectPort(this, p);
         }
         m_portsConnected.clear();
     }
     else
     {
-        this->removeConnectedPort(port);
-        port->removeConnectedPort(this);
+        this->removeConnectedPort(inputport);
+        inputport->removeConnectedPort(this);
+		emit disconnectPort(this, inputport);
     }
+	QList<Processor*> procConnected = connectedProcessors();
+	QList<Processor*>::iterator itr = procConnectedOld.begin();
+	while (itr != procConnectedOld.end())
+	{
+		if (!procConnected.contains(*itr))
+			emit m_processor->disconnected(m_processor, *itr);
+		itr++;
+	}
     return true;
 }
 /*!
@@ -70,13 +83,10 @@ bool Port::disconnect(Port *port)
  */
 bool Port::canConnectTo(Port *inputPort)
 {
-    TOTEM_ASSERT(inputPort != 0, return false);
     ///
     /// 本端口需要是\e OUT_PORT 类型的，inputPort的类型应该是输入端口
     if(m_portType!= OUT_PORT || inputPort->portType() != IN_PORT)
-    {
-        return false;
-    }
+		return false;
     ///
     /// 该端口不能是已经连接过的
     if(isConnectedTo(inputPort))
@@ -147,12 +157,19 @@ void Port::addConnectedPort(Port *port)
     if(m_portsConnected.contains(port))
         return;
     m_portsConnected.push_back(port);
+	if (m_portType == OUT_PORT)
+		emit connectPort(this, port);
+	else
+		emit connectPort(port, this);
 }
 
 void Port::removeConnectedPort(Port *port)
 {
     m_portsConnected.removeOne(port);
-	emit disconnectFromPort(port);
+	if (m_portType == OUT_PORT)
+		emit disconnectPort(this, port);
+	else
+		emit disconnectPort(port, this);
 }
 
 QString Port::name() const
@@ -163,10 +180,6 @@ QString Port::name() const
 void Port::setName(const QString &name)
 {
     m_name = name;
-}
-
-void Port::notifyStateChanged()
-{
 }
 
 void Port::addData(ProcessData* data)
@@ -188,6 +201,10 @@ Port::~Port()
 void Port::setMultiInputSupported( const bool &bSupported /*= true*/ )
 {
 	m_bMultiInput = bSupported;
+}
+
+ProcessData::ProcessData(DataType dt /*= DATATYPE_INVALID*/) : dataType(dt)
+{
 }
 
 }

@@ -35,12 +35,6 @@ const char DESIGN_DOCKNAME_AVAILIABLEDATA[] = "DockName.AvailiableData";
 const char ITEM_IMAGE_PORT_CONNECTED[]        = ":/media/port_connected.png";
 const char ITEM_IMAGE_PORT_NOTCONNECTED[]     = ":/media/port_notconnected.png";
 
-/// Data Type Image
-const char DATA_IMAGE_COLOR_IMAGE[]			= ":/media/colorimage.png";
-const char DATA_IMAGE_GRAY_IMAGE[]			= ":/media/grayimages.jpg";
-const char DATA_IMAGE_BINARY_IMAGE[]		= ":/media/binaryimage.png";
-const char DATA_IMAGE_MATRIX[]				= ":/media/matrix.jpg";
-const char DATA_IMAGE_INT[]					= ":/media/intdata.png";
 //MIME Type
 const char MIME_TYPE_TOOLITEM[] = "DesignNet/ToolItem";
 
@@ -73,13 +67,20 @@ const float ZValue_Tooltip = 40.0f;
 
 ///
 /// GraphicsItem的Type
-const int PortGraphicsItemType = 1;         //!< 端口类型
-const int PortArrowLinkItemType = 2;        //!< 端口箭头类型
-const int ProcessorGraphicsBlockType = 3;   //!< 处理器类型
+const int GraphicsItemType_Port			= 1;	//!< 端口类型
+const int GraphicsItemType_PortConnect	= 2;	//!< 端口箭头类型
+const int GraphicsItemType_Process		= 3;	//!< 处理器类型
+const int GraphicsItemType_ProcessConnect = 4;	//!< 处理器箭头类型
 }//namespace DesignNet
 
 
 #define _T(x) QLatin1String(x)
-#define PORTITEM_WIDTH		10
+
+#define PORTITEM_WIDTH		16
+#define PORTITEM_SPACE		5
+
+#define TYPE(CLASS, x) \
+	enum { Type = UserType + x }; \
+	int type() const override { return CLASS::Type; }
 
 #endif // DESIGNNETCONSTANTS_H
