@@ -168,4 +168,16 @@ void PathListWidget::selectChanged(QModelIndex index)
         m_pathLineEdit->setButtonVisible(FancyLineEdit::Right, true);
     }
 }
+
+void PathListWidget::setPaths(QStringList strFileList)
+{
+	QStringList::iterator itr = strFileList.begin();
+	while (itr != strFileList.end())
+	{
+		m_model->addPath(*itr);
+		m_pathLineEdit->setText(*itr);
+		itr++;
+	}
+}
+
 }

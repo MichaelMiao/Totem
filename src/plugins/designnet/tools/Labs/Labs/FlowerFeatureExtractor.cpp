@@ -6,6 +6,7 @@
 #include <QDebug>
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/features2d/features2d.hpp"
+#include "opencv2/nonfree/features2d.hpp"
 #define PI	3.1415926
 
 using namespace cv;
@@ -13,6 +14,18 @@ using namespace cv;
 static int compareDis(std::pair<cv::Point2i, float> p1, std::pair<cv::Point2i, float> p2)
 {
 	return p1.second > p2.second;
+}
+
+FlowerFeatureExtractor::FlowerFeatureExtractor(cv::Mat matBGR)
+{
+	m_srcMat = matBGR;
+	m_glcm = cv::Mat::zeros(8, 8, CV_32F);
+	m_glcm_sobel = cv::Mat::zeros(8, 8, CV_32F);
+	cv::cvtColor(m_srcMat, m_hsvMat, COLOR_BGR2HSV);
+	cv::cvtColor(m_srcMat, m_grayMat, COLOR_BGR2GRAY);
+	cv::GaussianBlur(m_binaryMat, m_binaryMat, cv::Size(3, 3), 0);
+	cv::morphologyEx(m_binaryMat, m_binaryMat, cv::MORPH_CLOSE, cv::Mat(5,5,CV_8U,Scalar(1)));
+	cv::threshold(m_grayMat, m_binaryMat, 1, 255, CV_THRESH_BINARY);
 }
 
 cv::Mat FlowerFeatureExtractor::extractFeature(cv::Mat mat)
@@ -200,7 +213,7 @@ cv::Mat FlowerFeatureExtractor::siftFeature(cv::Mat mat)
 	return cv::Mat();
 }
 
-cv::Mat FlowerFeatureExtractor::extractShape(cv::Mat matBinary)
+cv::Mat FlowerFeatureExtractor::extractShape()
 {
 	/// 求中心
 	cv::Point2d centroid(0, 0);
@@ -307,27 +320,15 @@ cv::Mat FlowerFeatureExtractor::extractShape(cv::Mat matBinary)
 	return mat;
 }
 
-cv::Mat FlowerFeatureExtractor::extractShape2(cv::Mat mat)
+cv::Mat FlowerFeatureExtractor::extractShape2()
 {
-	cv::cvtColor(mat, m_grayMat, COLOR_BGR2GRAY);
-	cv::threshold(m_grayMat, m_binaryMat, 1, 255, CV_THRESH_BINARY);
-	return getGradient();
+//	return getGradient();
 	cv::Moments m = cv::moments(m_binaryMat, true);
 	double dhu[7];
 	cv::HuMoments(m, dhu);
 	cv::Mat feature(1, 7, CV_32FC1);
 	for (int i = 0; i < 7; i++)
-	{
 		feature.at<float>(0, i) = dhu[i];
-	}
-
-	for (int r = 0; r < m_binaryMat.rows; r++)
-	{
-		for (int c = 0; c < m_binaryMat.cols; c++)
-		{
-
-		}
-	}
 	return feature;
 }
 
@@ -387,22 +388,55 @@ cv::Mat FlowerFeatureExtractor::getGradient()
 		true,
 		false);
 	hist = hist.reshape(1,1);
-	std::ofstream ofile;
-	ofile.open("I:/test.txt");
-	for (int i = 0; i < hist.cols; i++)
-	{
-		ofile << hist.at<float>(0, i) << "\r\n";
-	}
-	ofile.close();
 	return hist;
 }
 
 cv::Mat FlowerFeatureExtractor::extractGLCM()
 {
-	int iBottom = m_rect.y + m_rect.height;
-	int iRight	= m_rect.x + m_rect.width;
-	int iLeft	= m_rect.x;
-	int iTop	= m_rect.y;
+	/// 求中心
+	cv::Point2d centroid(0, 0);
+	vector<vector<cv::Point> > countours;
+
+	cv::findContours(m_binaryMat.clone(), countours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+	size_t counts = countours.size();
+	double maxarea = 0;
+	cv::Rect maxrect(0, 0, 2, 2);
+	size_t max_index = -1;
+	for (size_t i = 0; i < counts ; ++i)
+	{
+		cv::Rect rect = cv::boundingRect(countours.at(i));
+		if(rect.area() > maxarea)
+		{
+			maxarea = rect.area();
+			maxrect = rect;
+			max_index = i;
+		}
+	}
+	m_rect = maxrect;
+	/// 求重心 坐标求和后求平均值
+	int iCount = 0;
+	int iX = 0;
+	int iY = 0;
+	int iBottom = maxrect.y + maxrect.height;
+	int iRight	= maxrect.x + maxrect.width;
+	int iLeft	= maxrect.x;
+	int iTop	= maxrect.y;
+	for(int r = maxrect.y; r <= iBottom; ++r)
+	{
+		for(int c = maxrect.x; c <= iRight; ++c)
+		{
+			if (m_binaryMat.at<uchar>(r, c) == 255)
+			{
+				iX += c;
+				iY += r;
+				iCount++;
+			}
+		}
+	}
+	centroid.x = iX * 1.0 / iCount;
+	centroid.y = iY * 1.0 / iCount;
+	m_centroid = centroid;
+	//////////////////////////////////////////////////////////////////////////
 	double radius = qMax(qMax(iRight - m_centroid.x, m_centroid.x - iLeft), qMax(m_centroid.y - iTop, iBottom - m_centroid.y));/// 半径
 	double B_min = radius / 3;
 	double B_max = radius * 2 / 3;
@@ -458,7 +492,7 @@ cv::Mat FlowerFeatureExtractor::extractGLCM()
 	///计算灰度共生矩阵的特征值
 	/// 归一化灰度共生矩阵
 	//////////////////////////////////////////////////////////////////////////
-	cv::Mat feature(1, 21, CV_32FC1);
+	cv::Mat feature(1, 6, CV_32FC1);
 	normalize(m_glcm);
 	normalize(m_glcm_sobel);
 	feature.at<float>(0, 0) = energe(m_glcm);
@@ -473,7 +507,7 @@ cv::Mat FlowerFeatureExtractor::extractGLCM()
 cv::Mat FlowerFeatureExtractor::extractColor()
 {
 	cv::Mat matRet;
-	int hbins = 40, sbins = 50;
+	int hbins = 10, sbins = 15;
 	int histSize[] = { hbins, sbins };
 	float hranges[] = { 0, 180 };
 	float sranges[] = { 0, 256 };
@@ -488,21 +522,110 @@ cv::Mat FlowerFeatureExtractor::extractColor()
 	double maxVal=0;
 	cv::minMaxLoc(hist, 0, &maxVal, 0, 0);
 
-	int scale = 10;
-	Mat histImg = Mat::zeros(sbins * scale, hbins * 10, CV_8UC3);
 	std::vector<std::pair<cv::Point2i, float> > fVec;
-	for( int h = 0; h < hbins; h++ )
+
+	for(int h = 0; h < hbins; h++)
 	{
+		float fSum = 0;
 		for( int s = 0; s < sbins; s++ )
-			fVec.push_back(std::make_pair(cv::Point2i(h, s), hist.at<float>(h, s)));
+			fSum += hist.at<float>(h, s);
+		matRet.push_back(fSum);
 	}
-	sort(fVec.begin(), fVec.end(), compareDis);
-	for (int i = 0; i < 64; i++)
+	for (int s = 0; s < sbins; s++)
 	{
-		matRet.push_back(fVec.at(i).first.x);
-		matRet.push_back(fVec.at(i).first.y);
+		float fSum = 0;
+		for( int h = 0; h < hbins; h++ )
+			fSum += hist.at<float>(h, s);
+		matRet.push_back(fSum);
 	}
 	matRet = matRet.reshape(1, 1);
 	matRet.convertTo(matRet, CV_32F);
 	return matRet;
+}
+
+cv::Mat FlowerFeatureExtractor::extractShapeDistance()
+{
+	/// 求中心
+	cv::Point2d centroid(0, 0);
+	vector<vector<cv::Point> > countours;
+
+	cv::findContours(m_binaryMat.clone(), countours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+	size_t counts = countours.size();
+	double maxarea = 0;
+	cv::Rect maxrect(0, 0, 2, 2);
+	size_t max_index = -1;
+	for (size_t i = 0; i < counts ; ++i)
+	{
+		cv::Rect rect = cv::boundingRect(countours.at(i));
+		if(rect.area() > maxarea)
+		{
+			maxarea = rect.area();
+			maxrect = rect;
+			max_index = i;
+		}
+	}
+	m_rect = maxrect;
+	/// 求重心 坐标求和后求平均值
+	int iCount = 0;
+	int iX = 0;
+	int iY = 0;
+	int iBottom = maxrect.y + maxrect.height;
+	int iRight	= maxrect.x + maxrect.width;
+	int iLeft	= maxrect.x;
+	int iTop	= maxrect.y;
+	for(int r = maxrect.y; r <= iBottom; ++r)
+	{
+		for(int c = maxrect.x; c <= iRight; ++c)
+		{
+			if (m_binaryMat.at<uchar>(r, c) == 255)
+			{
+				iX += c;
+				iY += r;
+				iCount++;
+			}
+		}
+	}
+	centroid.x = iX * 1.0 / iCount;
+	centroid.y = iY * 1.0 / iCount;
+	m_centroid = centroid;
+
+	vector<cv::Point> &max_countours = countours.at(max_index);
+	std::vector<int> vecCounts;
+	std::vector<float> vecDis;
+	float fMax = 0;
+	float fMin = 1000;
+	for (size_t t = 0; t < max_countours.size(); t++)
+	{
+		cv::Point p = max_countours.at(t);
+		float fDis = sqrtf((p.x - m_centroid.x) * (p.x - m_centroid.x) + (p.y - m_centroid.y) * (p.y - m_centroid.y));
+		vecDis.push_back(fDis);
+		fMax = qMax(fDis, fMax);
+		fMin = qMin(fDis, fMin);
+	}
+	cv::MatND hist;
+	float hranges[] = { fMin, fMax };
+	const float *ranges[] = { hranges };
+	int channels[] = { 0 };
+	int hbins = 15;
+	int histSize[] = { hbins };
+	cv::Mat matCounts(vecDis);
+	matCounts.convertTo(matCounts, CV_32FC1);
+	cv::calcHist(&matCounts, 1, channels, cv::Mat(),
+		hist, 1, &hbins, ranges,
+		true,
+		false);
+	
+	hist = hist.reshape(1,1);
+	return hist;
+}
+
+#define SIFTFEATURE_COUNT 100
+
+cv::Mat FlowerFeatureExtractor::extractSift()
+{
+	cv::SIFT ext(SIFTFEATURE_COUNT);
+	std::vector<cv::KeyPoint> keyPoints;
+	cv::Mat descriptor;
+	ext(m_grayMat, m_binaryMat, keyPoints, descriptor);
+	return descriptor;
 }

@@ -13,14 +13,14 @@ class ColorSpaceConversion : public DesignNet::Processor
 	Q_OBJECT
 
 public:
+
+	DECLEAR_PROCESSOR(ColorSpaceConversion)
+
 	ColorSpaceConversion(DesignNet::DesignNetSpace *space, QObject *parent = 0);
 	virtual ~ColorSpaceConversion();
-	virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const;
 	virtual QString title() const;
 	virtual QString category() const;//!< 种类
 	virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);     //!< 处理函数
-
-	bool connectionTest(DesignNet::Port* src, DesignNet::Port* target);
 
 public slots:
 	virtual void propertyChanged(DesignNet::Property *prop);

@@ -6,43 +6,29 @@
 #include <vector>
 using namespace std;
 using namespace DesignNet;
-class BufferProcessorPrivate
+
+enum PortIndex
 {
-public: 
-	BufferProcessorPrivate(BufferProcessor *processor)
-		: m_processor(processor),
-		m_bufferSizePort(new IntData(10, processor), Port::IN_PORT, "Buffer Size"),
-		m_inputBufferPort(new MatrixData(processor), Port::IN_PORT, "Input Buffer"),
-		m_outputMatrixPort(new MatrixData(processor), Port::OUT_PORT, "Output Matrix")
-	{
-		m_inputBufferPort.setMultiInputSupported(true);
-	}
-	DesignNet::Port				m_bufferSizePort;
-	DesignNet::Port				m_inputBufferPort;
-	DesignNet::Port				m_outputMatrixPort;
-	BufferProcessor*			m_processor;
-	std::vector<cv::Mat>		m_mats;
+	PortIndex_In,
+	PortIndex_Out,
 };
 
+static PortData s_ports[] =
+{
+	{ Port::IN_PORT,	DATATYPE_MATRIX,	"Input Matrix" },
+	{ Port::OUT_PORT,	DATATYPE_MATRIX,	"Output Buffer" },
+};
 
 BufferProcessor::BufferProcessor( DesignNet::DesignNetSpace *space, QObject* parent /*= 0*/ )
-	: DesignNet::Processor(space, parent),
-	d(new BufferProcessorPrivate(this))
+	: DesignNet::Processor(space, parent)
 {
-	addPort(&d->m_bufferSizePort);
-	addPort(&d->m_inputBufferPort);
-	addPort(&d->m_outputMatrixPort);
+	for (int i = 0; i < _countof(s_ports); i++)
+		addPort(s_ports[i].ePortType, s_ports[i].eDataType, s_ports[i].strName);
 	setName(tr("Buffer"));
 }
 
 BufferProcessor::~BufferProcessor()
 {
-	delete d;
-}
-
-DesignNet::Processor* BufferProcessor::create( DesignNet::DesignNetSpace *space /*= 0*/ ) const
-{
-	return new BufferProcessor(space);
 }
 
 QString BufferProcessor::title() const
@@ -57,28 +43,10 @@ QString BufferProcessor::category() const
 
 bool BufferProcessor::process(QFutureInterface<ProcessResult> &future)
 {
-	QVector<IData*> datas = getData("Input Buffer");
-	if (datas.size() == 0)
-	{
-		emit logout("There's no input data.");
-		return false;
-	}
-	foreach (IData* data, datas)
-	{
-		MatrixData *mat = (MatrixData*)data;
-		d->m_mats.push_back(mat->getMatrix());
-	}
-	IntData* dataCount = (IntData*)d->m_bufferSizePort.getInputData().at(0);
-	Q_ASSERT(dataCount->value() > 0);
-	if (d->m_mats.size() < dataCount->value())
-		return true;
-	
-	cv::Mat mat;
-	cv::merge(d->m_mats, mat);
-	MatrixData data;
-	data.setMatrix(mat);
-	pushData(&data, "Output Matrix");
-	d->m_mats.clear();
+	ProcessData pd = getOneData(s_ports[PortIndex_In].strName);
+	cv::Mat mat = pd.variant.value<cv::Mat>();
+	cv::merge(m_mats, mat);
+	pushData(qVariantFromValue(mat), DATATYPE_MATRIX, s_ports[PortIndex_Out].strName);
 	return true;
 }
 

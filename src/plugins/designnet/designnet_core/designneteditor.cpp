@@ -54,7 +54,6 @@ DesignNetEditor::DesignNetEditor(QObject *parent)
 		this, SLOT(onDeserialized(Utils::XmlDeserializer &)));
 	connect(d->m_file, SIGNAL(serialized(Utils::XmlSerializer &)), 
 		this, SLOT(onSerialized(Utils::XmlSerializer &)));
-
 	createCommand();
 }
 
@@ -71,6 +70,7 @@ bool DesignNetEditor::createNew( const QString &contents /*= QString()*/ )
 bool DesignNetEditor::open( QString *errorString, const QString &fileName, const QString &realFileName )
 {
 	bool bret = d->m_file->open(errorString, fileName, realFileName);
+	connect(d->m_file->designNetSpace(), SIGNAL(processFinished()), this, SIGNAL(designNetFinished()));
 	return bret;
 }
 
@@ -141,19 +141,23 @@ void DesignNetEditor::createCommand()
 
 bool DesignNetEditor::run()
 {
+	if (d->m_file->designNetSpace()->isRunning())
+		return false;
+
 	QFutureWatcher<bool> bWatcher;
 	bWatcher.setFuture(QtConcurrent::run(d->m_file->designNetSpace(), &DesignNetSpace::prepareProcess));
 	bWatcher.waitForFinished();
 	if (bWatcher.result() == false)
 		return false;
+	
 	d->m_file->designNetSpace()->start();
-
-	bWatcher.setFuture(QtConcurrent::run(d->m_file->designNetSpace(), &DesignNetSpace::finishProcess));
-	bWatcher.waitForFinished();
-	if (bWatcher.result() == false)
-		return false;
-
 	return true;
+}
+
+void DesignNetEditor::onFinish()
+{
+	int i = 0;
+	i++;
 }
 
 }

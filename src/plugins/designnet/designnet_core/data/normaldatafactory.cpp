@@ -13,7 +13,9 @@ NormalDataFactory::NormalDataFactory(QObject *parent)
 IDataWidget *NormalDataFactory::createWidget(IData *data, QGraphicsItem* parent)
 {
 	IDataWidget* widget = 0;
-    if(data->id() == DesignNet::Constants::DATA_TYPE_IMAGE)
+	if (!data)
+		return 0;
+	if(data->id() == DesignNet::Constants::DATA_TYPE_IMAGE)
     {
         widget = new ImageDataWidget(data, parent);
     }

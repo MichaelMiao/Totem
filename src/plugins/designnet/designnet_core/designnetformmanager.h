@@ -35,6 +35,7 @@ public:
 public slots:
 
 	void onRunDesignNet();
+	void onDesignNetFinished();
 
 protected:
 	void setupActions();

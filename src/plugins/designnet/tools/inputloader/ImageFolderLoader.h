@@ -27,11 +27,22 @@ public:
 	void setPath(const QString &p);
 	QString path() const;
 
-	virtual void serialize(Utils::XmlSerializer& s) const;
-	virtual void deserialize(Utils::XmlDeserializer& s);
+	virtual void serialize(Utils::XmlSerializer& s) const
+	{
+		Processor::serialize(s);
+	}
+	virtual void deserialize(Utils::XmlDeserializer& s)
+	{
+		Processor::deserialize(s);
+	}
 
-signals:
+
 protected:
+
+	bool waitForAccept();	//!< 等待所有子processor处理完
+	virtual void onChildProcessorFinish(Processor* p);
+	QList<Processor*> m_listWaitProcessors;	//!< 当前正在等待的处理器列表
+	
 	
 	void LoadSiftFeature();
 	void LoadLabel();
@@ -61,6 +72,7 @@ protected:
 	DesignNet::ImageData		m_imageData;
 
 	mutable QReadWriteLock	m_lock;
+	mutable QMutex	m_waitLock;
 };
 
 }

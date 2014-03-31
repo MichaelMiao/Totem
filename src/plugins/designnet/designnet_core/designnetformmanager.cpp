@@ -175,7 +175,21 @@ void DesignNetFormManager::addToolAction( QAction* pAction, const Core::Context&
 void DesignNetFormManager::onRunDesignNet()
 {
 	DesignNetEditor *pEditor = qobject_cast<DesignNetEditor *>(Core::EditorManager::instance()->currentEditor());
+	connect(pEditor, SIGNAL(designNetFinished()), this, SLOT(onDesignNetFinished()));
 	if (pEditor)
+	{
+		Command *pRun = ActionManager::instance()->command(Constants::DESIGNNET_PROCESS_ID);
+		pRun->action()->setDisabled(true);
 		pEditor->run();
+	}
 }
+
+void DesignNetFormManager::onDesignNetFinished()
+{
+	DesignNetEditor *pEditor = qobject_cast<DesignNetEditor *>(sender());
+	disconnect(pEditor, SIGNAL(designNetFinished()), this, SLOT(onDesignNetFinished()));
+	Command *pRun = ActionManager::instance()->command(Constants::DESIGNNET_PROCESS_ID);
+	pRun->action()->setDisabled(false);
+}
+
 }

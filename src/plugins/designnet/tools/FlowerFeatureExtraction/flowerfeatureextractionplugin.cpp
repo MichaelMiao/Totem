@@ -1,8 +1,11 @@
 #include "flowerfeatureextractionplugin.h"
+#include <QtPlugin>
+#include "featureringcca.h"
+#include "HistogramOfEdgeGradient.h"
 #include "hscolorfeature.h"
 #include "polorglcmblock.h"
-#include "featureringcca.h"
-#include <QtPlugin>
+
+
 namespace FlowerFeatureExtraction{
 FlowerFeatureExtractionPlugin::FlowerFeatureExtractionPlugin(QObject *parent)
 {
@@ -22,6 +25,7 @@ void FlowerFeatureExtractionPlugin::extensionsInitialized()
 	addAutoReleasedObject(m_featureProcessor);
 	addAutoReleasedObject(m_polorGLCM);
 	addAutoReleasedObject(m_featureRingCCA);
+	addAutoReleasedObject(new HistogramOfEdgeGradient(0));
 }
 
 bool FlowerFeatureExtractionPlugin::initialize( const QStringList &arguments, QString *errorString )

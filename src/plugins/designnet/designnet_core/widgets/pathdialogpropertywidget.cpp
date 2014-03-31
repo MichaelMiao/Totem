@@ -28,7 +28,12 @@ PathDialogPropertyWidget::PathDialogPropertyWidget(PathDialogProperty *prop, QWi
     d(new PathDialogPropertyWidgetPrivate(this))
 {
     d->m_pathListWidget = new PathListWidget(prop->m_filters, prop->nameFilters(), prop->m_bSinglePath, parent);
-    addWidget(d->m_pathListWidget);
+    QList<Utils::Path> listPath = prop->paths();
+	QStringList tempPaths;
+	for (QList<Utils::Path>::iterator itr = listPath.begin(); itr != listPath.end(); itr++)
+		tempPaths << (*itr).m_path;
+	d->m_pathListWidget->setPaths(tempPaths);
+	addWidget(d->m_pathListWidget);
     connect(d->m_pathListWidget, SIGNAL(dataChanged()), this, SLOT(onDataChanged()));
 }
 

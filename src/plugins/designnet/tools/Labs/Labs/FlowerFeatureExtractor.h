@@ -11,7 +11,10 @@
 
 class FlowerFeatureExtractor
 {
+
 public:
+
+	FlowerFeatureExtractor(cv::Mat matBGR);
 
 	cv::Mat extractFeature(cv::Mat mat);
 	cv::Mat siftFeature(cv::Mat mat);
@@ -21,11 +24,14 @@ public:
 	float contrast(const cv::Mat &glcm);//!<  计算对比度
 	float homogeneity(const cv::Mat &glcm);//!< 计算同质性，GLCM中元素对角线分布的控件紧密度的度量
 
-	cv::Mat extractShape(cv::Mat matBinary);
-	cv::Mat extractShape2(cv::Mat matBinary);
+	cv::Mat extractShape();
+	cv::Mat extractShape2();
+	cv::Mat extractShapeDistance();
 	cv::Mat getGradient();
 	cv::Mat extractGLCM();
 	cv::Mat extractColor();
+
+	cv::Mat extractSift();
 
 private:
 

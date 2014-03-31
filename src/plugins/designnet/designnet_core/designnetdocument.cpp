@@ -41,6 +41,7 @@ DesignNetDocument::DesignNetDocument(DesignNetEditor *parent)
 	d->bModified    = false;
 	d->space		= new DesignNetSpace(0, this);
 	connect(d->space, SIGNAL(modified()), this, SLOT(onModified()));
+	m_bOpening		= false;
 }
 
 DesignNetDocument::~DesignNetDocument()
@@ -129,16 +130,19 @@ DesignNetSpace * DesignNetDocument::designNetSpace() const
 
 void DesignNetDocument::onModified()
 {
-	setModified(true);
+	if (!m_bOpening)
+		setModified(true);
 }
 
 bool DesignNetDocument::open( QString *errorString, const QString &fileName, const QString &realFileName )
 {
+	m_bOpening = true;
 	bool bRet = IDocument::open(errorString, fileName, realFileName);
 	d->space->setObjectName(realFileName);
 	Utils::XmlDeserializer deserializer(realFileName);
 	deserializer.deserialize("DesignNetSpace", *(d->space));
 	emit deserialized(deserializer);
+	m_bOpening = false;
 	return bRet;
 }
 

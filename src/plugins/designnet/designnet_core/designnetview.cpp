@@ -2,6 +2,7 @@
 #include <QAction>
 #include <QApplication>
 #include <QDropEvent>
+#include <QtOpenGL\QGLWidget>
 #include <QGraphicsItem>
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
@@ -27,6 +28,64 @@
 
 
 namespace DesignNet{
+
+
+class GraphicsConnection : public Utils::XmlSerializable
+{
+public:
+
+	DECLARE_SERIALIZABLE_NOTYPE(GraphicsConnection)
+
+	GraphicsConnection() : m_srcProcessor(-1), m_targetProcessor(-1), m_srcPort(-1), m_targetPort(-1), m_pt1(0, 0), m_pt2(0, 0) {}
+	GraphicsConnection(const GraphicsConnection &c)
+	{
+		m_srcProcessor	= c.m_srcProcessor;
+		m_srcPort		= c.m_srcPort;
+		m_targetProcessor = c.m_targetProcessor;
+		m_targetPort	= c.m_targetPort;
+		m_pt1			= c.m_pt1;
+		m_pt2			= c.m_pt2;
+	}
+
+	virtual void serialize(Utils::XmlSerializer& s) const
+	{
+		s.serialize("SrcProcessor", m_srcProcessor);
+		s.serialize("TargetProcessor", m_targetProcessor);
+		s.serialize("SrcPort", m_srcPort);
+		s.serialize("TargetPort", m_targetPort);
+		s.serialize("pt1.x", m_pt1.x());
+		s.serialize("pt1.y", m_pt1.y());
+		s.serialize("pt2.x", m_pt2.x());
+		s.serialize("pt2.y", m_pt2.y());
+	}
+
+	virtual void deserialize(Utils::XmlDeserializer& s)
+	{
+		s.deserialize("SrcProcessor", m_srcProcessor);
+		s.deserialize("TargetProcessor", m_targetProcessor);
+		s.deserialize("SrcPort", m_srcPort);
+		s.deserialize("TargetPort", m_targetPort);
+		int x, y;
+		s.deserialize("pt1.x", x);
+		s.deserialize("pt1.y", y);
+		m_pt1.setX(x);
+		m_pt1.setY(y);
+		s.deserialize("pt2.x", x);
+		s.deserialize("pt2.y", y);
+		m_pt2.setX(x);
+		m_pt2.setY(y);
+	}
+
+	int			m_srcProcessor;
+	int			m_srcPort;
+	int			m_targetProcessor;
+	int			m_targetPort;
+	QPointF		m_pt1;
+	QPointF		m_pt2;
+};
+
+
+
 class DesignNetViewPrivate
 {
 public:
@@ -65,16 +124,17 @@ DesignNetView::DesignNetView(DesignNetSpace *space, QWidget *parent)
 	m_bPressed = false;
 	setObjectName(QLatin1String("DesignView"));
  	setRenderHint(QPainter::Antialiasing);
-	QGraphicsScene *scene = new QGraphicsScene(this);
+	QGraphicsScene *scene = new QGraphicsScene(-1000, -1000, 2000, 2000, this);
 	setScene(scene);
-	setSceneRect(-1000, -1000, 2000, 2000);
 	viewport()->setMouseTracking(true);
  	setFocusPolicy(Qt::StrongFocus);
  	setDragMode(QGraphicsView::RubberBandDrag);
-	scene->setBackgroundBrush(Qt::gray);
+	scene->setBackgroundBrush(Qt::black);
 	d->m_lineItem->setVisible(false);
 	scene->addItem(d->m_lineItem);
 	setAcceptDrops(true);
+	setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
+	setCacheMode(QGraphicsView::CacheBackground);
 	if (space)
 	{
 		QObject::connect(space, SIGNAL(logout(QString)), this, SLOT(OnShowMessage(QString)));
@@ -155,6 +215,7 @@ void DesignNetView::setDesignNetSpace( DesignNetSpace *space )
 		QObject::connect(space, SIGNAL(processorRemoved(Processor*)), this, SLOT(onProcessorRemoved(Processor*)));
 		QObject::connect(space, SIGNAL(connectionAdded(Processor*, Processor*)), this, SLOT(onConnectionAdded(Processor*, Processor*)));
 		QObject::connect(space, SIGNAL(connectionRemoved(Processor*, Processor*)), this, SLOT(onConnectionRemoved(Processor*, Processor*)));
+		QObject::connect(space, SIGNAL(connectionRemoved(Port*, Port*)), this, SLOT(onConnectionRemoved(Port*, Port*)));
 	}
 }
 
@@ -295,6 +356,7 @@ void DesignNetView::mouseMoveEvent( QMouseEvent * event )
 
 void DesignNetView::mouseReleaseEvent( QMouseEvent * event )
 {
+	QGraphicsView::mouseReleaseEvent(event);
 	if (m_eEditState == EditState_Link && m_bPressed)
 	{
 		if (d->m_tempProcessor && d->m_tempProcessor != d->m_srcProcessor)
@@ -316,8 +378,6 @@ void DesignNetView::mouseReleaseEvent( QMouseEvent * event )
 		d->m_tempProcessor = 0;
 		d->m_lineItem->setVisible(false);
 	}
-	event->accept();
-	QGraphicsView::mouseReleaseEvent(event);
 }
 
 void DesignNetView::addProcessor(ProcessorGraphicsBlock *processor)
@@ -375,12 +435,43 @@ void DesignNetView::serialize(Utils::XmlSerializer &s)
 		posList.push_back(pos);
 	}
 	s.serialize(_T("Positions"), posList, _T("Position"));
+	QList<GraphicsConnection> conList;
+	QList<QGraphicsItem*> allItems = scene()->items();
+	for (QList<QGraphicsItem*>::iterator itr = allItems.begin(); itr != allItems.end(); itr++)
+	{
+		if ((*itr)->type() == PortArrowLink::Type)
+		{
+			PortArrowLink* pItem = (PortArrowLink*)*itr;
+			GraphicsConnection gc;
+			gc.m_srcProcessor	 = pItem->getSrc()->processorId();
+			gc.m_targetProcessor = pItem->getTarget()->processorId();
+			gc.m_srcPort		 = pItem->getSrc()->index();
+			gc.m_targetPort		 = pItem->getTarget()->index();
+			gc.m_pt1 = pItem->getControlItemScenePosFirst();
+			gc.m_pt2 = pItem->getControlItemScenePosSecond();
+			conList.push_back(gc);
+		}
+		else if ((*itr)->type() == ProcessorArrowLink::Type)
+		{
+			ProcessorArrowLink* pItem = (ProcessorArrowLink*)*itr;
+			GraphicsConnection gc;
+			gc.m_srcProcessor	 = pItem->getSrc()->processor()->id();
+			gc.m_targetProcessor = pItem->getTarget()->processor()->id();
+			gc.m_pt1 = pItem->getControlItemScenePosFirst();
+			gc.m_pt2 = pItem->getControlItemScenePosSecond();
+			conList.push_back(gc);
+			qDebug() << gc.m_pt1 << gc.m_pt2;
+		}
+	}
+	s.serialize(_T("GraphicsConnectionList"), conList, "GraphicsConnection");
 }
 
 void DesignNetView::deserialize( Utils::XmlDeserializer &x )
 {
 	QList<Position> positions;
+	QList<GraphicsConnection> conList;
 	x.deserializeCollection(_T("Positions"), positions, _T("Position"));
+	x.deserializeCollection(_T("GraphicsConnectionList"), conList, "GraphicsConnection");
 
 	foreach(Processor *p, d->m_designnetSpace->processors())
 	{
@@ -390,6 +481,44 @@ void DesignNetView::deserialize( Utils::XmlDeserializer &x )
 			{
 				d->m_processorMaps.value(p)->setPos(pos.m_x, pos.m_y);
 				break;
+			}
+		}
+	}
+	QList<QGraphicsItem*> allItems = scene()->items();
+	for (QList<QGraphicsItem*>::iterator itr = allItems.begin(); itr != allItems.end(); itr++)
+	{
+		if ((*itr)->type() == PortArrowLink::Type)
+		{
+			PortArrowLink* pItem = (PortArrowLink*)*itr;
+			for (QList<GraphicsConnection>::iterator c = conList.begin(); c != conList.end(); c++)
+			{
+				GraphicsConnection &con = *c;
+				if (con.m_srcProcessor == pItem->getSrc()->processorId()
+					&& con.m_targetProcessor == pItem->getTarget()->processorId()
+					&& con.m_srcPort == pItem->getSrc()->index()
+					&& con.m_targetPort == pItem->getTarget()->index())
+				{
+					pItem->setControlPointPos(con.m_pt1, true);
+					pItem->setControlPointPos(con.m_pt2, false);
+					break;
+				}
+			}
+		}
+		else if ((*itr)->type() == ProcessorArrowLink::Type)
+		{
+			ProcessorArrowLink* pItem = (ProcessorArrowLink*)*itr;
+			for (QList<GraphicsConnection>::iterator c = conList.begin(); c != conList.end(); c++)
+			{
+				GraphicsConnection &con = *c;
+				if (con.m_srcProcessor == pItem->getSrc()->processor()->id()
+					&& con.m_targetProcessor == pItem->getTarget()->processor()->id()
+					&& con.m_srcPort == -1
+					&& con.m_targetPort == -1)
+				{
+					pItem->setControlPointPos(con.m_pt1, true);
+					pItem->setControlPointPos(con.m_pt2, false);
+					break;
+				}
 			}
 		}
 	}
@@ -415,7 +544,8 @@ void DesignNetView::onProcessorRemoved( Processor* processor )
 	{
 		ProcessorGraphicsBlock* p = itr.value();
 		d->m_processorMaps.erase(itr);
-		p->deleteLater();
+		scene()->removeItem(p);
+		delete p;
 	}
 }
 
@@ -456,12 +586,17 @@ void DesignNetView::onConnectionRemoved(Processor* father, Processor* child)
 		if (pLink->getSrc()->processor() == father && pLink->getTarget()->processor() == child)
 		{
 			pLinkRemove = pLink;
-			pLink->deleteLater();
+			delete pLink;
 			break;
 		}
 	}
 	if (pLinkRemove)
 		d->m_links.removeOne(pLinkRemove);
+}
+
+void DesignNetView::onConnectionRemoved(Port* src, Port* target)
+{
+
 }
 
 void DesignNetView::setEditState(EditState e)

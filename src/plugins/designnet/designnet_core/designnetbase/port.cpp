@@ -9,9 +9,10 @@
 
 namespace DesignNet{
 
-Port::Port(PortType portType, DataType dt, const QString &name, QObject *parent) :
+Port::Port(PortType portType, DataType dt, const QString &name, bool bRemovable, QObject *parent) :
 	QObject(parent),
     m_bMultiInput(false),
+	m_bRemovable(bRemovable),
     m_portType(portType),
     m_processor(0),
 	m_name(name),
@@ -36,7 +37,11 @@ bool Port::connect(Port *port)
     m_portsConnected.push_back(port);
     port->addConnectedPort(this);/// 直接将自己放到inputPort的列表中
 	if (!bConnected)
+	{
+		QObject::connect(port->processor(), SIGNAL(childProcessFinished()), m_processor, SLOT(onChildProcessFinished()));
+		emit connectPort(this, port);
 		emit m_processor->connected(m_processor, port->processor());
+	}
 	
     return true;
 }
@@ -103,9 +108,13 @@ bool Port::canConnectTo(Port *inputPort)
 
 bool Port::isConnectedTo(const Port *port) const
 {
-    QList<Port*>::const_iterator itr = qFind(m_portsConnected, port);
-    if(itr != m_portsConnected.constEnd())
-        return true;
+    QList<Port*>::const_iterator itr = m_portsConnected.begin();
+	while (itr != m_portsConnected.constEnd())
+	{
+		if (*itr == port)
+			return true;
+		itr++;
+	}
     return false;
 }
 
@@ -187,11 +196,12 @@ void Port::addData(ProcessData* data)
 	Q_ASSERT(m_portType == OUT_PORT);
 	QWriteLocker locker(&m_dataLocker);
 	m_data = *data;
+	emit dataChanged();
 }
 
 ProcessData *Port::data()
 {
-    return &m_data;
+	return &m_data;
 }
 
 Port::~Port()
@@ -201,6 +211,31 @@ Port::~Port()
 void Port::setMultiInputSupported( const bool &bSupported /*= true*/ )
 {
 	m_bMultiInput = bSupported;
+}
+
+int Port::getIndex()
+{
+	int iIndex = -1;
+	QList<Port*> inputPort = m_processor->getPorts(IN_PORT);
+	for (QList<Port*>::iterator itr = inputPort.begin(); itr != inputPort.end(); itr++)
+	{
+		iIndex++;
+		if (*itr == this)
+			return iIndex;
+	}
+	QList<Port*> outputPort = m_processor->getPorts(OUT_PORT);
+	for (QList<Port*>::iterator itr = outputPort.begin(); itr != outputPort.end(); itr++)
+	{
+		iIndex++;
+		if (*itr == this)
+			return iIndex;
+	}
+	return -1;
+}
+
+void Port::setProcessor(Processor* processor)
+{
+	m_processor = processor; m_data.processorID = processor->id();
 }
 
 ProcessData::ProcessData(DataType dt /*= DATATYPE_INVALID*/) : dataType(dt)

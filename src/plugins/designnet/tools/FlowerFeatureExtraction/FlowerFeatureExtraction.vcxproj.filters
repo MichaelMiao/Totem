@@ -79,6 +79,15 @@
     <ClCompile Include="featureringcca.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_HistogramOfEdgeGradient.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_HistogramOfEdgeGradient.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="HistogramOfEdgeGradient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="flowerfeatureextractionplugin.h">
@@ -91,6 +100,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="featureringcca.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HistogramOfEdgeGradient.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

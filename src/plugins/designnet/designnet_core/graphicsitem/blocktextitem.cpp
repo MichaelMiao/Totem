@@ -19,7 +19,7 @@ void BlockTextItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * 
 {
 	QRectF rectF = boundingRect();
 	painter->save();
-	painter->setBrush(Qt::black);
+	painter->setBrush(Qt::darkYellow);
 	painter->drawRoundedRect(rectF, 10, 15);
 
 	painter->setPen(Qt::white);
@@ -35,9 +35,9 @@ QRectF BlockTextItem::boundingRect() const
 {
 	QFontMetrics fm(font());
 	QRectF rect = fm.boundingRect(m_blockName);
-	QRect rt(0, 0, 
-		qMin((qreal)(rect.width() + fm.averageCharWidth() * 3), (qreal)(m_maxWidth)), 
-		rect.height() + fm.xHeight() * 2);
+	const int iWidth = rect.width() + fm.averageCharWidth() * 3;
+	const int iHeight = rect.height() + fm.xHeight() * 2;
+	QRect rt(-iWidth / 2, -iHeight / 2, iWidth, iHeight);
 	return rt;
 }
 
@@ -62,9 +62,7 @@ QSizeF BlockTextItem::getSize() const
 void BlockTextItem::setMaxWidth( const float &fWidth )
 {
 	if (fWidth <= 0)
-	{
 		return ;
-	}
 	m_maxWidth = fWidth;
 }
 

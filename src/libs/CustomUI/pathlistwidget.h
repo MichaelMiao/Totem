@@ -1,6 +1,4 @@
-#ifndef PATHLISTWIDGET_H
-#define PATHLISTWIDGET_H
-
+#pragma once
 #include <QWidget>
 #include <QDir>
 #include <QModelIndex>
@@ -26,6 +24,9 @@ public:
     void setFilters(QDir::Filters filters);
     void setNameFilters(const QStringList &filterList);
     QList<Path> paths() const;
+
+	void setPaths(QStringList strFileList);
+
 signals:
     void dataChanged();
 public slots:
@@ -44,5 +45,3 @@ protected:
     bool            m_bSingleSelection;     //!< 是否单选
 };
 }
-
-#endif // PATHLISTWIDGET_H

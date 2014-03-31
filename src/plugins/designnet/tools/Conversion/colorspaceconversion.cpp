@@ -40,19 +40,14 @@ ColorSpaceConversion::ColorSpaceConversion( DesignNetSpace *space, QObject *pare
 	d->m_property->setName(tr("Conversion"));
 	d->m_property->select(tr("BGR 2 HSV"));
 	addProperty(d->m_property);
-	addPort(Port::IN_PORT, DATATYPE_IMAGE, tr("ColorImage"));
-	addPort(Port::OUT_PORT, DATATYPE_IMAGE, tr("ColorImage"));
+	addPort(Port::IN_PORT, DATATYPE_8UC3IMAGE, tr("ColorImage"));
+	addPort(Port::OUT_PORT, DATATYPE_8UC3IMAGE, tr("ColorImage"));
 	setName(tr("Color Space Conversion"));
 }
 
 ColorSpaceConversion::~ColorSpaceConversion()
 {
 
-}
-
-Processor* ColorSpaceConversion::create( DesignNet::DesignNetSpace *space /*= 0*/ ) const
-{
-	return new ColorSpaceConversion(space);
 }
 
 QString ColorSpaceConversion::title() const
@@ -67,6 +62,7 @@ QString ColorSpaceConversion::category() const
 
 bool ColorSpaceConversion::process(QFutureInterface<ProcessResult> &future)
 {
+	notifyDataWillChange();
 	int iType = d->m_property->value().toInt(0);
 	if(iType != 0)
 	{
@@ -75,22 +71,15 @@ bool ColorSpaceConversion::process(QFutureInterface<ProcessResult> &future)
 		cv::cvtColor(imageData->imageData(), mat, iType);
 		imageData->setImageData(mat);
 		QVariant var = VariantPointCvt<ImageData>::fromPtr(imageData);
-		pushData(var, DATATYPE_IMAGE, "ColorImage");
+		pushData(var, DATATYPE_8UC3IMAGE, "ColorImage");
 	}
+	notifyProcess();
 	return true;
 }
 
 void ColorSpaceConversion::propertyChanged( Property *prop )
 {
 
-}
-
-bool ColorSpaceConversion::connectionTest(DesignNet::Port* src, DesignNet::Port* target)
-{
-	ImageData *srcData = (ImageData*)src->data()->variant.value<void*>();
-	if (!srcData || srcData->imageType() != ImageData::IMAGE_BGR)
-		return false;
-	return true;
 }
 
 }

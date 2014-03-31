@@ -7,6 +7,7 @@ namespace DesignNet{
 class DesignNetEditor;
 class MinimapNavigator : public QGraphicsView
 {
+	Q_OBJECT
 public:
 
 	MinimapNavigator(QWidget* pParent);
@@ -16,15 +17,16 @@ public:
 
 public slots:
 
-	void showScene();
+	void showScene(QRectF rc);
 
 protected:
 
-	void paintEvent (QPaintEvent * event) override;
 	void drawForeground(QPainter *painter, const QRectF &rect) override;
 	void mousePressEvent (QMouseEvent * event) override;
 	void mouseMoveEvent(QMouseEvent *event) override;
 	void mouseReleaseEvent(QMouseEvent *event) override;
+
+	void resizeEvent(QResizeEvent *event);
 
 private:
 

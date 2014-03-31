@@ -14,6 +14,7 @@ class IData;
  * \brief 数据管理类，提供指定数据类型的Widget
  * \todo 数据管理类和属性管理类可以抽象成一个AbastractManager,因为他们功能相似
  */
+
 class DESIGNNET_CORE_EXPORT DataManager : public QObject
 {
     Q_OBJECT

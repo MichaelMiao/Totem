@@ -4,6 +4,8 @@
 #include <QObject>
 #include "designnet/designnet_core/designnetbase/processor.h"
 #include "designnet/designnet_core/designnetbase/port.h"
+#include "opencv2/core/core.hpp"
+
 QT_BEGIN_NAMESPACE
 class QMenu;
 QT_END_NAMESPACE
@@ -26,9 +28,10 @@ class JoinProcessor : public DesignNet::Processor
 	Q_OBJECT
 
 public:
+
+	DECLEAR_PROCESSOR(JoinProcessor)
 	JoinProcessor(DesignNet::DesignNetSpace *space, QObject* parent = 0);
 	virtual ~JoinProcessor();
-	virtual DesignNet::Processor* create(DesignNet::DesignNetSpace *space = 0) const;
 	virtual QString title() const;
 	virtual QString category() const;	//!< 种类
 	virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);				//!< 处理函数
@@ -38,8 +41,11 @@ public:
 signals:
 protected:
 	virtual void propertyChanged(DesignNet::Property *prop);
+
 private:
-	JoinProcessorPrivate *d;
+	
+	cv::Mat m_mat;
+
 };
 
 #endif // JOIN_H

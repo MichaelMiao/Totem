@@ -1,20 +1,28 @@
 #include "hscolorfeature.h"
-#include "designnet/designnet_core/graphicsitem/portgraphicsitem.h"
-#include "designnet/designnet_core/data/imagedata.h"
-#include "designnet/designnet_core/data/matrixdata.h"
-#include "designnet/designnet_core/designnetbase/port.h"
 #include <opencv2/imgproc/imgproc.hpp>
+#include "../../../designnet/designnet_core/data/imagedata.h"
+#include "../../../designnet/designnet_core/data/matrixdata.h"
+#include "../../../designnet/designnet_core/designnetbase/port.h"
+#include "../../designnet_core/data/histogramdata.h"
+#include "../../designnet_core/data/idata.h"
+#include "designnet/designnet_core/graphicsitem/portitem.h"
+
+
 using namespace DesignNet;
 namespace FlowerFeatureExtraction{
 
+static int compareDis(std::pair<cv::Point2i, float> p1, std::pair<cv::Point2i, float> p2)
+{
+	return p1.second > p2.second;
+}
+
 HSColorFeature::HSColorFeature(DesignNet::DesignNetSpace *space, QObject *parent)
-	: Processor(space, parent),
-	m_outputPort(new MatrixData(this), Port::OUT_PORT, tr("OutFeature")),
-	m_inputPort(new ImageData(ImageData::IMAGE_BGR, this),Port::IN_PORT)
+	: Processor(space, parent)
 {
 	m_featureData = new DesignNet::MatrixData(this);
-	addPort(&m_inputPort);
-	addPort(&m_outputPort);
+	addPort(Port::IN_PORT, DATATYPE_8UC3IMAGE, "HSV Color Image");
+	addPort(Port::OUT_PORT, DATATYPE_HISTOGRAM, "Matrix Histogram");
+	addPort(Port::IN_PORT, DATATYPE_BINARYIMAGE, "Binary Color Image");
 	setName(tr("Color Feature HSV"));
 }
 
@@ -23,14 +31,9 @@ HSColorFeature::~HSColorFeature()
 
 }
 
-Processor* HSColorFeature::create( DesignNet::DesignNetSpace *space /*= 0*/ ) const
-{
-	return new HSColorFeature(space);
-}
-
 QString HSColorFeature::title() const
 {
-	return tr("Color Feature HSV");
+	return tr("Color Histogram HSV");
 }
 
 QString HSColorFeature::category() const
@@ -40,62 +43,14 @@ QString HSColorFeature::category() const
 
 bool HSColorFeature::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
-	qDebug() << "HSColorFeature process";
-	QVector<IData*> datas = m_inputPort.getInputData();
-	if (datas.size() == 0)
-	{
-		emit logout("The input image has not been provided.");
-		return false;
-	}
-	m_imageData.copy(m_inputPort.getInputData().at(0));
-	cv::Mat &hsvimage = m_imageData.imageData();
-	int hbins = 30, sbins = 32;
-	int histSize[] = {hbins, sbins};
-	int channels[] = {0, 1};
-	float hranges[] = { 0, 180 };
-	// saturation varies from 0 (black-gray-white) to
-	// 255 (pure spectrum color)
-	float sranges[] = { 0, 256 };
-	const float* ranges[] = { hranges, sranges };
-	cv::calcHist( &hsvimage, 1, channels, cv::Mat(), // do not use mask
-		m_hist, 2, histSize, ranges,
-		true, // the histogram is uniform
-		false );
-	cv::Mat feature(1, 5, CV_32FC1);
-	int hmax = 0, smax = 0, hmax2 = 0, smax2 = 0;
-	float max_value = 0, max2_value = 0;
-
-	for(int i = 0; i < hbins; ++i)
-	{
-		for(int j = 0; j < sbins; ++j)
-		{
-			float f = m_hist.at<float>(i, j);
-			
-			if(f > max2_value )/// 大于次大值
-			{
-				if(f > max_value)/// 大于最大值
-				{
-					hmax = i;
-					smax = j;
-					max_value = f;
-				}
-				else
-				{
-					hmax2 = i;
-					smax2 = j;
-					max2_value = f;
-				}
-			}
-		}
-	}
-	feature.at<float>(0) = hmax;
-	feature.at<float>(1) = smax;
-	feature.at<float>(2) = hmax2;
-	feature.at<float>(3) = smax2;
-	feature.at<float>(4) = max_value/(hsvimage.rows * hsvimage.cols + 1);
-	MatrixData matrixData;
-	matrixData.setMatrix(feature);
-	pushData(&matrixData, "OutFeature");
+	MatrixData* pMatrix = (MatrixData*)getOneData("HSV Color Image").variant.value<IData*>();
+	HistogramData* pHistogram = (HistogramData*)getOneData("Binary Color Image").variant.value<IData*>();
+	cv::Mat hsvMat = pMatrix->getMatrix();
+	cv::Mat hist = pHistogram->histogram();
+	notifyDataWillChange();
+	cv::Mat mat = extractColor(hsvMat, hist);
+	QVariant::fromValue(mat);
+	notifyProcess();
 	return true;
 }
 
@@ -104,18 +59,41 @@ void HSColorFeature::propertyChanged( DesignNet::Property *prop )
 
 }
 
-bool HSColorFeature::connectionTest( Port* src, Port* target )
+cv::Mat HSColorFeature::extractColor(cv::Mat& hsvMat, cv::Mat& binaryMat)
 {
-	if (target == &m_inputPort)
+	cv::Mat matRet;
+	int hbins = 40, sbins = 50;
+	int histSize[] = { hbins, sbins };
+	float hranges[] = { 0, 180 };
+	float sranges[] = { 0, 256 };
+	const float* ranges[] = { hranges, sranges };
+	cv::MatND hist;
+	int channels[] = { 0, 1 };
+	cv::calcHist(&hsvMat, 1, channels, binaryMat,
+		hist, 2, histSize, ranges,
+		true, // the histogram is uniform
+		false );
+
+	double maxVal=0;
+	cv::minMaxLoc(hist, 0, &maxVal, 0, 0);
+
+	int scale = 10;
+	cv::Mat histImg = cv::Mat::zeros(sbins * scale, hbins * 10, CV_8UC3);
+	std::vector<std::pair<cv::Point2i, float> > fVec;
+	for( int h = 0; h < hbins; h++ )
 	{
-		ImageData *srcData = qobject_cast<ImageData*>(src->data());
-		if (!srcData || srcData->imageType() != ImageData::IMAGE_BGR)
-		{
-			return false;
-		}
-		return true;
+		for( int s = 0; s < sbins; s++ )
+			fVec.push_back(std::make_pair(cv::Point2i(h, s), hist.at<float>(h, s)));
 	}
-	return false;
+	sort(fVec.begin(), fVec.end(), compareDis);
+	for (int i = 0; i < 64; i++)
+	{
+		matRet.push_back(fVec.at(i).first.x);
+		matRet.push_back(fVec.at(i).first.y);
+	}
+	matRet = matRet.reshape(1, 1);
+	matRet.convertTo(matRet, CV_32F);
+	return matRet;
 }
 
 }

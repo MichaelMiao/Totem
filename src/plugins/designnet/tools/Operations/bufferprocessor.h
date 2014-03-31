@@ -10,17 +10,20 @@ class BufferProcessor : public DesignNet::Processor
 	Q_OBJECT
 
 public:
+
+	DECLEAR_PROCESSOR(BufferProcessor)
+
 	BufferProcessor(DesignNet::DesignNetSpace *space, QObject* parent = 0);
 	~BufferProcessor();
-	virtual DesignNet::Processor* create(DesignNet::DesignNetSpace *space = 0) const;
 	virtual QString title() const;
 	virtual QString category() const;//!< 种类
 	virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);     //!< 处理函数
+
 signals:
 protected:
 
 	virtual void propertyChanged(DesignNet::Property *prop);
-	BufferProcessorPrivate *d;
+	std::vector<cv::Mat>		m_mats;
 };
 
 #endif // BUFFERPROCESSOR_H

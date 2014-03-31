@@ -14,6 +14,7 @@ ArrowLinkControlItem::ArrowLinkControlItem(QGraphicsItem *parent) :
 	m_bPressed = false;
     setFlags(ItemSendsScenePositionChanges
              | ItemIgnoresTransformations);
+	setCacheMode(DeviceCoordinateCache);
 }
 
 QRectF ArrowLinkControlItem::boundingRect() const

@@ -63,6 +63,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Conversion", "src\plugins\d
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Labs", "src\plugins\designnet\tools\Labs\Labs\Labs.vcxproj", "{66C44834-452F-4ADE-80BF-7F93B6B64EE0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FeatureExtraction", "src\plugins\designnet\tools\FeatureExtraction\FeatureExtraction.vcxproj", "{B21249A5-9C85-466C-8286-C64DD021514D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlowerFeatureExtraction", "src\plugins\designnet\tools\FlowerFeatureExtraction\FlowerFeatureExtraction.vcxproj", "{F955F37D-EC4E-4CBB-B5C1-99101A5D18DD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Classifier", "src\plugins\designnet\tools\classifier\Classifier\Classifier.vcxproj", "{2F0479C8-A28A-4F6A-BE87-BF810842062F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Operations", "src\plugins\designnet\tools\Operations\Operations.vcxproj", "{4A4ECD97-1A6D-4A8B-9EAC-BAD5DB21CCA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -125,6 +133,22 @@ Global
 		{66C44834-452F-4ADE-80BF-7F93B6B64EE0}.Debug|Win32.Build.0 = Debug|Win32
 		{66C44834-452F-4ADE-80BF-7F93B6B64EE0}.Release|Win32.ActiveCfg = Release|Win32
 		{66C44834-452F-4ADE-80BF-7F93B6B64EE0}.Release|Win32.Build.0 = Release|Win32
+		{B21249A5-9C85-466C-8286-C64DD021514D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B21249A5-9C85-466C-8286-C64DD021514D}.Debug|Win32.Build.0 = Debug|Win32
+		{B21249A5-9C85-466C-8286-C64DD021514D}.Release|Win32.ActiveCfg = Release|Win32
+		{B21249A5-9C85-466C-8286-C64DD021514D}.Release|Win32.Build.0 = Release|Win32
+		{F955F37D-EC4E-4CBB-B5C1-99101A5D18DD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F955F37D-EC4E-4CBB-B5C1-99101A5D18DD}.Debug|Win32.Build.0 = Debug|Win32
+		{F955F37D-EC4E-4CBB-B5C1-99101A5D18DD}.Release|Win32.ActiveCfg = Release|Win32
+		{F955F37D-EC4E-4CBB-B5C1-99101A5D18DD}.Release|Win32.Build.0 = Release|Win32
+		{2F0479C8-A28A-4F6A-BE87-BF810842062F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2F0479C8-A28A-4F6A-BE87-BF810842062F}.Debug|Win32.Build.0 = Debug|Win32
+		{2F0479C8-A28A-4F6A-BE87-BF810842062F}.Release|Win32.ActiveCfg = Release|Win32
+		{2F0479C8-A28A-4F6A-BE87-BF810842062F}.Release|Win32.Build.0 = Release|Win32
+		{4A4ECD97-1A6D-4A8B-9EAC-BAD5DB21CCA4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4A4ECD97-1A6D-4A8B-9EAC-BAD5DB21CCA4}.Debug|Win32.Build.0 = Debug|Win32
+		{4A4ECD97-1A6D-4A8B-9EAC-BAD5DB21CCA4}.Release|Win32.ActiveCfg = Release|Win32
+		{4A4ECD97-1A6D-4A8B-9EAC-BAD5DB21CCA4}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -147,9 +171,13 @@ Global
 		{283A8ADF-6026-4DE3-940D-2E9CAD146111} = {39A3CB56-FC4E-4267-93AF-7FC266A74D3F}
 		{647D836C-2E96-43B8-8053-59A5F7DBE2BC} = {39A3CB56-FC4E-4267-93AF-7FC266A74D3F}
 		{66C44834-452F-4ADE-80BF-7F93B6B64EE0} = {39A3CB56-FC4E-4267-93AF-7FC266A74D3F}
+		{B21249A5-9C85-466C-8286-C64DD021514D} = {39A3CB56-FC4E-4267-93AF-7FC266A74D3F}
+		{F955F37D-EC4E-4CBB-B5C1-99101A5D18DD} = {39A3CB56-FC4E-4267-93AF-7FC266A74D3F}
+		{2F0479C8-A28A-4F6A-BE87-BF810842062F} = {39A3CB56-FC4E-4267-93AF-7FC266A74D3F}
+		{4A4ECD97-1A6D-4A8B-9EAC-BAD5DB21CCA4} = {39A3CB56-FC4E-4267-93AF-7FC266A74D3F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		QtVersion = 4.8.5
 		Qt5Version = 4.8.5
+		QtVersion = 4.8.5
 	EndGlobalSection
 EndGlobal

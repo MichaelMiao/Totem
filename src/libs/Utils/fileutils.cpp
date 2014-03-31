@@ -179,7 +179,8 @@ void Path::serialize(XmlSerializer& s) const
 
 void Path::deserialize(XmlDeserializer& s) 
 {
-
+	s.deserialize("value", m_path);
+	s.deserialize("recursion", bRecursion);
 }
 //-  FileSaverBase ----------------------------
 

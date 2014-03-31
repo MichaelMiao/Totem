@@ -6,23 +6,16 @@ using namespace DesignNet;
 namespace FlowerFeatureExtraction{
 
 FeatureRingCCA::FeatureRingCCA(DesignNet::DesignNetSpace *space, QObject *parent)
-	: Processor(space, parent),
-	m_inputBinaryImagePort(0, Port::IN_PORT),
-	m_inputCentroidPort(0, Port::IN_PORT)
+	: Processor(space, parent)
 {
-	addPort(&m_inputBinaryImagePort);
-	addPort(&m_inputCentroidPort);
+	addPort(Port::IN_PORT, DATATYPE_BINARYIMAGE, "Binary Image");
+	addPort(Port::IN_PORT, DATATYPE_MATRIX, "Centroid");
 	setName(tr("Connected component count Of Ring A"));
 }
 
 FeatureRingCCA::~FeatureRingCCA()
 {
 
-}
-
-Processor* FeatureRingCCA::create( DesignNet::DesignNetSpace *space /*= 0*/ ) const
-{
-	return new FeatureRingCCA(space);
 }
 
 QString FeatureRingCCA::title() const
@@ -37,14 +30,14 @@ QString FeatureRingCCA::category() const
 
 bool FeatureRingCCA::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
-	QVector<IData*> datas = m_inputCentroidPort.getInputData();
-	Q_ASSERT(datas.size() == 1);
-	cv::Mat binaryImage = ((MatrixData*)m_inputBinaryImagePort.getInputData().at(0))->getMatrix();
-	cv::Mat centroidMat = ((MatrixData*)m_inputCentroidPort.getInputData().at(0))->getMatrix();
+	notifyDataWillChange();
+	cv::Mat binaryImage = ((MatrixData*)getInputData(DATATYPE_MATRIX).at(0).variant.value<IData*>())->getMatrix();
+	cv::Mat centroidMat = ((MatrixData*)getInputData(DATATYPE_BINARYIMAGE).at(0).variant.value<IData*>())->getMatrix();
 	/// ÖÐÐÄ
 	cv::Point2d centroid(0, 0);
 	centroid.x = centroidMat.at<float>(0, 0);
 	centroid.y = centroidMat.at<float>(0, 1);
+	notifyProcess();
 
 	return true;
 }

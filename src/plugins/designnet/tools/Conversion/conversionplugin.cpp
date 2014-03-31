@@ -3,8 +3,6 @@
 #include "colorspaceconversion.h"
 #include "binaryimage.h"
 #include "designnet/designnet_core/designnetbase/processorconfigmanager.h"
-#include "binaryimageconfigwidget.h"
-#include "colorspaceconversionconfig.h"
 #include <QtPlugin>
 using namespace DesignNet;
 namespace Conversion{
@@ -30,10 +28,6 @@ void ConversionPlugin::extensionsInitialized()
 	m_colorSpaceConversion	= new ColorSpaceConversion(0);
 	m_binaryImage			= new BinaryImage(0);
 
-	ProcessorConfigManager::instance()->registerConfigWidget(m_binaryImage->typeID().toString(),
-		new BinaryImageConfigWidget(0, 0));
-	ProcessorConfigManager::instance()->registerConfigWidget(m_colorSpaceConversion->typeID().toString(),
-		new ColorSpaceConversionConfig(0, 0));
 	addAutoReleasedObject(m_color2Gray);
 	addAutoReleasedObject(m_colorSpaceConversion);
 	addAutoReleasedObject(m_binaryImage);

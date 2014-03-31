@@ -1,6 +1,9 @@
 #include "imagedata.h"
 #include "designnetconstants.h"
 #include "Utils/totemassert.h"
+#include <QReadLocker>
+
+
 namespace DesignNet{
 
 ImageData::ImageData(int type, QObject *parent) :
@@ -34,23 +37,25 @@ Core::Id ImageData::id()
 
 void ImageData::setImageData(const cv::Mat &mat)
 {
+	QWriteLocker lock(&m_lock);
     m_imageMat = mat;
     emit dataChanged();
 }
 
 cv::Mat ImageData::imageData() const
 {
+	QReadLocker lock(&m_lock);
     return m_imageMat;
 }
 
-IData* ImageData::clone( QObject *parent /*= 0 */ )
+IData* ImageData::clone(QObject *parent /*= 0 */)
 {
 	ImageData *imageData = new ImageData(this->imageType(), parent);
 	imageData->setImageData(this->imageData().clone());
 	return imageData;
 }
 
-bool ImageData::copy( IData* data )
+bool ImageData::copy(IData* data)
 {
 	TOTEM_ASSERT(data->id() == id(), return false);
 	ImageData *imageData = qobject_cast<ImageData*>(data);
@@ -59,7 +64,6 @@ bool ImageData::copy( IData* data )
 
 	imageData->imageData().copyTo(m_imageMat);
 	return IData::copy(data);
-
 }
 
 bool ImageData::isValid() const
@@ -75,5 +79,4 @@ QImage ImageData::image()
 {
 	return m_image;
 }
-
 }

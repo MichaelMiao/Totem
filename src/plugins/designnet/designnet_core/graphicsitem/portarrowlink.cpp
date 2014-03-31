@@ -1,6 +1,11 @@
 #include "portarrowlink.h"
+#include "../designnetbase/designnetspace.h"
+#include "../designnetbase/port.h"
+#include "../designnetbase/processor.h"
 #include "GraphicsUI/arrowlinkcontrolitem.h"
 #include "portitem.h"
+
+
 using namespace GraphicsUI;
 
 
@@ -26,9 +31,6 @@ void PortArrowLink::connectPort(PortItem* pSrc, PortItem* pTarget)
 	m_controlPoint_2->setParentItem((QGraphicsItem*)m_targetPortItem);
 
 
-	connect((QObject*)m_srcPortItem, SIGNAL(positionChanged()), this, SLOT(onPortPosChanged()));
-	connect((QObject*)m_targetPortItem, SIGNAL(positionChanged()), this, SLOT(onPortPosChanged()));
-
 	QPointF posPortSrc = m_srcPortItem->scenePos();
 	QPointF posPortTarget = m_targetPortItem->scenePos();
 	QPointF ptTemp1(posPortSrc.x(), posPortSrc.y() - 10);
@@ -51,6 +53,7 @@ void PortArrowLink::connectPort(PortItem* pSrc, PortItem* pTarget)
 void PortArrowLink::onControlItemPostionChanged()
 {
 	updatePosition();
+	m_srcPortItem->port()->processor()->space()->setModified();
 }
 
 void PortArrowLink::updatePosition()
@@ -59,11 +62,6 @@ void PortArrowLink::updatePosition()
 	QPointF posTarget = m_targetPortItem->scenePos();
 	setPoint_Internal(posStart, true);
 	setPoint_Internal(posTarget, false);
-}
-
-void PortArrowLink::onPortPosChanged()
-{
-
 }
 
 QVariant PortArrowLink::itemChange(GraphicsItemChange change, const QVariant & v)
@@ -78,4 +76,3 @@ void PortArrowLink::onPortVisibleChanged()
 }
 
 }
-

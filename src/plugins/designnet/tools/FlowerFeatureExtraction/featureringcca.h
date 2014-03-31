@@ -16,21 +16,18 @@ class FeatureRingCCA : public DesignNet::Processor
 	Q_OBJECT
 
 public:
+
+	DECLEAR_PROCESSOR(FeatureRingCCA)
 	FeatureRingCCA(DesignNet::DesignNetSpace *space, QObject *parent = 0);
 	~FeatureRingCCA();
-	virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const;
-	virtual QString title() const;
-	virtual QString category() const;//!< 种类
-	virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);     //!< 处理函数
+	QString title() const;
+	QString category() const;//!< 种类
+	bool process(QFutureInterface<DesignNet::ProcessResult> &future) override;     //!< 处理函数
+
 protected:
-	virtual void propertyChanged(DesignNet::Property *prop);
-	virtual bool connectionTest(DesignNet::Port* src, DesignNet::Port* target);
 
-private:
-	
-	DesignNet::Port m_inputBinaryImagePort;	//!< 输入二值图端口
-	DesignNet::Port m_inputCentroidPort;	//!< 输入中心位置端口
-
+	void propertyChanged(DesignNet::Property *prop) override;
+	bool connectionTest(DesignNet::Port* src, DesignNet::Port* target) override;
 };
 
 }

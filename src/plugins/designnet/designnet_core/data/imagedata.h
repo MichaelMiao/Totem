@@ -3,6 +3,7 @@
 
 #include "opencv2/core/core.hpp"
 #include "idata.h"
+#include <QReadWriteLock>
 
 
 namespace DesignNet {
@@ -29,11 +30,14 @@ public:
 	virtual bool copy(IData* data);
 	virtual bool isValid() const;
 	virtual QImage image();//!< 类型图片
-	int imageType() const{return m_type;}
+	int imageType() const { return m_type; }
+
 signals:
 
 public slots:
 protected:
+
+	mutable QReadWriteLock m_lock;
     cv::Mat m_imageMat;//!< opencv Image图像
 	int m_type;
 };

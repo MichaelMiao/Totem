@@ -95,6 +95,7 @@
     </ClCompile>
     <ClCompile Include="labs.cpp" />
     <ClCompile Include="MultiLabelKNN.cpp" />
+    <ClCompile Include="OpenCVKNN.cpp" />
     <ClCompile Include="opencvlibsvm.cpp" />
     <ClCompile Include="PolorHOG.cpp" />
     <ClCompile Include="PolorLBP.cpp" />
@@ -106,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MultiLabelKNN.h" />
+    <ClInclude Include="OpenCVKNN.h" />
     <ClInclude Include="PolorHOG.h" />
     <ClInclude Include="PolorLBP.h" />
     <ClInclude Include="SVMBoostClassifier.h" />

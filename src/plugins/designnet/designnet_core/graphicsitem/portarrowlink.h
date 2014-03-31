@@ -31,7 +31,6 @@ public:
 
 protected slots:
 	
-	void onPortPosChanged();
 	void onPortVisibleChanged();
 
 protected:

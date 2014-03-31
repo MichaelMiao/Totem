@@ -1,25 +1,28 @@
 #include "polorglcmblock.h"
-#include "designnet/designnet_core/data/matrixdata.h"
-#include "designnet/designnet_core/data/imagedata.h"
-#include "designnet/designnet_core/property/doublerangeproperty.h"
-#include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <vector>
+#include "../../../designnet/designnet_core/data/imagedata.h"
+#include "../../../designnet/designnet_core/data/matrixdata.h"
+#include "../../../designnet/designnet_core/property/doublerangeproperty.h"
+
+
+static const char PN_OUT_GLCMFeature[]	= "Polor GLCM Feature";
+static const char PN_IN_GrayImage[]		= "Gray Image";
+static const char PN_IN_BinaryImage[]	= "Binary Image";
+static const char PN_IN_Centroid[]		= "Centroid";
+
 using namespace std;
 using namespace DesignNet;
 namespace FlowerFeatureExtraction{
 
 PolorGLCMBlock::PolorGLCMBlock(DesignNet::DesignNetSpace *space, QObject *parent)
-	: Processor(space, parent),
-	m_outputPort(new MatrixData(this), Port::OUT_PORT, QLatin1String("OutputFeature")),
-	m_inputPort(new ImageData(ImageData::IMAGE_GRAY, this), Port::IN_PORT, QLatin1String("InputGrayImage")),
-	m_inputBinaryImagePort(new ImageData(ImageData::IMAGE_BINARY, this), Port::IN_PORT, QLatin1String("InputBinaryImage")),
-	m_inputCentroidPort(new MatrixData(this), Port::IN_PORT, "centroid")
+	: Processor(space, parent)
 {
-	addPort(&m_outputPort);
-	addPort(&m_inputPort);
-	addPort(&m_inputBinaryImagePort);
-	addPort(&m_inputCentroidPort);
+	addPort(Port::IN_PORT, DATATYPE_BINARYIMAGE, PN_IN_BinaryImage);
+	addPort(Port::IN_PORT, DATATYPE_GRAYIMAGE, PN_IN_GrayImage);
+	addPort(Port::IN_PORT, DATATYPE_MATRIX, PN_IN_Centroid);
+	addPort(Port::OUT_PORT, DATATYPE_MATRIX, PN_OUT_GLCMFeature);
 	setName(tr("Polor GLCM"));
 	m_doubleRangeProperty = new DoubleRangeProperty(QLatin1String("threshold"),
 		tr("Threshold"), this);
@@ -40,11 +43,6 @@ PolorGLCMBlock::~PolorGLCMBlock()
 
 }
 
-Processor* PolorGLCMBlock::create( DesignNet::DesignNetSpace *space /*= 0*/ ) const
-{
-	return new PolorGLCMBlock(space);
-}
-
 QString PolorGLCMBlock::title() const
 {
 	return tr("Polor GLCM");
@@ -57,27 +55,14 @@ QString PolorGLCMBlock::category() const
 
 bool PolorGLCMBlock::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
-	QVector<IData*> datas = m_inputPort.getInputData();
-	if (datas.size() == 0)
-	{
-		emit logout("the input gray image is not provided");
-		return false;
-	}
-	if (m_inputBinaryImagePort.getInputData().size() == 0)
-	{
-		emit logout("The binary image is needed.");
-		return false;
-	}
-	if (m_inputCentroidPort.getInputData().size() == 0)
-	{
-		emit logout("The image of Centroid isn't provided");
-		return false;
-	}
+	notifyDataWillChange();
+	MatrixData *pBinaryMatrix = (MatrixData*)getOneData(PN_IN_BinaryImage).variant.value<IData*>();
+	MatrixData *pGrayMatrix = (MatrixData*)getOneData(PN_IN_GrayImage).variant.value<IData*>();
+	MatrixData *pCentroidMatrix = (MatrixData*)getOneData(PN_IN_Centroid).variant.value<IData*>();
 
-	ImageData *grayImage = qobject_cast<ImageData*>(m_inputPort.getInputData().at(0));
-	cv::Mat binaryImage = ((MatrixData*)m_inputBinaryImagePort.getInputData().at(0))->getMatrix();
-	cv::Mat grayMat = grayImage->imageData();
-	cv::Mat centroidMat = ((MatrixData*)m_inputCentroidPort.getInputData().at(0))->getMatrix();
+	cv::Mat binaryImage = pBinaryMatrix->getMatrix();
+	cv::Mat grayMat = pGrayMatrix->getMatrix();
+	cv::Mat centroidMat = pCentroidMatrix->getMatrix();
 	/// ÖÐÐÄ
 	cv::Point2d centroid(0, 0);
 	centroid.x = centroidMat.at<float>(0, 0);
@@ -191,7 +176,8 @@ bool PolorGLCMBlock::process(QFutureInterface<DesignNet::ProcessResult> &future)
 	feature.at<float>(0, 6) = homogeneity(m_glcm_sobel);
 	MatrixData data;
 	data.setMatrix(feature);
-	pushData(&data, QLatin1String("OutputFeature"));
+	pushData(&data, PN_OUT_GLCMFeature);
+	notifyProcess();
 	return true;
 }
 
@@ -269,39 +255,6 @@ float PolorGLCMBlock::contrast( const cv::Mat &glcm )
 	return sum;
 }
 
-bool PolorGLCMBlock::connectionTest( Port* src, Port* target )
-{
-	if (target == &m_inputPort)
-	{
-		ImageData *srcData = qobject_cast<ImageData*>(src->data());
-		if (!srcData || srcData->imageType() != ImageData::IMAGE_GRAY)
-		{
-			return false;
-		}
-		return true;
-	}
-	if (target == &m_inputBinaryImagePort)
-	{
-		ImageData *srcData = qobject_cast<ImageData*>(src->data());
-		if (!srcData || srcData->imageType() != ImageData::IMAGE_BINARY)
-		{
-			return false;
-		}
-		return true;
-	}
-	if (target == &m_inputCentroidPort)
-	{
-		MatrixData *srcData = qobject_cast<MatrixData*>(src->data());
-		if (!srcData)
-		{
-			return false;
-		}
-		return true;
-	}
-	return false;
-}
-
 
 
 }
-

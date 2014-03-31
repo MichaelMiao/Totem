@@ -30,15 +30,11 @@ ArrowLinkItem::ArrowLinkItem(QGraphicsItem *parent) :
 
 ArrowLinkItem::~ArrowLinkItem()
 {
-	delete m_controlPoint_1;
-	m_controlPoint_1 = 0;
-	delete m_controlPoint_2;
-	m_controlPoint_2 = 0;
 }
 
 QPainterPath ArrowLinkItem::shape() const
 {
-    QPainterPath path = originalShape();
+    QPainterPath path = m_path;
     QPainterPathStroker pathStroker;
     pathStroker.setWidth(10);
     return pathStroker.createStroke(path);
@@ -50,7 +46,6 @@ QPainterPath ArrowLinkItem::originalShape() const
     QPointF c2 = getControlItemPosSecond();
     QPainterPath path(getStartPoint());
     path.cubicTo(c1, c2, getEndPoint());
-    path.cubicTo(c2, c1, getStartPoint());
     return path;
 }
 
@@ -85,7 +80,7 @@ void ArrowLinkItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         setControlPointVisible(true);
 		QPen pen(Qt::DotLine);
 		pen.setWidth(1);
-		pen.setColor(QColor(0, 0, 255, 125));
+		pen.setColor(Qt::darkYellow);
 		painter->save();
         painter->setPen(pen);
         painter->drawLine(c1, startPos);
@@ -107,13 +102,9 @@ void ArrowLinkItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         penColor.setAlpha(210);
     }
     painter->setPen(QPen(penColor, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    painter->drawPath(m_path);
 
-
-    QPainterPath path = originalShape();
-    painter->drawPath(path);
-
-
-    qreal arrowSize = 10;
+	qreal arrowSize = 10;
     QLineF line(endPos, c2);
     double angle = ::acos(line.dx() / (line.length() <= 0 ? 1 : line.length()));
     if (line.dy() >= 0)
@@ -153,9 +144,18 @@ QPointF ArrowLinkItem::getEndPoint() const
     return m_endPoint;
 }
 
+void ArrowLinkItem::setControlPointPos(QPointF point, bool bSrc /*= true*/)
+{
+	QGraphicsItem *pItem = bSrc ? m_controlPoint_1 : m_controlPoint_2;
+	QGraphicsItem* p = pItem->parentItem();
+	if (p)
+		pItem->setPos(p->mapFromScene(point));
+	else
+		pItem->setPos(point);
+}
+
 void ArrowLinkItem::setControlPointVisible(bool bVisible)
 {
-    prepareGeometryChange();
     m_controlPoint_1->setVisible(bVisible);
     m_controlPoint_2->setVisible(bVisible);
 }
@@ -172,16 +172,15 @@ QPointF ArrowLinkItem::getControlItemPosSecond() const
 
 void ArrowLinkItem::controlItemPositionChanged()
 {
-    prepareGeometryChange();
+	prepareGeometryChange();
 	onControlItemPostionChanged();
-    update();
+	m_path = originalShape();
+	update();
 }
 
 void ArrowLinkItem::updateGeometory()
 {
     prepareGeometryChange();
-    
-
     QPointF c1;
     QPointF c2;
     QPointF startPoint = getStartPoint();
@@ -235,6 +234,7 @@ void ArrowLinkItem::setPoint_Internal( const QPointF &pf, bool bStartPoint /*= f
 	if (bStartPoint)
 	{
 		m_startPoint = mapFromScene(pf);
+		QPointF p = m_controlPoint_1->scenePos();
 		m_arrowLinkEndPoint.setPos(m_startPoint);
 	}
 	else
@@ -260,6 +260,17 @@ QVariant ArrowLinkItem::itemChange(GraphicsItemChange change, const QVariant &v)
 		m_controlPoint_2->setVisible(v.toBool());
 	}
 	return v;
+}
+
+QPointF ArrowLinkItem::getControlItemScenePosFirst() const
+{
+	QPointF p = m_controlPoint_1->scenePos();
+	return m_controlPoint_1->scenePos();
+}
+
+QPointF ArrowLinkItem::getControlItemScenePosSecond() const
+{
+	return m_controlPoint_2->scenePos();
 }
 
 }

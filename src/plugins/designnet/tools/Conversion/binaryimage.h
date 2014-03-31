@@ -12,9 +12,11 @@ class BinaryImage : public DesignNet::Processor
 	Q_OBJECT
 
 public:
+
+	DECLEAR_PROCESSOR(BinaryImage)
+
 	BinaryImage(DesignNet::DesignNetSpace *space, QObject *parent = 0);
 	~BinaryImage();
-	virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const;
 	virtual QString title() const;
 	virtual QString category() const;//!< 种类
 	virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);     //!< 处理函数

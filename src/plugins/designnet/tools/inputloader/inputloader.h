@@ -8,6 +8,8 @@
 namespace InputLoader{
 
 class ImageFolderLoader;
+class GraphicsNormalImageLoader;
+class LabelLoader;
 class InputLoaderPlugin : public ExtensionSystem::IPlugin
 {
     Q_OBJECT
@@ -22,6 +24,8 @@ public:
 protected:
 
 	ImageFolderLoader*			m_imageFolderLoader;
+	GraphicsNormalImageLoader*	m_imageLoader;
+	LabelLoader*				m_labelLoader;
 };
 }
 

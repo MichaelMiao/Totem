@@ -32,21 +32,25 @@ const QString strTestPath = "I:/MD/flower/flowers/test/";
 namespace InputLoader{
 
 const char ImageFolderIcon[] = ":/InputLoader/images/add_folder.png";
-ImageFolderLoader::ImageFolderLoader( DesignNet::DesignNetSpace *space, QObject *parent /*= 0*/ )
-	: Processor(space, parent),
+ImageFolderLoader::ImageFolderLoader(DesignNet::DesignNetSpace *space, QObject *parent)
+	: Processor(space, parent, ProcessorType_Permanent),
 	m_iCurIndex(0)
 {
 	setName(tr("Image Folder Loader"));
 	setIcon(QLatin1String(ImageFolderIcon));
-	addPort(Port::OUT_PORT, DATATYPE_IMAGE, OUTPUT_IMAGE);
+	addPort(Port::OUT_PORT, DATATYPE_8UC3IMAGE, OUTPUT_IMAGE);
 	addPort(Port::OUT_PORT, DATATYPE_STRING, OUTPUT_FILE_PATH);
+	QStringList fileTypes;
+	PathDialogProperty* pProperty = new PathDialogProperty("Path", m_folderPath, fileTypes, QDir::Dirs, true, this);
+	addProperty(pProperty);
 }
 
 ImageFolderLoader::~ImageFolderLoader(void)
 {
+	m_waitLock.unlock();
 }
 
-Processor* ImageFolderLoader::create( DesignNet::DesignNetSpace *space /*= 0*/ ) const
+Processor* ImageFolderLoader::create(DesignNet::DesignNetSpace *space) const
 {
 	return new ImageFolderLoader(space);
 }
@@ -334,83 +338,35 @@ int ImageFolderLoader::MaskMat( cv::Mat &mat, cv::Mat& mask )
 
 bool ImageFolderLoader::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
-// 	cv::Mat mat1 = cv::imread("I:/MD/1.bmp");
-// 	cv::Mat matR = cv::imread("I:/MD/R.bmp");
-// 	cv::SiftFeatureDetector sift;
-// 	cv::Mat matDescript1, matDescriptR;
-// 	std::vector<cv::KeyPoint> vecRKeyPoint1, vecRKeyPointR;
-// 	sift.detect(mat1, vecRKeyPoint1);
-// 	sift.detect(matR, vecRKeyPointR);
-// 	sift.compute(mat1, vecRKeyPoint1, matDescript1);
-// 	sift.compute(matR, vecRKeyPointR, matDescriptR);
-// 	std::vector<cv::DMatch> matches;
-// 	cv::BFMatcher bfmacher;
-// 	bfmacher.match(matDescript1, matDescriptR, matches);
-// 	cv::Mat mm(mat1.rows, mat1.cols, CV_8UC1);
-// 	for (int i = 0; i < matches.size(); i++)
-// 	{
-// 		cv::KeyPoint kp = vecRKeyPoint1.at(matches.at(i).trainIdx);
-// 		mm.at<uchar>(kp.pt.y, kp.pt.x) = 255;
-// 	}
-// 	cv::imwrite("I:/res.bmp", mm);
-// 	//画出匹配结果  
-// 	cv::Mat img_matches;  
-// 	//红色连接的是匹配的特征点对，绿色是未匹配的特征点  
-// 	cv::drawMatches(mat1, vecRKeyPoint1,matR, vecRKeyPointR, matches, img_matches,  
-// 		cv::Scalar::all(-1)/*CV_RGB(255,0,0)*/, CV_RGB(0,255,0), cv::Mat(), 2);
-// 	cv::imwrite("I:/mm.bmp", img_matches);
-//	cv::initModule_nonfree();
-//	SVM_SIFT();
-//	TestTrain();
-
-//	LoadData();
-//	SaveBinary();
-
-//	SaveContours();
-//	SaveFinal();
-//	BOWCluster();
-//	RepresentBOW();
-//	SVMTrain();
-//	SVMTest();
-//	PrepareData();
-//	SVM_C();
-//	return true;
-
 	emit logout(tr("ImageFolderLoader Processing"));
-	ProcessResult pr;
-	if (m_iCurIndex >= m_filePaths.size())
+	waitForAccept();
+	foreach (QString file, m_filePaths)
 	{
-		pr.m_bSucessed = true;
-		pr.m_bNeedLoop = false;
-		future.reportResult(pr, 0);
-		return true;
-	}
-	pr.m_bNeedLoop = true;
-	QString file = m_filePaths.at(m_iCurIndex);
-	std::string str = file.toLocal8Bit().data();
-	cv::Mat mat = cv::imread(str);
-	if(!mat.data)
-	{
-		emit logout(tr("load %1 failed").arg(file));
-		pr.m_bSucessed = false;
-		pr.m_bNeedLoop = false;
-		future.reportResult(pr, 0);
-		return false;
-	}
-	else
-	{
-		emit logout(tr("loading %1...").arg(file));
-		m_imageData.setImageData(mat);
-		m_imageData.setIndex(m_iCurIndex++);
-		DataType dt = DATATYPE_MATRIX;
-		if (mat.type() == CV_8UC1)
-			dt = DATATYPE_GRAYIMAGE;
-		else if (mat.type() == CV_8UC3)
-			dt = DATATYPE_8UC3IMAGE;
+		notifyDataWillChange();
+		std::string str = file.toLocal8Bit().data();
+		cv::Mat mat = cv::imread(str);
+		if(!mat.data)
+		{
+			emit logout(tr("load %1 failed").arg(file));
+			return false;
+		}
+		else
+		{
+			emit logout(tr("loading %1...").arg(file));
+			m_imageData.setImageData(mat);
+			m_imageData.setIndex(m_iCurIndex++);
+			DataType dt = DATATYPE_MATRIX;
+			if (mat.type() == CV_8UC1)
+				dt = DATATYPE_GRAYIMAGE;
+			else if (mat.type() == CV_8UC3)
+				dt = DATATYPE_8UC3IMAGE;
 
-		pushData(&m_imageData, OUTPUT_IMAGE);
+			pushData(&m_imageData, OUTPUT_IMAGE);
+		}
+		notifyProcess();
+		if (getOutputProcessor().size() > 0)
+			waitForAccept();
 	}
-	future.reportResult(pr, 0);
 	return true;
 }
 
@@ -418,6 +374,7 @@ void ImageFolderLoader::setPath( const QString &p )
 {
 	QWriteLocker locker(&m_lock);
 	m_folderPath = p;
+	emit processorModified();
 }
 
 QString ImageFolderLoader::path() const
@@ -428,6 +385,10 @@ QString ImageFolderLoader::path() const
 
 bool ImageFolderLoader::prepareProcess()
 {
+	m_waitLock.tryLock();
+	m_waitLock.unlock();
+	m_iCurIndex = 0;
+
 	if(m_folderPath.isEmpty())
 	{
 		emit logout(tr("Property %1 is not valid.").arg(m_folderPath));
@@ -439,6 +400,7 @@ bool ImageFolderLoader::prepareProcess()
 	QFileInfoList infoList = dir.entryInfoList(nameFilters, 
 		QDir::Files | QDir::Readable);
 	
+	m_filePaths.clear();
 	foreach(QFileInfo info, infoList)
 		m_filePaths << info.absoluteFilePath();
 
@@ -452,7 +414,6 @@ bool ImageFolderLoader::prepareProcess()
 
 bool ImageFolderLoader::finishProcess()
 {
-	m_iCurIndex = 0;
 	return true;
 }
 
@@ -748,16 +709,18 @@ void ImageFolderLoader::SVM_HOG()
 
 }
 
-void ImageFolderLoader::serialize(Utils::XmlSerializer& s) const
+bool ImageFolderLoader::waitForAccept()
 {
-	Processor::serialize(s);
-	s.serialize("path", m_folderPath);
+	m_waitLock.lock();
+	m_listWaitProcessors = getOutputProcessor();
+	return true;
 }
 
-void ImageFolderLoader::deserialize(Utils::XmlDeserializer& s)
+void ImageFolderLoader::onChildProcessorFinish(Processor* p)
 {
-	s.deserialize("path", m_folderPath);
-	Processor::deserialize(s);
+	m_listWaitProcessors.removeOne(p);
+	if (m_listWaitProcessors.empty())
+		m_waitLock.unlock();
 }
 
 }//!< namespace InputLoader

@@ -4,6 +4,7 @@
 #include "Utils/XML/xmlserializer.h"
 #include "Utils/XML/xmlserializable.h"
 #include <QDebug>
+#include "Utils/XML/xmldeserializer.h"
 using namespace Aggregation;
 namespace DesignNet{
 
@@ -112,7 +113,8 @@ void PropertyOwner::serialize( Utils::XmlSerializer& s ) const
 
 void PropertyOwner::deserialize( Utils::XmlDeserializer& s )
 {
-
+	foreach(Property *p, m_aggregate->components<Property>())
+		s.deserialize("Property", *p);
 }
 
 void PropertyOwner::propertyRemoving( Property* prop )

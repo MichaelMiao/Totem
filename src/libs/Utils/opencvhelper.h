@@ -13,6 +13,8 @@ public:
     OpenCVHelper();
     static QImage Mat2QImage(const cv::Mat& mat);
 	static cv::Mat QImage2Mat(QImage img);
+//	static cv::Mat Combine(cv::Mat &mat1, cv::Mat& mat2);
+
 };
 }
 

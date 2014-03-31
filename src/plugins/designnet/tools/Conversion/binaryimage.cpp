@@ -25,7 +25,7 @@ BinaryImage::BinaryImage( DesignNet::DesignNetSpace *space, QObject *parent /*= 
 	m_doubleRangeProperty = new DesignNet::DoubleRangeProperty("threshold", "threshold",this);
 	addProperty(m_doubleRangeProperty);
 	addPort(Port::IN_PORT, DATATYPE_GRAYIMAGE, DATA_LABEL_GRAYIMAGE);
-	addPort(Port::OUT_PORT, DATATYPE_MATRIX, DATA_LABEL_BINARYIMAGE);
+	addPort(Port::OUT_PORT, DATATYPE_BINARYIMAGE, DATA_LABEL_BINARYIMAGE);
 	setName(tr("Binary Image"));
 	setIcon(QLatin1String(":/medias/binary.png"));
 }
@@ -33,11 +33,6 @@ BinaryImage::BinaryImage( DesignNet::DesignNetSpace *space, QObject *parent /*= 
 BinaryImage::~BinaryImage()
 {
 
-}
-
-Processor* BinaryImage::create( DesignNet::DesignNetSpace *space /*= 0*/ ) const
-{
-	return new BinaryImage(space);
 }
 
 QString BinaryImage::title() const
@@ -52,6 +47,7 @@ QString BinaryImage::category() const
 
 bool BinaryImage::process(QFutureInterface<ProcessResult> &future)
 {
+	notifyDataWillChange();
 	ImageData *srcData = qobject_cast<ImageData*>(getData(DATA_LABEL_GRAYIMAGE).at(0)->variant.value<IData*>());
 	cv::Mat mat = srcData->imageData();
 	double valueThreshold = m_doubleRangeProperty->value();///ãÐÖµ
@@ -62,7 +58,8 @@ bool BinaryImage::process(QFutureInterface<ProcessResult> &future)
 	ImageData data;
 	data.setImageData(binaryImage);
 	data.setIndex(srcData->index());
-	pushData(VariantPointCvt<ImageData>::fromPtr(&data), DATATYPE_MATRIX, DATA_LABEL_BINARYIMAGE);
+	pushData(VariantPointCvt<ImageData>::fromPtr(&data), DATATYPE_BINARYIMAGE, DATA_LABEL_BINARYIMAGE);
+	notifyProcess();
 	return true;
 }
 

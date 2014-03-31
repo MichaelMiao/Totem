@@ -1,14 +1,15 @@
 #pragma once
 #include "../designnet_core_global.h"
 #include "../designnetconstants.h"
-#include <QGraphicsObject>
+#include "graphicsui/graphicstoolbutton.h"
 
 
 namespace DesignNet{
 
 class Port;
 class ProcessorGraphicsBlock;
-class DESIGNNET_CORE_EXPORT PortItem : public QGraphicsObject
+class ToolTipGraphicsItem;
+class DESIGNNET_CORE_EXPORT PortItem : public GraphicsUI::GraphicsToolButton
 {
 	Q_OBJECT
 
@@ -20,6 +21,11 @@ public:
 	virtual ~PortItem();
 	
 	Port* port() { return m_pPort; }
+	int processorId();
+	int index();
+
+	QImage getImage();
+
 	//////////////////////////////////////////////////////////////////////////
 
 	QRectF  boundingRect() const override;
@@ -29,15 +35,24 @@ public:
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
+protected:
+
+	void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
+	void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
+
+
 public slots:
 
-	void portConnected(Port* src, Port* target);
-	void portDisconnected(Port* src, Port* target);
+	void onPortConnected(Port* src, Port* target);
+	void onPortDisconnected(Port* src, Port* target);
+
+	void onPortDataChanged();
 
 private:
 
 	Port* m_pPort;							//!< ¶Ë¿Ú
 	ProcessorGraphicsBlock* m_pBlock;		//!< Block
+	ToolTipGraphicsItem*	m_pToolTip;
 };
 
 }

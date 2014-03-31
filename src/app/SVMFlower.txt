@@ -1,10 +1,49 @@
 <XML XMLVersion="0.0.1">
     <DesignNetSpace Name="DesignNetSpace" type="DesignNetSpace" ID="-1">
         <processors>
-            <processor path="" Name="Image Folder Loader" type="Loader/Image Folder Loader" ID="0"/>
+            <processor path="I:/MD/flower/flowers/test" Name="Image Folder Loader" type="Loader/Image Folder Loader" ID="0"/>
+            <processor Name="Color 2 Gray" type="Conversion/Color 2 Gray" ID="1"/>
+            <processor Name="Color Space Conversion" type="Conversion/Color Space Conversion" ID="2">
+                <Property typeID="PropertyType/Option" Name="Conversion" value="BGR 2 HSV" type="PropertyType/Option" ID="ConversionOption"/>
+            </processor>
+            <processor Name="Binary Image" type="Conversion/Binary Image" ID="3">
+                <Property typeID="PropertyType/DoubleRange" Name="threshold" value="0" type="PropertyType/DoubleRange" ID="threshold"/>
+            </processor>
+            <processor Name="Centroid" type="FeatureExtraction/Centroid" ID="4"/>
+            <processor Name="Polor GLCM" type="Flowers/Feature/Polor GLCM" ID="5">
+                <Property typeID="PropertyType/DoubleRange" Name="Threshold" value="0" type="PropertyType/DoubleRange" ID="threshold"/>
+                <Property typeID="PropertyType/DoubleRange" Name="Bins" value="8" type="PropertyType/DoubleRange" ID="binCount"/>
+            </processor>
         </processors>
+        <Connections>
+            <Connection src_processor="0" target_processor="1" target_port="0" src_port="0"/>
+            <Connection src_processor="0" target_processor="2" target_port="0" src_port="0"/>
+            <Connection src_processor="1" target_processor="3" target_port="0" src_port="1"/>
+            <Connection src_processor="1" target_processor="5" target_port="1" src_port="1"/>
+            <Connection src_processor="3" target_processor="4" target_port="0" src_port="1"/>
+            <Connection src_processor="3" target_processor="5" target_port="0" src_port="1"/>
+        </Connections>
     </DesignNetSpace>
     <Positions>
-        <Position X="-428" Y="-115" type="Position" id="0"/>
+        <Position X="-902" Y="-72" type="Position" id="0"/>
+        <Position X="-751" Y="8" type="Position" id="1"/>
+        <Position X="-754" Y="-163" type="Position" id="2"/>
+        <Position X="-596" Y="38" type="Position" id="3"/>
+        <Position X="-432" Y="99" type="Position" id="4"/>
+        <Position X="-445" Y="-69" type="Position" id="5"/>
     </Positions>
+    <GraphicsConnectionList>
+        <GraphicsConnection pt1.x="-649" pt1.y="-17" pt2.x="-541" pt2.y="-65" TargetProcessor="5" TargetPort="1" SrcPort="1" SrcProcessor="1"/>
+        <GraphicsConnection pt1.x="-526" pt1.y="-19" pt2.x="-594" pt2.y="-102" TargetProcessor="5" TargetPort="0" SrcPort="1" SrcProcessor="3"/>
+        <GraphicsConnection pt1.x="-513" pt1.y="58" pt2.x="-538" pt2.y="93" TargetProcessor="4" TargetPort="0" SrcPort="1" SrcProcessor="3"/>
+        <GraphicsConnection pt1.x="-683" pt1.y="22" pt2.x="-692" pt2.y="41" TargetProcessor="3" TargetPort="0" SrcPort="1" SrcProcessor="1"/>
+        <GraphicsConnection pt1.x="-759" pt1.y="-138" pt2.x="-914" pt2.y="-147" TargetProcessor="2" TargetPort="0" SrcPort="0" SrcProcessor="0"/>
+        <GraphicsConnection pt1.x="-739" pt1.y="-62" pt2.x="-917" pt2.y="-44" TargetProcessor="1" TargetPort="0" SrcPort="0" SrcProcessor="0"/>
+        <GraphicsConnection pt1.x="-597" pt1.y="-78" pt2.x="-642" pt2.y="-74" TargetProcessor="5" TargetPort="-1" SrcPort="-1" SrcProcessor="1"/>
+        <GraphicsConnection pt1.x="-598" pt1.y="-32" pt2.x="-574" pt2.y="-51" TargetProcessor="5" TargetPort="-1" SrcPort="-1" SrcProcessor="3"/>
+        <GraphicsConnection pt1.x="-581" pt1.y="99" pt2.x="-523" pt2.y="134" TargetProcessor="4" TargetPort="-1" SrcPort="-1" SrcProcessor="3"/>
+        <GraphicsConnection pt1.x="-668" pt1.y="25" pt2.x="-686" pt2.y="54" TargetProcessor="3" TargetPort="-1" SrcPort="-1" SrcProcessor="1"/>
+        <GraphicsConnection pt1.x="-847" pt1.y="-157" pt2.x="-848" pt2.y="-121" TargetProcessor="2" TargetPort="-1" SrcPort="-1" SrcProcessor="0"/>
+        <GraphicsConnection pt1.x="-861" pt1.y="-1" pt2.x="-827" pt2.y="-3" TargetProcessor="1" TargetPort="-1" SrcPort="-1" SrcProcessor="0"/>
+    </GraphicsConnectionList>
 </XML>

@@ -13,7 +13,7 @@ ProcessorPropertyWidget::ProcessorPropertyWidget(Processor *processor, QWidget *
     QWidget(parent),
     m_processor(processor)
 {
-
+	
 }
 
 ProcessorPropertyWidget::~ProcessorPropertyWidget()
@@ -37,4 +37,5 @@ void ProcessorPropertyWidget::initWidgets()
         vLayout->addWidget((QWidget*)widget);
     }
 }
+
 }

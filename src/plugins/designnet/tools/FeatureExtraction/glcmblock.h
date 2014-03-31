@@ -23,13 +23,15 @@ public:
 
 	GLCMBlock(DesignNet::DesignNetSpace *space, QObject *parent = 0);
 	virtual ~GLCMBlock();
-	virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const;
+	DECLEAR_PROCESSOR(GLCMBlock)
 	virtual QString title() const;
 	virtual QString category() const;//!< 种类
 	virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);			//!< 处理函数
+
 protected:
+	
 	virtual void propertyChanged(DesignNet::Property *prop);
-	bool connectionTest( DesignNet::Port* src, DesignNet::Port* target );
+
 private:
 	GLCMBlockPrivate *d;
 };

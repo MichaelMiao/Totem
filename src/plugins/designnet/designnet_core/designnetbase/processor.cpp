@@ -41,23 +41,30 @@ void ProcessorWorker::stopped()
 {
 	QMutexLocker locker(&m_mutex);
 	m_bWorking = false;
+	emit m_processor->processFinished();
 }
 
 void ProcessorWorker::started()
 {
 	QMutexLocker locker(&m_mutex);
 	m_bWorking = true;
+	emit m_processor->processStarted();
 }
 
 Processor::Processor(DesignNetSpace *space, QObject* parent, ProcessorType processorType)
-	: QObject(parent), m_space(space), m_worker(this), m_eType(processorType), m_thread(0)
+	: QObject(parent),
+	m_space(space),
+	m_worker(this),
+	m_eType(processorType), m_thread(0), m_bResizableInput(false)
 {
+	m_bDataDirty = true;
     m_name = "";
 	m_id = -1;
 	if (processorType == ProcessorType_Permanent)
 	{
 		m_thread = new QThread(this);
 		m_worker.moveToThread(m_thread);
+		QObject::connect(m_thread, SIGNAL(started()), &m_worker, SLOT(started()));
 		QObject::connect(m_thread, SIGNAL(started()), &m_worker, SLOT(run()));
 		QObject::connect(m_thread, SIGNAL(finished()), &m_worker, SLOT(stopped()));
 		QObject::connect(m_thread, SIGNAL(terminated()), &m_worker, SLOT(stopped()));
@@ -104,14 +111,14 @@ int Processor::id() const
     return m_id;
 }
 
-void Processor::pushData(const ProcessData &pd, QString strLabel)
+void Processor::pushData(ProcessData &pd, QString strLabel)
 {
 	QList<Port*>::Iterator itr = m_outputPort.begin();
 	for (; itr < m_outputPort.end(); itr++)
 	{
 		if ((*itr)->data()->dataType == pd.dataType && (*itr)->name() == strLabel)
 		{
-			(*itr)->data()->variant = pd.variant;
+			(*itr)->addData(&pd);
 			break;
 		}
 	}
@@ -128,8 +135,10 @@ void Processor::pushData(QVariant &var, DataType dataType, QString strLabel /*= 
 void Processor::pushData(IData* data, QString strLabel /*= ""*/, int iProcessId /*= -1*/)
 {
 	Port* pPort = getPort(Port::OUT_PORT, strLabel);
+	ProcessData pd(DATATYPE_USERTYPE);
+	pd.variant.setValue<IData*>(data);
 	if (pPort)
-		pPort->data()->variant.setValue<IData*>(data);
+		pPort->addData(&pd);
 }
 
 QList<ProcessData> Processor::getOutputData(DataType dt)
@@ -183,6 +192,7 @@ bool Processor::beforeProcess(QFutureInterface<ProcessResult> &future)
 
 void Processor::afterProcess(bool status)
 {
+	m_bDataDirty = false;
 	emit logout(tr("%1 id: %2 processing finished.").arg(name()).arg(id()));
 }
 
@@ -195,9 +205,14 @@ void Processor::run( QFutureInterface<ProcessResult> &future )
 		pr = future.future().result();
 		pr.m_bSucessed = false;
 		future.reportResult(pr, 0);
+		return;
 	}
 	pr = future.future().resultAt(0);
 	afterProcess(future.future().resultAt(0).m_bSucessed);
+	if (getOutputProcessor().size() == 0)
+		emit childProcessFinished();
+	if (m_thread)
+		m_thread->quit();
 }
 
 void Processor::start()
@@ -225,7 +240,14 @@ void Processor::waitForFinish()
 
 bool Processor::connectionTest(Port* pOutput, Port* pInput)
 {
-	return pOutput->data()->dataType == pInput->data()->dataType;
+	if (pOutput->data()->dataType == pInput->data()->dataType)
+		return true;
+	if (pInput->data()->dataType == DATATYPE_MATRIX
+		&& (pOutput->data()->dataType >= DATATYPE_MATRIX || pOutput->data()->dataType <= END_DATATYPE_MATRIX))
+	{
+		return true;
+	}
+	return false;
 }
 
 bool Processor::connectionTest(Processor* father)
@@ -254,6 +276,7 @@ void Processor::deserialize( Utils::XmlDeserializer& s )
 {
 	s.deserialize("Name", m_name);
 	s.deserialize("ID", m_id);
+	PropertyOwner::deserialize(s);
 }
 
 QString Processor::serializableType() const
@@ -309,7 +332,7 @@ void Processor::propertyAdded( Property* prop )
 
 void Processor::propertyChanged( Property *prop )
 {
-
+	emit processorModified();
 }
 
 void Processor::onPropertyChanged_internal()
@@ -380,16 +403,27 @@ void Processor::detach()
 		disconnect(p);
 }
 
-bool Processor::addPort(Port::PortType pt, DataType dt, QString sLabel)
+bool Processor::addPort(Port::PortType pt, DataType dt, QString sLabel, bool bRemovable)
 {
-	Port *pPort = new Port(pt, dt, sLabel, this);
+	Port *pPort = new Port(pt, dt, sLabel, bRemovable, this);
 	pPort->setProcessor(this);
+	QObject::connect(pPort, SIGNAL(connectPort(Port*, Port*)), this, SLOT(onPortConnected(Port*, Port*)));
 	if (pt == Port::IN_PORT)
 		m_inputPort.push_back(pPort);
 	else if (pt == Port::OUT_PORT)
 		m_outputPort.push_back(pPort);
-
+	
+	emit portAdded(pPort);
 	return true;
+}
+
+void Processor::removePort(Port *pPort)
+{
+	pPort->disconnect();
+	m_inputPort.removeAll(pPort);
+	m_outputPort.removeAll(pPort);
+	emit portRemoved(pPort);
+	pPort->deleteLater();
 }
 
 Port* Processor::getPort(Port::PortType pt, DataType dt)
@@ -413,6 +447,14 @@ Port* Processor::getPort(Port::PortType pt, QString sLabel)
 	}
 	return NULL;
 }
+Port* Processor::getPort(const int iIndex)
+{
+	QList<Port*> ports;
+	ports << m_inputPort << m_outputPort;
+	if (iIndex >= ports.size())
+		return 0;
+	return ports[iIndex];
+}
 
 QList<DesignNet::ProcessData*> Processor::getData(QString sLabel)
 {
@@ -425,6 +467,11 @@ QList<DesignNet::ProcessData*> Processor::getData(QString sLabel)
 			res << portsConnected[i]->data();
 	}
 	return res;
+}
+
+ProcessData Processor::getOneData(QString sLabel)
+{
+	return *(getData(sLabel)).at(0);
 }
 
 QList<Port*> Processor::getPorts(Port::PortType pt) const
@@ -452,12 +499,74 @@ QList<Processor*> Processor::getOutputProcessor() const
 
 void Processor::onPortConnected(Port* src, Port* target)
 {
-	
+	emit processorModified();
 }
 
 void Processor::onPortDisconnected(Port* src, Port* target)
 {
-
+	emit processorModified();
 }
 
+void Processor::notifyDataWillChange()
+{
+	m_bDataDirty = true;
+	QList<Processor*> processors = getOutputProcessor();
+	for (QList<Processor*>::iterator itr = processors.begin(); itr != processors.end(); itr++)
+	{
+		(*itr)->onNotifyDataChanged();
+	}
+}
+
+void Processor::notifyProcess()
+{
+	m_bDataDirty = false;
+	QList<Processor*> processors = getOutputProcessor();
+	m_waitProcessors = processors;
+	for (QList<Processor*>::iterator itr = processors.begin(); itr != processors.end(); itr++)
+	{
+		(*itr)->onNotifyProcess();
+
+	}
+}
+
+void Processor::onNotifyDataChanged()
+{
+	m_bDataDirty = true;
+}
+
+void Processor::onNotifyProcess()
+{
+	for (QList<Port*>::iterator itr = m_inputPort.begin(); itr != m_inputPort.end(); itr++)
+	{
+		QList<Processor*> processors = (*itr)->connectedProcessors();
+		for (QList<Processor*>::iterator itr = processors.begin(); itr != processors.end(); itr++)
+		{
+			if ((*itr)->isDataDirty())
+				return;
+		}
+	}
+	start();
+}
+
+void Processor::onChildProcessFinished()
+{
+	onChildProcessorFinish((Processor*)sender());
+}
+
+void Processor::onChildProcessorFinish(Processor* p)
+{
+	m_waitProcessors.removeOne(p);
+	if (m_waitProcessors.size() == 0)
+		emit childProcessFinished();
+}
+
+void Processor::onCreateNewPort(Port::PortType pt)
+{
+	QString str;
+	if (pt == Port::IN_PORT)
+		str = tr("Input Port(%1)").arg(m_inputPort.size());
+	else
+		str = tr("Output Port(%1)").arg(m_outputPort.size());
+	addPort(pt, DATATYPE_MATRIX, str, true);
+}
 }

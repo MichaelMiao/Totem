@@ -38,13 +38,16 @@ public:
         OUT_PORT    //!< 输出端口
     };
 
-    explicit Port(PortType portType, DataType dt, const QString &label = "", QObject *parent = 0);
+    explicit Port(PortType portType, DataType dt,
+			const QString &label = "", bool bRemovable = false, QObject *parent = 0);
 	virtual ~Port();
-    PortType portType() const{return m_portType;}
-    void setPortType(const PortType &portType){m_portType = portType;}
+    PortType portType() const{ return m_portType; }
+    void setPortType(const PortType &portType){ m_portType = portType; }
 
-    Processor* processor() const{return m_processor;}
-    void setProcessor(Processor* processor){m_processor = processor;}
+    Processor* processor() const{ return m_processor; }
+    void setProcessor(Processor* processor);
+
+	int getIndex();
     /*!
      * \brief connect
      *
@@ -55,11 +58,13 @@ public:
     bool connect(Port* inputPort);//!< 当前端口将会作为输出端口连接到\e inputPort.
 
     bool disconnect(Port* port = 0);
-    bool canConnectTo(Port* inputPort);     //!< 判断是否能够连接到\e inputPort
+    bool canConnectTo(Port* inputPort);				//!< 判断是否能够连接到\e inputPort
 
-    bool isConnectedTo(const Port* port) const;   //!< 是否已经连接到了端口\e port
-    bool isConnected() const;               //!< 是否处于连接状态
+    bool isConnectedTo(const Port* port) const;		//!< 是否已经连接到了端口\e port
+    bool isConnected() const;						//!< 是否处于连接状态
     bool isConnectedTo(const Processor* processor) const;
+	bool isRemovable() const { return m_bRemovable; }
+
     bool isMultiInputSupported() const;
 	void setMultiInputSupported(const bool &bSupported = true); //!< 设置端口是否支持多输入
     QList<Processor*> connectedProcessors() const;  //!< 返回该端口所连接的所有处理器
@@ -94,17 +99,29 @@ signals:
 
 	void connectPort(Port* src, Port* target);
 	void disconnectPort(Port* src, Port* target);
+	void dataChanged();
 
 protected:
 
     bool			m_bMultiInput;  //!< 是否支持多份输入
-    PortType		m_portType;     //!< 端口类型
+    bool			m_bRemovable;	//!< 是否可以移除
+	PortType		m_portType;     //!< 端口类型
     ProcessData		m_data;         //!< 数据
+	
     QString			m_name;         //!< 端口名称（一个Processor中名称唯一）
     Processor*		m_processor;    //!< 该端口所属的处理器
     QList<Port*>	m_portsConnected;//!< 当前端口所连接的所有Port
 	QReadWriteLock	m_dataLocker;
 };
+
+
+struct PortData
+{
+	Port::PortType	ePortType;
+	DataType		eDataType;
+	QString			strName;
+};
+
 }
 
 #endif // PORT_H

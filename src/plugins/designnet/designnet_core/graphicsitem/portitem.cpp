@@ -1,16 +1,19 @@
 #include "portitem.h"
-#include "../designnetconstants.h"
-#include "../designnetbase/port.h"
-#include "processorgraphicsblock.h"
-#include "portarrowlink.h"
-#include <QPainter>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsScene>
 #include <QGraphicsLineItem>
-#include "data/idata.h"
-#include "data/datatype.h"
+#include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
+#include <QMessageBox>
+#include <QPainter>
+#include "../data/datatype.h"
+#include "../data/idata.h"
+#include "../designnetbase/port.h"
+#include "../widgets/tooltipgraphicsitem.h"
+#include "../designnetconstants.h"
+#include "portarrowlink.h"
+#include "processorgraphicsblock.h"
 
 
+using namespace GraphicsUI;
 namespace DesignNet
 {
 static PortArrowLink* _pTempLink		= 0;
@@ -18,17 +21,31 @@ static QGraphicsLineItem* _pLineItem	= 0;
 //////////////////////////////////////////////////////////////////////////
 
 PortItem::PortItem(Port* pPort, ProcessorGraphicsBlock* pBlock)
-	: m_pPort(pPort), m_pBlock(pBlock)
+	: GraphicsToolButton(pBlock), m_pPort(pPort), m_pBlock(pBlock)
 {
 	setParentItem(pBlock);
 	setFlags(ItemIsFocusable | ItemIsSelectable);
-	QObject::connect(pPort, SIGNAL(connectPort(Port*, Port*)), this, SLOT(portConnected(Port*, Port*)));
-	QObject::connect(pPort, SIGNAL(disconnectPort(Port*, Port*)), this, SLOT(portDisconnected(Port*, Port*)));
+	
+	m_pToolTip = new ToolTipGraphicsItem(this);
+	m_pToolTip->hide();
+	QObject::connect(pPort, SIGNAL(connectPort(Port*, Port*)), this, SLOT(onPortConnected(Port*, Port*)));
+	QObject::connect(pPort, SIGNAL(disconnectPort(Port*, Port*)), this, SLOT(onPortDisconnected(Port*, Port*)));
+	QObject::connect(pPort, SIGNAL(dataChanged()), this, SLOT(onPortDataChanged()));
 }
 
 PortItem::~PortItem()
 {
 
+}
+
+int PortItem::processorId()
+{
+	return m_pPort->processor()->id();
+}
+
+int PortItem::index()
+{
+	return m_pPort->getIndex();
 }
 
 QRectF PortItem::boundingRect() const
@@ -46,17 +63,15 @@ void PortItem::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
 	if (m_pPort->data())
 	{
 		if (m_pPort->data()->dataType < DATATYPE_USERTYPE)
-		{
 			painter->drawImage(boundingRect(), QImage(g_InnerDataType[m_pPort->data()->dataType].strFile));
-		}
 	}
 }
 
 void PortItem::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
 	setSelected(true);
-	grabMouse();
 	event->accept();
+	GraphicsToolButton::mousePressEvent(event);
 }
 
 void PortItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -81,7 +96,7 @@ void PortItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void PortItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-	ungrabMouse();
+	GraphicsToolButton::mouseReleaseEvent(event);
 	if (_pLineItem)
 	{
 		scene()->removeItem(_pLineItem);
@@ -91,16 +106,54 @@ void PortItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 		if (pItem && pItem->type() == PortItem::Type)
 			m_pPort->connect(((PortItem*)pItem)->port());
 	}
+	else if (event->button() == Qt::LeftButton && m_pPort->portType() == Port::OUT_PORT)
+	{
+		m_pToolTip->setData(m_pPort->data()->variant);
+		m_pToolTip->show();
+	}
 }
 
-void PortItem::portConnected(Port* src, Port* target)
+void PortItem::onPortConnected(Port* src, Port* target)
 {
 	
 }
 
-void PortItem::portDisconnected(Port* src, Port* target)
+void PortItem::onPortDisconnected(Port* src, Port* target)
 {
 
+}
+
+void PortItem::onPortDataChanged()
+{
+	m_pToolTip->setData(m_pPort->data()->variant);
+}
+
+void PortItem::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
+{
+	QString toolTip;
+	toolTip = tr("<p><b>PortName:</b> <span style=\"color: red; font-size: small\">%2</span></p>").arg(m_pPort->name());
+	if (m_pPort->portType() == Port::IN_PORT)
+	{
+		toolTip += tr("<b>PortType:</b> <span style=\"color: red; font-size: small\">IN_PORT</span>");	
+	}
+	else
+		toolTip += tr("<b>PortType:</b> <span style=\"color: red; font-size: small\">OUT_PORT</span>");
+
+	setToolTip(toolTip);
+
+	update();
+	QGraphicsItem::hoverEnterEvent(event);
+}
+
+void PortItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
+{
+	update();
+	QGraphicsItem::hoverLeaveEvent(event);
+}
+
+QImage PortItem::getImage()
+{
+	return QImage(g_InnerDataType[m_pPort->data()->dataType].strFile);
 }
 
 }

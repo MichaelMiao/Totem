@@ -27,6 +27,7 @@ OpenCVLibSVM::OpenCVLibSVM() : m_pModel(0)
 	m_param.nr_weight = 0;
 	m_param.weight_label = NULL;
 	m_param.weight = NULL;
+	m_pModel = NULL;
 }
 
 OpenCVLibSVM::~OpenCVLibSVM()
@@ -80,25 +81,25 @@ void OpenCVLibSVM::train(cv::Mat &mat, cv::Mat &labelMat, char* strFileName)
 	const char *error_msg;
 	error_msg = svm_check_parameter(&m_prob, &m_param);
 	m_pModel = svm_train(&m_prob, &m_param);
+//	crossValidation();
 	svm_save_model(strFileName, m_pModel);
-	crossValidation();
 }
 
-void OpenCVLibSVM::crossValidation()
+double OpenCVLibSVM::crossValidation()
 {
 	float gamma_step = 0.1;
 	float c_step = 0.1;
-	float g_min = 0, g_max = 2;
-	float c_min = 1, c_max = 30;
+	float g_min = 0.1, g_max = 2;
+	float c_min = 10, c_max = 20;
 	float g = g_min, c = c_min;
 	float f = 0, c_best = c, g_best = g_min;
-//	while (g < g_max)
+	while (g < g_max)
 	{
 		c = c_min;
-//		while (c < c_max)
+		while (c < c_max)
 		{
-// 			m_param.C = c;
-// 			m_param.gamma = g;
+//  			m_param.C = c;
+//  			m_param.gamma = g;
 			int total_correct = 0;
 			double total_error = 0;
 			double sumv = 0, sumy = 0, sumvv = 0, sumyy = 0, sumvy = 0;
@@ -125,12 +126,15 @@ void OpenCVLibSVM::crossValidation()
 		g += gamma_step;
 	}
 	qDebug() << QString("Cross Validation Accuracy = %1%----c =  %2-- g = %3\n").arg(f).arg(c_best).arg(g_best);
-	
+	m_param.C = c_best;
+	m_param.gamma = g_best;
+	m_pModel->param = m_param;
+	return f;
 }
 
-void OpenCVLibSVM::loadModel()
+void OpenCVLibSVM::loadModel(char * strFileName)
 {
-	m_pModel = svm_load_model("I:/data/svm.xml");
+	m_pModel = svm_load_model(strFileName);
 }
 
 int comp(const void *a, const void *b)

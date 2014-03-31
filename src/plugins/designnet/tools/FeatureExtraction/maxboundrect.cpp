@@ -4,22 +4,16 @@
 using namespace DesignNet;
 
 MaxBoundRect::MaxBoundRect(DesignNet::DesignNetSpace *space, QObject *parent)
-	: Processor(space, parent),
-	m_outputRectPort(new CustomData(0, "Rect", this), Port::OUT_PORT, tr("Out Rect"), this),
-	m_inputBinaryImagePort(new CustomData(0, "Rect", this), Port::OUT_PORT, tr("Out Rect"), this)
+	: Processor(space, parent)
 {
-	addPort(&m_inputBinaryImagePort);
-	addPort(&m_outputRectPort);
+	addPort(Port::IN_PORT, DATATYPE_USERTYPE, tr("Input Rect"));
+	addPort(Port::OUT_PORT, DATATYPE_USERTYPE, tr("Out Rect"));
+	setName(tr("MaxBoundRect"));
 }
 
 MaxBoundRect::~MaxBoundRect()
 {
 
-}
-
-Processor* MaxBoundRect::create( DesignNet::DesignNetSpace *space /*= 0*/ ) const
-{
-	return 0;
 }
 
 QString MaxBoundRect::title() const

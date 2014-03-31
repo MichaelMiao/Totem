@@ -41,4 +41,13 @@ cv::Mat OpenCVHelper::QImage2Mat(QImage img)
 	return mat2; 
 }
 
+// cv::Mat OpenCVHelper::Combine(cv::Mat &mat1, cv::Mat& mat2)
+// {
+// 	if (mat1.rows != mat2.rows)
+// 		return cv::Mat();
+// 
+// 	cv::Mat m(mat1.rows, mat1.cols + mat2.cols, mat1.type());
+// 	return m;
+// }
+
 }

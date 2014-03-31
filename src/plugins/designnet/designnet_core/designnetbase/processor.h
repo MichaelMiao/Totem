@@ -22,6 +22,12 @@
 		return new x(space); \
 	}
 
+#define BEGIN_PROCESS() \
+	notifyDataWillChange(); \
+	m_bDataDirty = true;
+#define END_PROCESS() \
+	m_bDataDirty = false;
+
 
 QT_BEGIN_NAMESPACE
 class QThread;
@@ -106,21 +112,22 @@ public:
     
 	//////////////////////////////////////////////////////////////////////////
 
-	bool	addPort(Port::PortType pt, DataType dt, QString sLabel);
+	bool	addPort(Port::PortType pt, DataType dt, QString sLabel, bool bRemovable = false);
+	void	removePort(Port *pPort);
 	Port*	getPort(Port::PortType pt, DataType dt);
 	Port*	getPort(Port::PortType pt, QString sLabel);
+	Port*	getPort(const int iIndex);
 	QList<Port*> getPorts(Port::PortType pt) const;
 	
-	
 	QList<ProcessData*> getData(QString sLabel);
+	ProcessData			getOneData(QString sLabel);
 
-	void pushData(const ProcessData &pd, QString strLabel);
+	void pushData(ProcessData &pd, QString strLabel);
 	void pushData(QVariant &var, DataType dataType, QString strLabel = "", int iProcessId = -1);
 	void pushData(IData* data, QString strLabel = "", int iProcessId = -1);
 
-	QList<ProcessData> getOutputData(DataType dt = DATATYPE_INVALID);
-	QList<ProcessData> getInputData(DataType dt = DATATYPE_INVALID);
-
+	QList<ProcessData>	getOutputData(DataType dt = DATATYPE_INVALID);
+	QList<ProcessData>	getInputData(DataType dt = DATATYPE_INVALID);
 	//////////////////////////////////////////////////////////////////////////
 
 	void start();
@@ -139,7 +146,9 @@ public:
 	bool isConnectTo(Processor* pChild);
 	void detach();
 
+	bool isDataDirty() { return m_bDataDirty; }
 
+	bool isResizableInput() { return m_bResizableInput; }
 
 	QReadWriteLock m_workingLock;
 
@@ -148,6 +157,14 @@ signals:
 	void logout(QString log);
 	void connected(Processor* father, Processor* pChild);
 	void disconnected(Processor* father, Processor* pChild);
+	void processorModified();
+	void childProcessFinished();
+	
+	void processStarted();
+	void processFinished();
+
+	void portAdded(Port* pPort);
+	void portRemoved(Port* pPort);
 
 public slots:
 
@@ -158,8 +175,15 @@ public slots:
 	void onPortConnected(Port* src, Port* target);
 	void onPortDisconnected(Port* src, Port* target);
 
+	void onChildProcessFinished();
 
 protected:
+
+	void notifyDataWillChange();	//!< 通知数据有变化
+	void notifyProcess();			//!< 通知处理器处理
+	virtual void onNotifyDataChanged();
+	virtual void onNotifyProcess();
+	virtual void onChildProcessorFinish(Processor* p);
 
 	virtual void propertyChanged(Property *prop);
 	virtual void propertyAdded(Property* prop);
@@ -169,18 +193,24 @@ protected:
 	virtual void afterProcess(bool status = true);		//!< 完成处理
 	virtual bool finishProcess() { return true; }
 	
+	virtual void onCreateNewPort(Port::PortType pt);
+
 	//////////////////////////////////////////////////////////////////////////
 
 	QIcon			m_icon;
 	QString			m_title;				//!< 种类title
 	int				m_id;
 	ProcessorType	m_eType;
+	bool			m_bDataDirty;			//!< 数据有更新
 
 	QList<Port*>	m_outputPort;			//!< 所有的输出端口
 	QList<Port*>	m_inputPort;			//!< 输入端口
 
+	QList<Processor*> m_waitProcessors;		//!< 还未收到完成通知的处理器列表 
 	ProcessorWorker m_worker;
 	DesignNetSpace* m_space;				//!< DesignNetSpace
+
+	bool			m_bResizableInput;		//!< 可变数量的输入
 
 	QFutureWatcher<ProcessResult> m_watcher;	//!< 用于控制进度
 	QThread*  m_thread;

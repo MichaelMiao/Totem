@@ -11,6 +11,7 @@ public:
 
 	LabelLoader(DesignNet::DesignNetSpace *space, QObject *parent = 0);
 	~LabelLoader(void);
+
 	virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const;
 	virtual QString title() const;
 	virtual QString category() const;//!< ÖÖÀà
@@ -21,8 +22,11 @@ public:
 
 	void setPath(const QString &p);
 	QString path() const;
+	
+private:
+	
+	virtual void propertyChanged(DesignNet::Property *prop);
 
-	virtual void serialize(Utils::XmlSerializer& s) const;
-	virtual void deserialize(Utils::XmlDeserializer& s);
+	QMap<int, int> m_mapLabel;
 };
 }

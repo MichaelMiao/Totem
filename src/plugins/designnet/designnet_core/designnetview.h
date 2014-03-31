@@ -63,6 +63,7 @@ public slots:
 	void onProcessorRemoved(Processor* processor);
 	void onConnectionAdded(Processor* father, Processor* child);
 	void onConnectionRemoved(Processor* father, Processor* child);
+	void onConnectionRemoved(Port* src, Port* target);
 	void processorClosed();
 	void processorPortVisibleChanged(bool bVisible, int iType);
 

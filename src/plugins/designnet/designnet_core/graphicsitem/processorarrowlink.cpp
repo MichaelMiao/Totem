@@ -1,10 +1,14 @@
 #include "processorarrowlink.h"
-#include "processorgraphicsblock.h"
-#include "GraphicsUI/arrowlinkcontrolitem.h"
-#include <QLineF>
-#include <QGraphicsScene>
-#include <QGraphicsItemGroup>
 #include <QEvent>
+#include <QGraphicsItemGroup>
+#include <QGraphicsScene>
+#include <QLineF>
+#include "../designnetbase/designnetspace.h"
+#include "../designnetbase/processor.h"
+#include "GraphicsUI/arrowlinkcontrolitem.h"
+#include "processorgraphicsblock.h"
+
+
 using namespace GraphicsUI;
 namespace DesignNet{
 
@@ -45,16 +49,6 @@ ProcessorArrowLink::ProcessorArrowLink(QGraphicsItem *parent)
 
 ProcessorArrowLink::~ProcessorArrowLink()
 {
-	if (m_srcProcessor)
-	{
-		m_srcProcessor->setEmphasized(false);
-		m_srcProcessor = 0;
-	}
-	if (m_targetProcessor)
-	{
-		m_targetProcessor->setEmphasized(false);
-		m_targetProcessor = 0;
-	}
 }
 
 void ProcessorArrowLink::connectProcessor( ProcessorGraphicsBlock* pSrc, ProcessorGraphicsBlock* pTarget )
@@ -99,6 +93,7 @@ void ProcessorArrowLink::onProcessorPosChanged()
 void ProcessorArrowLink::onControlItemPostionChanged()
 {
 	updatePosition();
+	m_srcProcessor->processor()->space()->setModified();
 }
 
 void ProcessorArrowLink::updatePosition()
@@ -119,6 +114,18 @@ QVariant ProcessorArrowLink::itemChange( GraphicsItemChange change, const QVaria
 		{
 			m_srcProcessor->setEmphasized(value.toBool());
 			m_targetProcessor->setEmphasized(value.toBool());
+		}
+		if (value.toBool())
+		{
+			QList<QGraphicsItem *> list = collidingItems();
+			for (QList<QGraphicsItem*>::iterator itr = list.begin(); itr != list.end(); itr++)
+				(*itr)->stackBefore(this);
+			list = m_controlPoint_1->collidingItems();
+			for (QList<QGraphicsItem*>::iterator itr = list.begin(); itr != list.end(); itr++)
+				(*itr)->stackBefore(m_controlPoint_1);
+			list = m_controlPoint_2->collidingItems();
+			for (QList<QGraphicsItem*>::iterator itr = list.begin(); itr != list.end(); itr++)
+				(*itr)->stackBefore(m_controlPoint_2);
 		}
 	}
 	return ArrowLinkItem::itemChange(change, value);

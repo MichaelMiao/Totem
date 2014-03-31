@@ -24,9 +24,11 @@ class PolorGLCMBlock : public DesignNet::Processor
 	Q_OBJECT
 
 public:
+
+	DECLEAR_PROCESSOR(PolorGLCMBlock)
+
 	PolorGLCMBlock(DesignNet::DesignNetSpace *space, QObject *parent = 0);
 	~PolorGLCMBlock();
-	virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const;
 	virtual QString title() const;
 	virtual QString category() const;//!< 种类
 
@@ -41,10 +43,11 @@ public:
 	 *  feature[5]: 经过sobel算子之后的 glcm 对比度
 	 *  feature[6]: 经过sobel算子之后的 glcm 同质性
 	 */
-	virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);     
+	virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);
+
 protected:
+	
 	virtual void propertyChanged(DesignNet::Property *prop);
-	bool connectionTest( DesignNet::Port* src, DesignNet::Port* target );
 
 	void centroid();	//!<	计算中心坐标
 	void normalize(cv::Mat &glcm);	//!<	归一化glcm
@@ -53,10 +56,7 @@ protected:
 	float homogeneity(const cv::Mat &glcm);//!< 计算同质性，GLCM中元素对角线分布的控件紧密度的度量
 
 private:
-	DesignNet::Port m_outputPort;	//!< 输出特征端口
-	DesignNet::Port m_inputPort;	//!< 输入灰度图端口
-	DesignNet::Port m_inputBinaryImagePort;	//!< 输入二值图端口
-	DesignNet::Port m_inputCentroidPort;	//!< 输入中心位置端口
+
 	DesignNet::DoubleRangeProperty* m_doubleRangeProperty;
 	DesignNet::DoubleRangeProperty* m_binCountProperty;//!< 灰度级，默认为8
 	cv::Mat m_glcm;					//!< 灰度共生矩阵

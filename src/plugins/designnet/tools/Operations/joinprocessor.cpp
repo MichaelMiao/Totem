@@ -1,45 +1,35 @@
 #include "joinprocessor.h"
+#include <QIcon>
 #include "data/matrixdata.h"
 #include "Utils/XML/xmlserializer.h"
-#include <QIcon>
+#include "../../designnet_core/designnetbase/port.h"
+
+
 using namespace DesignNet;
-class JoinProcessorPrivate
+enum PortIndex
 {
-public:
-	JoinProcessorPrivate(JoinProcessor *processor);
-	~JoinProcessorPrivate();
-	Port *m_outputPort;
+	PortIndex_In,
+	PortIndex_Out,
 };
 
-JoinProcessorPrivate::JoinProcessorPrivate(JoinProcessor *processor)
+static PortData s_ports[] =
 {
-	m_outputPort = new Port(new MatrixData(processor), Port::OUT_PORT, "OutputMatrix");
-}
+	{ Port::OUT_PORT,	DATATYPE_MATRIX,	"Joined Matrix" },
+};
 
-JoinProcessorPrivate::~JoinProcessorPrivate()
-{
-	delete m_outputPort;
-}
-
+using namespace DesignNet;
 JoinProcessor::JoinProcessor(DesignNet::DesignNetSpace *space, QObject* parent)
-	: DesignNet::Processor(space, parent),
-	d(new JoinProcessorPrivate(this))
+	: DesignNet::Processor(space, parent)
 {
 	setIcon(QLatin1String(":/images/join.png"));
 	setName(tr("Join"));
-	setPortCountResizable(true);
-	addPort(d->m_outputPort);
+	for (int i = 0; i < _countof(s_ports); i++)
+		addPort(s_ports[i].ePortType, s_ports[i].eDataType, s_ports[i].strName);
+	m_bResizableInput = true;
 }
 
 JoinProcessor::~JoinProcessor()
 {
-	delete d;
-	d = 0;
-}
-
-DesignNet::Processor* JoinProcessor::create( DesignNet::DesignNetSpace *space /*= 0*/ ) const
-{
-	return new JoinProcessor(space);
 }
 
 QString JoinProcessor::title() const
@@ -55,29 +45,22 @@ QString JoinProcessor::category() const
 bool JoinProcessor::process(QFutureInterface<ProcessResult> &future)
 {
 	int iRows = 0, iCols = 0;
-	foreach(Port *p, m_inputPorts)
+	QList<Port*> ports = getPorts(Port::IN_PORT);
+	QList<Port*>::iterator itr = ports.begin();
+	while (itr != ports.end())
 	{
-		if (p->getInputData().at(0)->isValid())
-		{
-			cv::Mat &mat = ((MatrixData*)p->getInputData().at(0))->getMatrix();
-			mat = mat.reshape(1, 1);
-			iCols += mat.cols;
-		}
+		cv::Mat m = (*itr)->data()->variant.value<cv::Mat>();
+		m.reshape(1, 1);
+		m.convertTo(m, CV_32FC1);
+		if (m_mat.rows == 0)
+			m_mat.push_back(m);
+		else if (m.rows != m_mat.rows || m.cols != m_mat.cols)
+			return false;
+		else
+			m_mat.push_back(m);
+		itr++;
 	}
-	cv::Mat mat(1, iCols, CV_32FC1);
-	iCols = 0;
-	foreach(Port *p, m_inputPorts)
-	{
-		if (p->data()->isValid())
-		{
-			cv::Mat &t = ((MatrixData*)p->data())->getMatrix();
-			t.copyTo(mat(cv::Rect(iCols, 0, t.cols, 1)));
-			iCols += t.cols;
-		}
-	}
-	MatrixData data;
-	data.setMatrix(mat);
-	pushData(&data, "OutputMatrix");
+	pushData(qVariantFromValue(m_mat), DATATYPE_MATRIX, s_ports[PortIndex_Out].strName);
 	return true;
 }
 
@@ -88,19 +71,14 @@ void JoinProcessor::propertyChanged( Property *prop )
 
 void JoinProcessor::serialize( Utils::XmlSerializer& s ) const
 {
-	s.serialize("count", m_inputPorts.size());
+	Processor::serialize(s);
+	s.serialize("InputPortCount", m_inputPort.size());
 }
 
 void JoinProcessor::deserialize( Utils::XmlDeserializer& s )
 {
 	int iCount = 0;
-	s.deserialize("count", iCount);
+	s.deserialize("InputPortCount", iCount);
 	for (int i = 0; i < iCount; i++)
-	{
-		blockSignals(true);
-		QString portName = "Port %1";
-		Port *port = new Port(new MatrixData(0), Port::IN_PORT, portName.arg(i), this);
-		addPort(port);
-		blockSignals(false);
-	}
+		addPort(Port::IN_PORT, DATATYPE_MATRIX, tr("Port(%1)").arg(i), true);
 }

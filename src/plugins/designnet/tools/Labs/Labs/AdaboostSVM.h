@@ -33,4 +33,11 @@ public:
 
 private:
 
+	cv::Mat m_colorTrain;
+	cv::Mat m_shapeTrain;
+	cv::Mat m_textureTrain;
+	cv::Mat m_train;
+	QList<QString> m_vecFiles;
+	QMap<int, int> m_imgLabel;
+	cv::Mat m_labelMat;
 };

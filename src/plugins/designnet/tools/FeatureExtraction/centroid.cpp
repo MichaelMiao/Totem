@@ -1,46 +1,25 @@
 #include "centroid.h"
-#include "designnet/designnet_core/designnetbase/port.h"
-#include "designnet/designnet_core/data/imagedata.h"
-#include "designnet/designnet_core/data/matrixdata.h"
-#include "designnet/designnet_core/property/optionproperty.h"
-#include <vector>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <vector>
+#include "../../../designnet/designnet_core/data/imagedata.h"
+#include "../../../designnet/designnet_core/data/matrixdata.h"
+#include "../../../designnet/designnet_core/designnetbase/port.h"
+#include "../../../designnet/designnet_core/property/optionproperty.h"
+
+#define INPUT_GRAYIMAGE		"grayInputImage"
+#define OUTPUT_CENTROID		"Centroid"
+
 using namespace std;
 using namespace DesignNet;
 
+
 namespace FeatureExtraction{
-class CentroidPrivate
-{
-public:
-	CentroidPrivate(Centroid *centroid)
-	{
-		m_inputBinaryImagePort = new DesignNet::Port(new ImageData(ImageData::IMAGE_BINARY, 0), Port::IN_PORT, "grayImageInput", centroid);
-		m_outputFeaturePort	= new DesignNet::Port(new MatrixData(0), Port::OUT_PORT, "centroid", centroid);
-	}
-	~CentroidPrivate()
-	{
-
-	}
-	DesignNet::Port *m_inputBinaryImagePort;
-	DesignNet::Port *m_outputFeaturePort;
-};
 Centroid::Centroid(DesignNet::DesignNetSpace *space, QObject *parent)
-	: Processor(space, parent),
-	d(new CentroidPrivate(this))
+	: Processor(space, parent)
 {
-	addPort(d->m_inputBinaryImagePort);
-	addPort(d->m_outputFeaturePort);
+	addPort(Port::IN_PORT, DATATYPE_BINARYIMAGE, INPUT_GRAYIMAGE);
+	addPort(Port::OUT_PORT, DATATYPE_MATRIX, OUTPUT_CENTROID);
 	setName(tr("Centroid"));
-}
-
-Centroid::~Centroid()
-{
-	delete d;
-}
-
-Processor* Centroid::create( DesignNet::DesignNetSpace *space /*= 0*/ ) const
-{
-	return new Centroid(space);
 }
 
 QString Centroid::title() const
@@ -55,6 +34,7 @@ QString Centroid::category() const
 
 bool Centroid::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
+	notifyDataWillChange();
 	cv::Mat binaryImage = ((MatrixData*)getData("grayImageInput").at(0))->getMatrix();
 	/// ÇóÖÐÐÄ
 	cv::Point2d centroid(0, 0);
@@ -103,6 +83,7 @@ bool Centroid::process(QFutureInterface<DesignNet::ProcessResult> &future)
 	MatrixData data;
 	data.setMatrix(mat);
 	pushData(&data, "centroid");
+	notifyProcess();
 	return true;
 }
 
@@ -114,4 +95,3 @@ void Centroid::propertyChanged( DesignNet::Property *prop )
 
 
 }
-

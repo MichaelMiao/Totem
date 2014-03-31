@@ -8,6 +8,7 @@
 namespace DesignNet{
 class ToolTipGraphicsItemPrivate;
 class IData;
+class Port;
 class ProcessorGraphicsBlock;
 /*!
  * \brief The ToolTipGraphicsItem class DesignView中显示的提示
@@ -17,22 +18,33 @@ class ProcessorGraphicsBlock;
 class DESIGNNET_CORE_EXPORT ToolTipGraphicsItem : public QGraphicsObject
 {
     Q_OBJECT
+
 public:
-    ToolTipGraphicsItem(ProcessorGraphicsBlock *parent);
+
+    ToolTipGraphicsItem(QGraphicsItem *parent);
 	virtual ~ToolTipGraphicsItem();
-    void setText(const QString& text);
-    QRectF boundingRect () const;
-    virtual void	paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-    QVariant itemChange ( GraphicsItemChange change, const QVariant & value ) ;
-    bool topmost() const;
-    void setData(IData* data);
-	virtual void mousePressEvent( QGraphicsSceneMouseEvent * event );
+    
+	QRectF boundingRect () const;
+	void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
+
+	void setText(const QString& text);
+	void setPort(Port* pPort);
+	void setData(QVariant v);
+	bool topmost() const;
+
+    QVariant itemChange(GraphicsItemChange change, const QVariant & value);
+
 public slots:
-    void onClosed();
+
+	void onClosed();
     void onTopMost(bool topmost);
 	void relayout(); //!< 重新布局
 	void onVisibleChanged();
+
 protected:
+
+	void focusOutEvent(QFocusEvent *event);
+
     ToolTipGraphicsItemPrivate *d;
 };
 }

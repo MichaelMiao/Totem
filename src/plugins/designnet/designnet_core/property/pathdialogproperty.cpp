@@ -79,16 +79,13 @@ QDir::Filters PathDialogProperty::filters() const
 void PathDialogProperty::serialize( Utils::XmlSerializer& s ) const
 {
 	Property::serialize(s);
-	QList<Utils::Path> pathList = paths();
-	foreach(Utils::Path path, pathList)
-	{
-		s.serialize("Path", path);
-	}
+	s.serialize("Paths", m_paths, "Path");
 }
 
-void PathDialogProperty::deserialize( Utils::XmlDeserializer& s )const
+void PathDialogProperty::deserialize( Utils::XmlDeserializer& s ) 
 {
-
+	QList<Utils::Path> pathList;
+	s.deserializeCollection("Paths", m_paths, "Path");
 }
 
 }

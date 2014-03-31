@@ -13,6 +13,7 @@
 #include "opencv2/nonfree/ocl.hpp"
 #include "opencv2/nonfree/features2d.hpp"
 #include "MultiLabelKNN.h"
+#include "OpenCVKNN.h"
 
 #define TEST_PATH		"I:/data/_test/"
 #define TRAIN_PATH		"I:/data/_train/"
@@ -152,7 +153,7 @@ void normalizeFeature(cv::Mat &mat, cv::Mat &matMaxMin)
 		matMaxMin = cv::Mat(2, mat.cols, CV_32FC1);
 		for (int c = 0; c < mat.cols; c++)
 		{
-			float fMax = -3000, fMin = 3000;
+			float fMax = -30000, fMin = 30000;
 			for (int r = 0; r < mat.rows; r++)
 			{
 				float* pData = mat.ptr<float>(r);
@@ -175,7 +176,7 @@ void normalizeFeature(cv::Mat &mat, cv::Mat &matMaxMin)
 bool AdaboostSVMProcessor::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
 //	prepareData();
-	train();
+//	train();
 	test();
 //	createBowSiftData();
 	return true;
@@ -265,62 +266,133 @@ void AdaboostSVMProcessor::train()
 	filters << "*.bmp";
 	QMap<int, int> imgLabel;	// img: id, label
 	LoadLabel(imgLabel);
-	cv::Mat labels;
-	cv::Mat trainData;
+	m_imgLabel = imgLabel;
+	cv::Mat &labels = m_labelMat;
+	cv::Mat &trainData = m_train;
+	cv::Mat &colorTrain = m_colorTrain;
+	cv::Mat &shapeTrain = m_shapeTrain;
+	cv::Mat &textureTrain = m_textureTrain;
+	cv::Mat featureKMean;
 	QFileInfoList fileList = dir.entryInfoList(filters, QDir::Files);
 	
-	int iDictionarySize = 500;
-	cv::BOWKMeansTrainer bowTrainer(iDictionarySize, cv::TermCriteria(CV_TERMCRIT_ITER, 20,0.001), 3, cv::KMEANS_PP_CENTERS);
+	QMultiMap<int, QString> categoryLabels;
 	for (int i = 0; i < fileList.size(); i++)
 	{
 		QString filePath = fileList.at(i).filePath();
 		QString fileName = fileList.at(i).baseName();
+		m_vecFiles.push_back(filePath);
 		int iId = fileName.toInt();
 		int iLabel = imgLabel.value(iId);
 		labels.push_back(iLabel);
+		categoryLabels.insert(iLabel, filePath);
 		emit logout(fileName);
 		cv::Mat mat = cv::imread(filePath.toLocal8Bit().data());
-		FlowerFeatureExtractor f;
-		cv::Mat feature = f.extractFeature(mat);
-		trainData.push_back(feature);
+		FlowerFeatureExtractor f(mat);
+		cv::Mat clrF = f.extractColor();
+		cv::Mat shapeF = f.extractShape2();
+		cv::Mat glcmF = f.extractGLCM();
+		cv::Mat F;
+		F.push_back(clrF.reshape(1, clrF.cols));
+		F.push_back(shapeF.reshape(1, shapeF.cols));
+		F.push_back(glcmF.reshape(1, glcmF.cols));
+		F = F.reshape(1, 1);
+		trainData.push_back(F);
+		colorTrain.push_back(clrF);
+		shapeTrain.push_back(shapeF);
+		textureTrain.push_back(glcmF);
 	}
-	trainData.convertTo(trainData, CV_32F);
-	cv::Mat matNormalize;
-	emit logout("normalizeFeature..");
-	normalizeFeature(trainData, matNormalize);
+// 	trainData.convertTo(trainData, CV_32F);
+  	cv::Mat matNormalize;
+ 	emit logout("normalizeFeature..");
+ 	normalizeFeature(colorTrain, matNormalize);
 	cv::FileStorage fsfesture(SVM_MODEL_FILE_NORM, cv::FileStorage::WRITE);
 	fsfesture << "minmax" << matNormalize;
 	fsfesture.release();
-	emit logout("train..");
+// 	emit logout("train..");
+// 
+ 	normalizeFeature(colorTrain, matNormalize);
+ 	normalizeFeature(shapeTrain, matNormalize);
+ 	normalizeFeature(textureTrain, matNormalize);
+// 	
+// 
 	OpenCVLibSVM svm;
-	svm.train(trainData, labels, SVM_MODEL_FILE);
+	svm.train(colorTrain, labels, SVM_MODEL_FILE);
+	svm.crossValidation();
 	return;
-	int *labelVoted = new int[svm.getClassCount()];
-	double *probility = new double[svm.getClassCount()];
-	cv::Mat labelMat;
-	cv::Mat probMat;
-	for (int i = 0; i < fileList.size(); i++)
-	{
-		QString filePath = fileList.at(i).filePath();
-		QString fileName = fileList.at(i).baseName();
-		emit logout(fileName);
-		cv::Mat mat = cv::imread(filePath.toLocal8Bit().data());
-		FlowerFeatureExtractor f;
-		cv::Mat imageFeature = trainData.row(i);
-		cv::Mat featureLabel(1, 6, CV_32SC1);
-		cv::Mat prob(1, 6, CV_32FC1);
-		svm.predict_probility(imageFeature, labelVoted, probility);
-		for (int i = 0; i < 6; i++)
-		{
-			featureLabel.at<int>(0, i) = labelVoted[i];
-			prob.at<float>(0, i) = probility[i];
-		}
-		probMat.push_back(prob);
-		labelMat.push_back(featureLabel);
-	}
-	
-	delete []labelVoted;
-	delete []probility;
+// 	int *labelVoted = new int[svm.getClassCount()];
+// 	double *probility = new double[svm.getClassCount()];
+// 	cv::Mat labelMat;
+// 	cv::Mat probMat;
+// 	for (int i = 0; i < fileList.size(); i++)
+// 	{
+// 		QString filePath = fileList.at(i).filePath();
+// 		QString fileName = fileList.at(i).baseName();
+// 		emit logout(fileName);
+// 		cv::Mat mat = cv::imread(filePath.toLocal8Bit().data());
+// 		FlowerFeatureExtractor f(mat);
+// 		cv::Mat imageFeature = trainData.row(i);
+// 		cv::Mat featureLabel(1, 5, CV_32SC1);
+// 		cv::Mat prob(1, 5, CV_32FC1);
+// 		svm.predict_probility(imageFeature, labelVoted, probility);
+// 		for (int i = 0; i < 5; i++)
+// 		{
+// 			featureLabel.at<int>(0, i) = labelVoted[i];
+// 			prob.at<float>(0, i) = probility[i];
+// 		}
+// 		probMat.push_back(prob);
+// 		labelMat.push_back(featureLabel);
+// 	}
+// 	
+// 	QMap<int, QSet<int> > labelAvaliableMap;
+// 	for (int r = 0; r < labelMat.rows; r++)
+// 	{
+// 		int *pData = labelMat.ptr<int>(r);
+// 		int iLabel = labels.at<int>(r, 0);
+// 		QSet<int> &d = labelAvaliableMap[iLabel];
+// 		for (int c = 0; c < labelMat.cols; c++)
+// 			d << pData[c];
+// 	}
+// 	QList<int> labelAva = labelAvaliableMap.keys();
+// 	for (QList<int>::iterator itr = labelAva.begin(); itr != labelAva.end(); itr++)
+// 	{
+// 		OpenCVLibSVM svmTop5;
+// 		cv::Mat trainData_top5;
+// 		cv::Mat trainData_top5_c;
+// 		cv::Mat trainData_top5_s;
+// 		cv::Mat trainData_top5_t;
+// 		cv::Mat label_top5;
+// 		QSet<int> labelTrain = labelAvaliableMap.value(*itr);
+// 		for (int r = 0; r < labels.rows; r++)
+// 		{
+// 			int iLabel = labels.at<int>(r, 0);
+// 			if (labelTrain.contains(iLabel))
+// 			{
+// 				trainData_top5_c.push_back(colorTrain.row(r));
+// 				trainData_top5_s.push_back(shapeTrain.row(r));
+// 				trainData_top5_t.push_back(textureTrain.row(r));
+// 				trainData_top5.push_back(trainData.row(r));
+// 				label_top5.push_back(iLabel);
+// 			}
+// 		}
+// 		svmTop5.train(trainData_top5_s, label_top5,
+// 			QString("I:/data/%1_top5_s.xml").arg(*itr).toLocal8Bit().data());
+// //		double s = svmTop5.crossValidation();
+// 		svmTop5.train(trainData_top5_t, label_top5,
+// 			QString("I:/data/%1_top5_t.xml").arg(*itr).toLocal8Bit().data());
+// //		double t = svmTop5.crossValidation();
+// 		
+// 		svmTop5.train(trainData_top5_c, label_top5,
+// 			QString("I:/data/%1_top5_c.xml").arg(*itr).toLocal8Bit().data());
+// //		double c = svmTop5.crossValidation();
+// 
+// 		svmTop5.train(trainData_top5, label_top5,
+// 			QString("I:/data/%1_top5.xml").arg(*itr).toLocal8Bit().data());
+// //		double com = svmTop5.crossValidation();
+// //		qDebug() << QString("lable =%1 c=%2 s=%3 t=%4 com=%5").arg(*itr).arg(c).arg(s).arg(t).arg(com);
+// 	}
+// 
+// 	delete []labelVoted;
+// 	delete []probility;
 
 //	MultiLabelKNN knn;
 //	knn.train2(labels, labelMat, svm.getClassCount());
@@ -365,12 +437,11 @@ void AdaboostSVMProcessor::test()
 			(*itr) >> featureMinMax;
 		itr++;
 	}
-	MultiLabelKNN knn;
-//	knn.load("I:/data/knn.xml");
-	knn.LoadData();
 	QFileInfoList fileList = dir.entryInfoList(filters, QDir::Files);
 	double fSum = 0;
 	double fSum5 = 0;
+	OpenCVKNN knn;
+//	knn.train(m_train, m_labelMat, 50);
 	for (int i = 0; i < fileList.size(); i++)
 	{
 		QString filePath = fileList.at(i).filePath();
@@ -378,44 +449,155 @@ void AdaboostSVMProcessor::test()
 		int iId = fileName.toInt();
 		int iLabel = imgLabel.value(iId);
 		cv::Mat mat = cv::imread(filePath.toLocal8Bit().data());
-		FlowerFeatureExtractor f;
-		cv::Mat feature = f.extractFeature(mat);
-		feature.convertTo(feature, CV_32F);
-		for (int c = 0; c < feature.cols; c++)
+		FlowerFeatureExtractor f(mat);
+		cv::Mat clrF = f.extractColor();
+		cv::Mat shapeF = f.extractShape2();
+		cv::Mat glcmF = f.extractGLCM();
+		cv::Mat F;
+		F.push_back(clrF.reshape(1, clrF.cols));
+		F.push_back(shapeF.reshape(1, shapeF.cols));
+		F.push_back(glcmF.reshape(1, glcmF.cols));
+		clrF = clrF.reshape(1, 1);
+		for (int c = 0; c < clrF.cols; c++)
 		{
 			float fMin = featureMinMax.at<float>(0, c);
 			float fMax = featureMinMax.at<float>(1, c);
-			feature.at<float>(0, c) = (feature.at<float>(0, c) - fMin) / (fMax - fMin);
+			clrF.at<float>(0, c) = (clrF.at<float>(0, c) - fMin) / (fMax - fMin);
 		}
+		
 		int *labelVoted = new int[svm.getClassCount()];
 		double *probility = new double[svm.getClassCount()];
-		svm.predict_probility(feature, labelVoted, probility);
-		cv::Mat labelF(1, 6, CV_32SC1);
-		cv::Mat prob(1, 6, CV_32FC1);
-		for (int i = 0; i < 6; i++)
-		{
-			labelF.at<int>(0, i) = labelVoted[i];
-			prob.at<float>(0, i) = probility[i];
-		}
-		int iPredictLabel = knn.predict2(labelF, prob);
-		qDebug() << iLabel << "-->" << labelVoted[0] << "---" << iPredictLabel;
-//		qDebug() << iLabel << "-->" << knn.predict(labelF, prob);
+		svm.predict_probility(clrF, labelVoted, probility);
+// 		cv::Mat matLabel;
+// 		knn.predict(F, matLabel);
+// 		
+// 		QList<int> vecLabel;
+// 		for (int i = 0; i < matLabel.cols; i++)
+// 			vecLabel.push_back(matLabel.at<float>(0, i));
+// 		QList<int> vecUsed;
+// 		while (vecLabel.size() > 0)
+// 		{
+// 			QMap<int, int> labelMap;
+// 			for (int i = 0; i < 10; i++)
+// 			{
+// 				if (vecLabel.size() - 1 < i)
+// 					break;
+// 				int temp = vecLabel[i];
+// 				if (!labelMap.contains(temp))
+// 					labelMap[temp] = 0;
+// 				else
+// 					labelMap[temp]++;
+// 			}
+// 
+// 			QMap<int, int>::iterator itr = labelMap.begin();
+// 			int iMax = 0;
+// 			int iIndex = -1;
+// 			while (itr != labelMap.end())
+// 			{
+// 				if (iMax < itr.value())
+// 				{
+// 					iMax = itr.value();
+// 					iIndex = itr.key();
+// 				}
+// 				itr++;
+// 			}
+// 			if (iIndex >= 0)
+// 				vecLabel.removeAll(iIndex);
+// 			vecUsed.push_back(iIndex);
+// 			if (vecUsed.size() >= 5)
+// 				break;
+// 		}
+// 		if (vecUsed.size() == 0)
+// 		{
+// 			continue;
+// 		}
+// 		else
+// 		{
+// 			if (vecUsed[0] == iLabel)
+// 				fSum++;
+// 			for (int i = 0; i < 5; i++)
+// 			{
+// 				if (vecUsed[i] == iLabel)
+// 				{
+// 					fSum5++;
+// 					break;
+// 				}
+// 			}
+// 		}
+		if (labelVoted[0] == iLabel)
+			fSum++;
+
 		for (int i = 0; i < 5; i++)
 		{
 			if (labelVoted[i] == iLabel)
-				fSum5 += 1;
+				fSum5++;
 		}
- 		if (iLabel == labelVoted[0])
-		{
-			fSum += 1;
-		}
-		else
-		{
-			qDebug() << "==========";
-			emit logout(tr("error: fileName: (%1, %2) -> %3  ").arg(fileName).arg(iLabel).arg(iPredictLabel));
-		}
-		delete []labelVoted;
-		delete []probility;
+//		cv::Mat labelF(1, 5, CV_32SC1);//		QSet<int> labelTrain;
+//		cv::Mat prob(1, 5, CV_32FC1);
+//		for (int i = 0; i < 5; i++)
+//		{
+//			labelF.at<int>(0, i) = labelVoted[i];
+//			labelTrain.insert(labelVoted[i]);
+//			prob.at<float>(0, i) = probility[i];
+//		}
+
+//		qDebug() << iLabel << "-->" << knn.predict(labelF, prob);
+		
+// 		cv::Mat trainData_top5;
+// 		cv::Mat label_top5;
+// 		std::vector<std::pair<double, int> > vecDis;
+// 		int iDictionarySize = 500;
+// 		cv::BOWKMeansTrainer bowTrainer(iDictionarySize, cv::TermCriteria(CV_TERMCRIT_ITER, 20,0.001), 3, cv::KMEANS_PP_CENTERS);
+// 		cv::Mat matSift;
+// 		for (int r = 0; r < m_labelMat.rows; r++)
+// 		{
+// 			int iLabel = m_labelMat.at<int>(r, 0);
+// 			if (labelTrain.contains(iLabel))
+// 			{
+// 				QString filePath = m_vecFiles.at(r);
+// 				cv::Mat mat = cv::imread(filePath.toLocal8Bit().data());
+// 				FlowerFeatureExtractor ext(mat);
+// 				cv::Mat sift = ext.extractSift();
+// 				matSift.push_back(sift);
+// //				trainData_top5.push_back(m_train.row(r));
+// 				label_top5.push_back(iLabel);
+// 				vecDis.push_back(std::pair<double, int>(cv::norm(m_train.row(r), F, cv::NORM_L2), iLabel));
+// 			}
+// 		}
+// 		cv::Mat dictionary = bowTrainer.cluster(matSift);
+// 		cv::Ptr<cv::DescriptorMatcher> matcher(new cv::FlannBasedMatcher);
+// 		cv::Ptr<cv::FeatureDetector> detector(new cv::SiftFeatureDetector(500));
+// 		cv::Ptr<cv::DescriptorExtractor> extractor(new cv::SiftDescriptorExtractor);    
+// 		cv::BOWImgDescriptorExtractor bowDE(extractor,matcher);
+// 		bowDE.setVocabulary(dictionary);
+// 		for (int r = 0; r < m_labelMat.rows; r++)
+// 		{
+// 			int iLabel = m_labelMat.at<int>(r, 0);
+// 			if (labelTrain.contains(iLabel))
+// 			{
+// 				QString filePath = m_vecFiles.at(r);
+// 				cv::Mat mat = cv::imread(filePath.toLocal8Bit().data());
+// 				std::vector<cv::KeyPoint> keypoints;        
+// 				detector->detect(mat,keypoints);
+// 				cv::Mat bowDescriptor;        
+// 				bowDE.compute(mat, keypoints, bowDescriptor);
+// 				trainData_top5.push_back(bowDescriptor);
+// 			}
+// 		}
+// 		cv::Mat bowDescriptor;
+// 		std::vector<cv::KeyPoint> keypoints;
+// 		detector->detect(mat,keypoints);
+// 		bowDE.compute(mat, keypoints, bowDescriptor);
+// 		OpenCVLibSVM s;
+// 		s.train(trainData_top5, label_top5, "I:/test.xml");
+// //		s.crossValidation();
+// 		s.predict_values(bowDescriptor, labelVoted);
+// 		if (labelVoted[0] == iLabel)
+// 			fSum++;
+// 
+// 
+// 		delete []labelVoted;
+// 		delete []probility;
 	}
 	emit logout(tr("Top1 Accurrate %1%").arg(fSum / fileList.size() * 100));
 	emit logout(tr("Top5 Accurrate %1%").arg(fSum5 / fileList.size() * 100));

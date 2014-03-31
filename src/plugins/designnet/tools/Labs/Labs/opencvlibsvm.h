@@ -9,9 +9,9 @@ public:
 	OpenCVLibSVM();
 	~OpenCVLibSVM();
 
-	void loadModel();
+	void loadModel(char * strFileName = "I:/data/svm.xml");
 	void train(cv::Mat &mat, cv::Mat &labelMat, char* strFileName = ""); //!< 每行是一个样本
-	void crossValidation();
+	double crossValidation();
 	double test(cv::Mat &mat);
 	double* predict(cv::Mat &mat);
 	void predict_values(cv::Mat &mat, int *labelVoted);

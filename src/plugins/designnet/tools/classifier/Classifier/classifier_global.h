@@ -1,0 +1,12 @@
+#ifndef CLASSIFIER_GLOBAL_H
+#define CLASSIFIER_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#ifdef CLASSIFIER_LIB
+# define CLASSIFIER_EXPORT Q_DECL_EXPORT
+#else
+# define CLASSIFIER_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // CLASSIFIER_GLOBAL_H

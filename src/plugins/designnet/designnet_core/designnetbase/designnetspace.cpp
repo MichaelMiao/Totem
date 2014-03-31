@@ -16,26 +16,34 @@ void Connection::serialize( XmlSerializer& s ) const
 		return;
 
 	s.serialize("src_processor", m_srcProcessor);
+	s.serialize("src_port", m_srcPort);
+
 	s.serialize("target_processor", m_targetProcessor);
+	s.serialize("target_port", m_targetPort);
 }
 
 void Connection::deserialize( XmlDeserializer& s )
 {
 	s.deserialize("src_processor", m_srcProcessor);
+	s.deserialize("src_port", m_srcPort);
+
 	s.deserialize("target_processor", m_targetProcessor);
+	s.deserialize("target_port", m_targetPort);
 }
 
 Connection::Connection( const Connection &c )
 {
 	m_srcProcessor	= c.m_srcProcessor;
+	m_srcPort		= c.m_srcPort;
 	m_targetProcessor	= c.m_targetProcessor;
+	m_targetPort	= c.m_targetPort;
 }
 
 
 DesignNetSpace::DesignNetSpace(DesignNetSpace *space, QObject *parent) :
-    Processor(space)
+    Processor(space, parent, ProcessorType_Permanent)
 {
-
+	QObject::connect(this, SIGNAL(processStarted()), this, SLOT(testOnProcessFinished()));
 }
 
 void DesignNetSpace::addProcessor(Processor *processor, bool bNotifyModify)
@@ -57,7 +65,8 @@ void DesignNetSpace::addProcessor(Processor *processor, bool bNotifyModify)
 	
 	QObject::connect(processor, SIGNAL(connected(Processor*, Processor*)), this, SIGNAL(connectionAdded(Processor*, Processor*)));
 	QObject::connect(processor, SIGNAL(disconnected(Processor*, Processor*)), this, SIGNAL(connectionRemoved(Processor*, Processor*)));
-	
+	QObject::connect(processor, SIGNAL(processorModified()), this, SIGNAL(modified()));
+
 	emit processorAdded(processor);
 	if (bNotifyModify)
 		emit modified();
@@ -155,11 +164,21 @@ bool DesignNetSpace::process(QFutureInterface<ProcessResult> &future)
 		return false;
     }
 	QList<Processor*> tempNet;
+	QList<Processor*> zeroProcessors;
 	foreach(Processor* processor, exclusions)
 	{
-
+		if(processor->indegree(tempNet) == 0)
+			zeroProcessors.push_back(processor);
 	}
-
+	tempNet << zeroProcessors;
+	foreach(Processor* processor, zeroProcessors)
+	{
+		processor->start();
+	}
+	foreach(Processor* processor, zeroProcessors)
+	{
+		processor->waitForFinish();
+	}
 // 	bool bNeedLoop = true;
 // 	while (bNeedLoop)
 // 	{
@@ -224,23 +243,42 @@ void DesignNetSpace::onPropertyChanged_internal()
 		propertyChanged(prop);
 }
 
-void DesignNetSpace::propertyChanged( Property *prop )
+void DesignNetSpace::propertyChanged(Property *prop)
 {
 	
 }
 
-void DesignNetSpace::propertyAdded( Property* prop )
+void DesignNetSpace::propertyAdded(Property* prop)
 {
 	QObject::connect(prop, SIGNAL(changed()), this, SLOT(onPropertyChanged_internal()));	
 }
 
-void DesignNetSpace::serialize( Utils::XmlSerializer& s ) const
+void DesignNetSpace::serialize(Utils::XmlSerializer& s) const
 {
 	Processor::serialize(s);
 	s.serialize("processors", m_processors, "processor");
+	QList<Connection> vecConn;
+	for (QList<Processor*>::const_iterator itr = m_processors.begin(); itr != m_processors.end(); itr++)
+	{
+		const QList<Port*> ports = (*itr)->getPorts(Port::OUT_PORT);
+		for (QList<Port*>::const_iterator itrPort = ports.begin(); itrPort != ports.end(); itrPort++)
+		{
+			const QList<Port*> portsConnected = (*itrPort)->connectedPorts();
+			for (QList<Port*>::const_iterator i = portsConnected.begin(); i != portsConnected.end(); i++)
+			{
+				Connection cnn;
+				cnn.m_srcProcessor	= (*itr)->id();
+				cnn.m_srcPort		= (*itrPort)->getIndex();
+				cnn.m_targetProcessor	= (*i)->processor()->id();
+				cnn.m_targetPort	= (*i)->getIndex();
+				vecConn.push_back(cnn);
+			}
+		}
+	}
+	s.serialize("Connections", vecConn, "Connection");
 }
 
-void DesignNetSpace::deserialize( Utils::XmlDeserializer& s )
+void DesignNetSpace::deserialize(Utils::XmlDeserializer& s)
 {
 	Processor::deserialize(s);
 	QList<Processor*> processors;
@@ -263,27 +301,26 @@ void DesignNetSpace::deserialize( Utils::XmlDeserializer& s )
 		}
 		else
 		{
-
-// 			Port *srcPort = srcProcessor->getPort(c);
-// 			Port *targetPort = targetProcessor->getPort(c.m_targetPort);
-// 			if (!srcPort)
-// 			{
-// 				emit logout(tr("Cannot add the connection from port [%1] to port [%2] because source port is empty.")
-// 					.arg(c.m_srcPort).arg(c.m_targetPort));
-// 				continue;
-// 			}
-// 			if (!targetPort)
-// 			{
-// 				emit logout(tr("Cannot add the connection from port [%1] to port [%2]  because target port is empty")
-// 					.arg(c.m_srcPort).arg(c.m_targetPort));
-// 				continue;
-// 			}
-// 			if(!connectPort(targetPort, srcPort))
-// 			{
-// 				emit logout(tr("Cannot add the connection from port [%1] to port [%2] ")
-// 					.arg(c.m_srcPort).arg(c.m_targetPort));
-// 				continue;
-// 			}
+			Port *srcPort = srcProcessor->getPort(c.m_srcPort);
+			Port *targetPort = targetProcessor->getPort(c.m_targetPort);
+			if (!srcPort)
+			{
+				emit logout(tr("Cannot add the connection from port [%1] to port [%2] because source port is empty.")
+					.arg(c.m_srcPort).arg(c.m_targetPort));
+				continue;
+			}
+			if (!targetPort)
+			{
+				emit logout(tr("Cannot add the connection from port [%1] to port [%2]  because target port is empty")
+					.arg(c.m_srcPort).arg(c.m_targetPort));
+				continue;
+			}
+			if(!srcPort->connect(targetPort))
+			{
+				emit logout(tr("Cannot add the connection from port [%1] to port [%2] ")
+					.arg(c.m_srcPort).arg(c.m_targetPort));
+				continue;
+			}
 		}
 	}
 }
@@ -293,7 +330,7 @@ QList<Processor*> DesignNetSpace::processors()
 	return m_processors;
 }
 
-Processor* DesignNetSpace::findProcessor( const int &id )
+Processor* DesignNetSpace::findProcessor(const int &id)
 {
 	QList<Processor*> processorList = processors();
 	foreach(Processor* p, processorList)
@@ -302,6 +339,11 @@ Processor* DesignNetSpace::findProcessor( const int &id )
 			return p;
 	}
 	return 0;
+}
+
+void DesignNetSpace::setModified()
+{
+	emit modified();
 }
 
 void DesignNetSpace::detachProcessor(Processor* processor)
@@ -337,4 +379,12 @@ bool DesignNetSpace::sortProcessors(QList<Processor*> &processors)
 	
 	return true;
 }
+
+void DesignNetSpace::testOnProcessFinished()
+{
+	int i = 0;
+	i++;
+	qDebug() << "testOnProcessFinished" << endl;
+}
+
 }

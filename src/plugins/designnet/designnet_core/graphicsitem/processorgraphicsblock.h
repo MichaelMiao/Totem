@@ -26,6 +26,7 @@ namespace GraphicsUI{
 class GraphicsToolButton;
 class TextAnimationBlock;
 class GraphicsAutoShowHideItem;
+class LoadingICON;
 }
 
 namespace DesignNet{
@@ -65,8 +66,8 @@ public:
 	 */
 
 	enum{
-		DEFAULT_WIDTH	= 110,		//!< 默认宽度
-		DEFAULT_HEIGHT	= 80,		//!< 默认高度
+		DEFAULT_WIDTH	= 50,		//!< 默认宽度
+		DEFAULT_HEIGHT	= 50,		//!< 默认高度
 		TITLE_HEIGHT	= 30,		//!< title高度
 		ITEMSPACING		= 5,		//!< spacing
 		STATUSBAR_HEIGHT = 15		//!< 状态栏高度
@@ -99,7 +100,7 @@ public:
 	virtual void propertyAdded(Property* prop);
 
 	virtual void serialize(Utils::XmlSerializer& s) const;
-	virtual void deserialize(Utils::XmlDeserializer& s) ;
+	virtual void deserialize(Utils::XmlDeserializer& s);
 
 	Position originalPosition() const;
 	virtual void createContextMenu(QMenu *parentMenu);
@@ -139,8 +140,20 @@ public slots:
 	void onPortConnected(Port* src, Port* target);
 	void onPortDisconnected(Port* src, Port* target);
 
+	void onProcessStarted();
+	void onProcessFinished();
+
+	void onAddPort(Port*);			//!< process添加Port的槽
+	void onClickAddPort();		//!< Action Clicked了
+
+	void onClickRemovePort();
+
+	void relayoutPort();
+
 protected:
 	
+	virtual QPainterPath shape() const;
+
 	void setState(const State &s, const bool &bAdd = false); //!< 设置状态，\e bAdd \e 表示是否以添加的形式添加属性。
 	bool testState(const State &s) { return m_state & s; }
 	void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
@@ -155,16 +168,15 @@ protected:
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
 	void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
-	void setLayoutDirty(const bool &dirty = true);			//!< 设置是否需要重新计算布局
+	void setLayoutDirty(const bool &dirty = true);				//!< 设置是否需要重新计算布局
 	void showStatus(const QString &msg);
 
 	QGraphicsDropShadowEffect*				m_dropdownShadowEffect;
-	GraphicsUI::GraphicsAutoShowHideItem*   m_closeItem;
-	GraphicsUI::GraphicsToolButton*			m_btnShowPort;//!< 显示端口
+	GraphicsUI::GraphicsToolButton*			m_btnShowPort;		//!< 显示端口
 	BlockTextItem*							m_titleItem;
 	QList<PortItem*>						m_outputPorts;
 	QList<PortItem*>						m_inputPorts;
-	QList<PortArrowLink*>					m_portArrowLinks;//!< 端口连接线
+	QList<PortArrowLink*>					m_portArrowLinks;	//!< 端口连接线
 	DesignNetView*							m_pNetView;
 	bool									m_bInputPortVisible;
 	bool									m_bOutputPortVisible;

@@ -11,15 +11,16 @@ namespace DesignNet{
 	class DesignNetSpace;
 }
 namespace FeatureExtraction{
-class CentroidPrivate;
 class Centroid :  public DesignNet::Processor
 {
 	Q_OBJECT
 
 public:
+	
+	DECLEAR_PROCESSOR(Centroid)
+
 	Centroid(DesignNet::DesignNetSpace *space, QObject *parent = 0);
-	virtual ~Centroid();
-	virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const;
+	virtual ~Centroid() {}
 	virtual QString title() const;
 	virtual QString category() const;//!< 种类
 	virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);			//!< 处理函数
@@ -27,7 +28,6 @@ public:
 protected:
 	virtual void propertyChanged(DesignNet::Property *prop);
 private:
-	CentroidPrivate *d;
 };
 }
 #endif // CENTROID_H

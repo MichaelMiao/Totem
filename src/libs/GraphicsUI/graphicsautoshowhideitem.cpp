@@ -27,10 +27,12 @@ GraphicsAutoShowHideItem::GraphicsAutoShowHideItem(QGraphicsItem *parent) :
 void GraphicsAutoShowHideItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     this->translate(1, 1);
+	grabMouse();
 }
 
 void GraphicsAutoShowHideItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+	ungrabMouse();
     this->translate(-1, -1);
     emit clicked();
 	event->accept();

@@ -20,8 +20,10 @@ public:
 	Connection(const Connection &c);
 	virtual void serialize(Utils::XmlSerializer& s) const;
 	virtual void deserialize(Utils::XmlDeserializer& s);
-	int		m_srcProcessor;
-	int		m_targetProcessor;
+	int			m_srcProcessor;
+	int			m_srcPort;
+	int			m_targetProcessor;
+	int			m_targetPort;
 };
 
 class DesignNetSpace : public Processor
@@ -54,24 +56,33 @@ public:
     virtual QString category() const;//!< 返回种类
 	QList<Processor*> processors();
 	Processor* findProcessor(const int &id);
+	
+	void setModified();
+	
 	virtual void serialize(Utils::XmlSerializer& s) const;
 	virtual void deserialize(Utils::XmlDeserializer& s) ;
 
 
 signals:
+
     void processorAdded(Processor* processor);
     void processorRemoved(Processor* processor);
 
     void connectionAdded(Processor* father, Processor* pChild);
     void connectionRemoved(Processor* father, Processor* pChild);
+	void connectionRemoved(Port* src, Port* target);
 	void modified();
 	void loadFinished();//!< 载入完成
 
 public slots:
+
 	void onPropertyChanged_internal();
 	void onShowMessage(QString log);
 
+	void testOnProcessFinished();
+
 protected:
+
 	virtual QList<ProcessData> dataProvided() { return QList<ProcessData>(); }
 	
 	virtual void propertyChanged(Property *prop);

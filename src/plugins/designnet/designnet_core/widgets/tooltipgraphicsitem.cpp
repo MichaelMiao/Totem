@@ -1,27 +1,29 @@
 #include "tooltipgraphicsitem.h"
-#include "data/idata.h"
-#include "idatawidget.h"
-#include "data/datamanager.h"
-#include "GraphicsUI/graphicsautoshowhideitem.h"
-#include "../designnetconstants.h"
-#include "processorgraphicsblock.h"
-
-#include <QGraphicsLinearLayout>
-#include <QGraphicsSceneMouseEvent>
-#include <QToolButton>
-#include <QGraphicsProxyWidget>
-#include <QPalette>
-#include <QPainter>
-#include <QGraphicsSceneResizeEvent>
-#include <QGraphicsScene>
 #include <QApplication>
 #include <QDebug>
+#include <QGraphicsLinearLayout>
+#include <QGraphicsProxyWidget>
+#include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneResizeEvent>
+#include <QPainter>
+#include <QPalette>
+#include <QToolButton>
+#include "../data/datamanager.h"
+#include "../data/idata.h"
+#include "../designnetbase/port.h"
+#include "../designnetconstants.h"
+#include "GraphicsUI/graphicsautoshowhideitem.h"
+#include "idatawidget.h"
+#include "processorgraphicsblock.h"
+
+
 namespace DesignNet {
 const float TITLE_HEIGHT  = 20;
 const float MINIMUM_WIDTH = 100;
 const float MINIMUM_HEIGHT = 100;
 
-const QString buttonStyleSheet = "QToolButton{background-color:rgba(0,0,0,0);"
+static const QString buttonStyleSheet = "QToolButton{background-color:rgba(0,0,0,0);"
         "border: none;"
         "image: url(:/media/untopmost_normal.png);"
         "}"
@@ -41,12 +43,12 @@ class ToolTipGraphicsItemPrivate
 {
 public:
     ToolTipGraphicsItemPrivate(ToolTipGraphicsItem *item);
-    QGraphicsProxyWidget*                   m_anchorButton; //!< 钉子
-    GraphicsUI::GraphicsAutoShowHideItem*   m_closeItem;    //!< 关闭
+    QGraphicsProxyWidget*                   m_anchorButton;
+    GraphicsUI::GraphicsAutoShowHideItem*   m_closeItem;
     QGraphicsTextItem *                     m_textItem;
     ToolTipGraphicsItem*                    m_toolTipItem;
-    IData*                                  m_data;         //!< 数据
-    IDataWidget*                            m_customWidget; //!< 数据相关预览窗口
+    Port*									m_pPort;
+    IDataWidget*                            m_customWidget;
 };
 
 ToolTipGraphicsItemPrivate::ToolTipGraphicsItemPrivate(ToolTipGraphicsItem* item)
@@ -68,7 +70,7 @@ ToolTipGraphicsItemPrivate::ToolTipGraphicsItemPrivate(ToolTipGraphicsItem* item
 }
 
 
-ToolTipGraphicsItem::ToolTipGraphicsItem(ProcessorGraphicsBlock *parent)
+ToolTipGraphicsItem::ToolTipGraphicsItem(QGraphicsItem *parent)
     : QGraphicsObject(parent),
       d(new ToolTipGraphicsItemPrivate(this))
 {
@@ -82,6 +84,11 @@ ToolTipGraphicsItem::ToolTipGraphicsItem(ProcessorGraphicsBlock *parent)
 void ToolTipGraphicsItem::setText(const QString &text)
 {
     d->m_textItem->setHtml(text);
+}
+
+void ToolTipGraphicsItem::setPort(Port* pPort)
+{
+
 }
 
 QRectF ToolTipGraphicsItem::boundingRect() const
@@ -108,7 +115,7 @@ void ToolTipGraphicsItem::paint(QPainter *painter,
 {
     QPalette palette =  QApplication::palette();
     painter->save();
-    painter->setBrush(palette.toolTipBase());
+    painter->setBrush(Qt::blue);
     painter->drawRoundedRect(boundingRect(), 2, 2);
     painter->restore();
 }
@@ -119,10 +126,9 @@ QVariant ToolTipGraphicsItem::itemChange(QGraphicsItem::GraphicsItemChange chang
     {
         QToolButton* toolButton = qobject_cast<QToolButton*>(d->m_anchorButton->widget());
         if(toolButton)
-        {
-            toolButton->setChecked(false);
-        }
+			toolButton->setChecked(false);
 		relayout();
+		setFocus();
     }
     return QGraphicsItem::itemChange(change, value);
 }
@@ -136,24 +142,19 @@ bool ToolTipGraphicsItem::topmost() const
     return false;
 }
 
-void ToolTipGraphicsItem::setData(IData *data)
+void ToolTipGraphicsItem::setData(QVariant v)
 {
 	prepareGeometryChange();
-    if(d->m_customWidget && d->m_data != data)
+    if(!d->m_customWidget)
     {
-        delete d->m_customWidget;
-        d->m_customWidget = 0;
+//		d->m_customWidget = DataManager::instance()->createWidget(d->m_data.value<IData*>(), this);
+
     }
-    d->m_data = data;
-    if(d->m_data)
-    {
-        d->m_customWidget = DataManager::instance()->createWidget(data, this);
-		if (d->m_customWidget)
-		{
-			d->m_customWidget->setVisible(true);
-		}
-        
-    }
+	if (!d->m_customWidget)
+		return;
+	
+	d->m_customWidget->setVisible(true);
+//    d->m_data = v;
     update();
 }
 
@@ -184,18 +185,9 @@ void ToolTipGraphicsItem::onClosed()
 void ToolTipGraphicsItem::onTopMost(bool topmost)
 {
     if(topmost)
-    {
 		this->setZValue(DesignNet::Constants::ZValue_Tooltip);
-    }
     else
-    {
 		this->setZValue(DesignNet::Constants::ZValue_GraphicsBlock_Normal);
-    }
-}
-
-void ToolTipGraphicsItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
-{
-	event->accept();
 }
 
 void ToolTipGraphicsItem::onVisibleChanged()
@@ -221,6 +213,10 @@ void ToolTipGraphicsItem::onVisibleChanged()
 ToolTipGraphicsItem::~ToolTipGraphicsItem()
 {
 	delete d;
+}
+
+void ToolTipGraphicsItem::focusOutEvent(QFocusEvent *event)
+{
 }
 
 }
