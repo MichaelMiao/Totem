@@ -6,8 +6,6 @@
 #include "Utils/varianthelper.h"
 using namespace DesignNet;
 
-#define DATA_LABEL_INPUTIMAGE "3 Channel Image"
-#define DATA_LABEL_OUTPUTIMAGE "3 Channel Image"
 
 namespace Conversion{
 class ColorSpaceConversionPrivate
@@ -66,12 +64,9 @@ bool ColorSpaceConversion::process(QFutureInterface<ProcessResult> &future)
 	int iType = d->m_property->value().toInt(0);
 	if(iType != 0)
 	{
-		ImageData* imageData = qobject_cast<ImageData*>(getData(tr("ColorImage")).at(0)->variant.value<IData*>());
-		cv::Mat mat;
-		cv::cvtColor(imageData->imageData(), mat, iType);
-		imageData->setImageData(mat);
-		QVariant var = VariantPointCvt<ImageData>::fromPtr(imageData);
-		pushData(var, DATATYPE_8UC3IMAGE, "ColorImage");
+		cv::Mat mat = getData(tr("ColorImage")).at(0)->variant.value<cv::Mat>();
+		cv::cvtColor(mat, mat, iType);
+		pushData(qVariantFromValue(mat), DATATYPE_8UC3IMAGE, "ColorImage");
 	}
 	notifyProcess();
 	return true;

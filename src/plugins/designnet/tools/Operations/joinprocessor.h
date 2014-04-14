@@ -42,10 +42,6 @@ signals:
 protected:
 	virtual void propertyChanged(DesignNet::Property *prop);
 
-private:
-	
-	cv::Mat m_mat;
-
 };
 
 #endif // JOIN_H

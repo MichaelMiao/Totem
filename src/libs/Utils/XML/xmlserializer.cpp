@@ -56,7 +56,7 @@ void XmlSerializer::serialize( const QString &key, const int &data )
 
 void XmlSerializer::serialize( const QString &key, const bool &data )
 {
-	m_currentElement.setAttribute(key, data);
+	m_currentElement.setAttribute(key, data ? Constants::XML_VALUE_TRUE : Constants::XML_VALUE_FALSE);
 }
 
 void XmlSerializer::serialize( const QString &key, const float &data )

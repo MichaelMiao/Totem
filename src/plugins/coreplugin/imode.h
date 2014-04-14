@@ -33,6 +33,7 @@ signals:
     void enabledStateChanged(bool enabled);
 
 private:
+
     QString m_displayName;
     QIcon m_icon;
     int m_priority;

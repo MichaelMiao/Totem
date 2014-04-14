@@ -218,6 +218,7 @@ bool DesignNetSpace::process(QFutureInterface<ProcessResult> &future)
 
 bool DesignNetSpace::finishProcess()
 {
+	emit processFinished();
 	return true;
 }
 

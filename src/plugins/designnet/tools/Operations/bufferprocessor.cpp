@@ -9,13 +9,15 @@ using namespace DesignNet;
 
 enum PortIndex
 {
-	PortIndex_In,
+	PortIndex_In_Data,
+	PortIndex_In_DataIndex,
 	PortIndex_Out,
 };
 
 static PortData s_ports[] =
 {
-	{ Port::IN_PORT,	DATATYPE_MATRIX,	"Input Matrix" },
+	{ Port::IN_PORT,	DATATYPE_MATRIX,	"Input Data" },
+	{ Port::IN_PORT,	DATATYPE_INT,		"Data Index" },
 	{ Port::OUT_PORT,	DATATYPE_MATRIX,	"Output Buffer" },
 };
 
@@ -43,14 +45,33 @@ QString BufferProcessor::category() const
 
 bool BufferProcessor::process(QFutureInterface<ProcessResult> &future)
 {
-	ProcessData pd = getOneData(s_ports[PortIndex_In].strName);
+	ProcessData pd = getOneData(s_ports[PortIndex_In_Data].strName);
 	cv::Mat mat = pd.variant.value<cv::Mat>();
-	cv::merge(m_mats, mat);
-	pushData(qVariantFromValue(mat), DATATYPE_MATRIX, s_ports[PortIndex_Out].strName);
+	mat = mat.reshape(1, 1);
+	m_mats.push_back(mat);
+	int iIndex = getPortData<int>(s_ports[PortIndex_In_DataIndex]);
+	qDebug() << "=================" << m_mats.rows << "----" << iIndex;
+	if (m_mats.rows != iIndex)
+	{
+		qDebug() << "Error";
+	}
+	if (iIndex == -1)
+	{
+		pushData(qVariantFromValue(m_mats), DATATYPE_MATRIX, s_ports[PortIndex_Out].strName);
+		notifyProcess();
+		return true;
+	}
+	emit childProcessFinished();
 	return true;
 }
 
 void BufferProcessor::propertyChanged( DesignNet::Property *prop )
 {
 
+}
+
+bool BufferProcessor::prepareProcess()
+{
+	m_mats = cv::Mat();
+	return true;
 }

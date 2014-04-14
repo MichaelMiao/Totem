@@ -3,6 +3,8 @@
 #include "Utils/XML/xmlserializer.h"
 #include "Utils/XML/xmlserializable.h"
 #include "Utils/XML/xmldeserializer.h"
+#include <QDebug>
+
 
 namespace DesignNet{
 
@@ -54,7 +56,9 @@ void BoolProperty::serialize( Utils::XmlSerializer& s ) const
 
 void BoolProperty::deserialize( Utils::XmlDeserializer& s ) 
 {
-
+	Property::deserialize(s);
+	s.deserialize("value", m_value);
+	qDebug() << m_value;
 }
 
 }

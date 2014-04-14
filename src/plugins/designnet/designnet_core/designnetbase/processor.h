@@ -7,6 +7,7 @@
 #include "../data/datatype.h"
 #include "Utils/XML/xmldeserializer.h"
 #include "port.h"
+#include "../widgets/processorfrontwidget.h"
 #include <QFutureInterface>
 #include <QFutureWatcher>
 #include <QObject>
@@ -83,6 +84,8 @@ public:
 	virtual void init() { }
 	virtual Processor* create(DesignNetSpace *space = 0) const = 0;  //!< 创建Processor
 
+	virtual ProcessorFrontWidget* processorFrontWidget() { return 0; }
+
 	void waitForFinish();
 	ProcessResult result() { return m_watcher.result(); }
 
@@ -121,6 +124,13 @@ public:
 	
 	QList<ProcessData*> getData(QString sLabel);
 	ProcessData			getOneData(QString sLabel);
+
+	template<class T>
+	T getPortData(PortData ptData)
+	{
+		return getOneData(ptData.strName).variant.value<T>();
+	}
+
 
 	void pushData(ProcessData &pd, QString strLabel);
 	void pushData(QVariant &var, DataType dataType, QString strLabel = "", int iProcessId = -1);
@@ -176,6 +186,7 @@ public slots:
 	void onPortDisconnected(Port* src, Port* target);
 
 	void onChildProcessFinished();
+
 
 protected:
 

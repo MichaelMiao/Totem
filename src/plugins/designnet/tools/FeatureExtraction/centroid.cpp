@@ -6,19 +6,28 @@
 #include "../../../designnet/designnet_core/designnetbase/port.h"
 #include "../../../designnet/designnet_core/property/optionproperty.h"
 
-#define INPUT_GRAYIMAGE		"grayInputImage"
-#define OUTPUT_CENTROID		"Centroid"
 
 using namespace std;
 using namespace DesignNet;
+enum PortIndex
+{
+	PortIndex_In_BinaryImage,
+	PortIndex_Out_Centroid,
+};
+
+static PortData s_ports[] =
+{
+	{ Port::IN_PORT,	DATATYPE_BINARYIMAGE,		"Gray Image" },
+	{ Port::OUT_PORT,	DATATYPE_MATRIX,			"Centroid" },
+};
 
 
 namespace FeatureExtraction{
 Centroid::Centroid(DesignNet::DesignNetSpace *space, QObject *parent)
 	: Processor(space, parent)
 {
-	addPort(Port::IN_PORT, DATATYPE_BINARYIMAGE, INPUT_GRAYIMAGE);
-	addPort(Port::OUT_PORT, DATATYPE_MATRIX, OUTPUT_CENTROID);
+	for (int i = 0; i < _countof(s_ports); i++)
+		addPort(s_ports[i].ePortType, s_ports[i].eDataType, s_ports[i].strName);
 	setName(tr("Centroid"));
 }
 
@@ -35,7 +44,7 @@ QString Centroid::category() const
 bool Centroid::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
 	notifyDataWillChange();
-	cv::Mat binaryImage = ((MatrixData*)getData("grayImageInput").at(0))->getMatrix();
+	cv::Mat binaryImage = getPortData<cv::Mat>(s_ports[PortIndex_In_BinaryImage]);
 	/// ÇóÖÐÐÄ
 	cv::Point2d centroid(0, 0);
 	vector<vector<cv::Point> > countours;
@@ -75,14 +84,12 @@ bool Centroid::process(QFutureInterface<DesignNet::ProcessResult> &future)
 			}
 		}
 	}
-	centroid.x = iX / iCount;
-	centroid.y = iY / iCount;
+	centroid.x = iX * 1.0 / iCount;
+	centroid.y = iY * 1.0 / iCount;
 	cv::Mat mat(1, 2, CV_32FC1);
 	mat.at<float>(0, 0) = centroid.x;
 	mat.at<float>(0, 1) = centroid.y;
-	MatrixData data;
-	data.setMatrix(mat);
-	pushData(&data, "centroid");
+	pushData(qVariantFromValue(mat), DATATYPE_MATRIX, s_ports[PortIndex_Out_Centroid].strName);
 	notifyProcess();
 	return true;
 }

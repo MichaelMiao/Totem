@@ -145,16 +145,7 @@ bool ToolTipGraphicsItem::topmost() const
 void ToolTipGraphicsItem::setData(QVariant v)
 {
 	prepareGeometryChange();
-    if(!d->m_customWidget)
-    {
-//		d->m_customWidget = DataManager::instance()->createWidget(d->m_data.value<IData*>(), this);
-
-    }
-	if (!d->m_customWidget)
-		return;
-	
 	d->m_customWidget->setVisible(true);
-//    d->m_data = v;
     update();
 }
 

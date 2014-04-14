@@ -9,6 +9,8 @@
 #include "../../../designnet/designnet_core/designnetbase/processor.h"
 #include "../../../designnet/designnet_core/property/pathdialogproperty.h"
 #include "../../../designnet/designnet_core/property/property.h"
+#include "../../designnet_core/widgets/processorfrontwidget.h"
+#include "normalimageloaderwidget.h"
 
 
 using namespace std;
@@ -31,6 +33,7 @@ GraphicsNormalImageLoader::GraphicsNormalImageLoader(DesignNetSpace *space, QObj
 	PathDialogProperty *pProperty = new PathDialogProperty(PROPERTY_IMAGEFILE, "", nameFilters,
 		QDir::Files, true, this);
 	addProperty(pProperty);
+	m_pWidget = new NormalImageLoaderWidget(this);
 }
 
 Processor *GraphicsNormalImageLoader::create(DesignNetSpace *space) const
@@ -88,6 +91,11 @@ QString GraphicsNormalImageLoader::path() const
 {
 	QReadLocker locker(&m_lock);
 	return m_filePath;
+}
+
+ProcessorFrontWidget* GraphicsNormalImageLoader::processorFrontWidget()
+{
+	return m_pWidget;
 }
 
 }

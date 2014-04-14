@@ -1,15 +1,18 @@
 #include "designneteditor.h"
-#include "designnetdocument.h"
-#include "designnetconstants.h"
-#include "designnetview.h"
-#include "designnetbase/designnetspace.h"
-#include "processorgraphicsblock.h"
-#include "Utils/XML/xmldeserializer.h"
+#include <QAction>
+#include <QMessageBox>
 #include <QtConcurrentRun>
 #include <QTextEdit>
-#include <QMessageBox>
 #include <QToolBar>
-#include <QAction>
+#include "designnetbase/designnetspace.h"
+#include "Utils/XML/xmldeserializer.h"
+#include "designnetconstants.h"
+#include "designnetdocument.h"
+#include "designnetfrontwidget.h"
+#include "designnetview.h"
+#include "processorgraphicsblock.h"
+
+
 namespace DesignNet{
 
 class DesignNetEditorPrivate
@@ -17,8 +20,8 @@ class DesignNetEditorPrivate
 public:
 	DesignNetEditorPrivate();
 	~DesignNetEditorPrivate();
-	DesignNetDocument *m_file;
-	QTextEdit   *   m_textEdit;
+	DesignNetDocument*			m_file;
+	DesignNetFrontWidget*		m_designNetWidget;
 	DesignNetView*	m_designNetView;
 	QToolBar*		m_toolBar;
 };
@@ -26,7 +29,6 @@ public:
 DesignNetEditorPrivate::DesignNetEditorPrivate()
 {
 	m_file			= 0;
-	m_textEdit		= new QTextEdit;
 	m_designNetView = new DesignNetView(0);
 }
 
@@ -38,9 +40,10 @@ DesignNetEditor::DesignNetEditor(QObject *parent)
 	: Core::IEditor(parent),
 	d(new DesignNetEditorPrivate())
 {
-	setWidget(d->m_textEdit);
-	
 	d->m_file = new DesignNetDocument(this);
+	d->m_designNetWidget = new DesignNetFrontWidget(this);
+	setWidget(d->m_designNetWidget);
+	
 	d->m_designNetView->setDesignNetSpace(d->m_file->designNetSpace());
 	d->m_toolBar = new QToolBar(tr("Build"), d->m_designNetView);
 

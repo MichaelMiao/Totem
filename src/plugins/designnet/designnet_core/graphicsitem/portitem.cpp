@@ -125,7 +125,6 @@ void PortItem::onPortDisconnected(Port* src, Port* target)
 
 void PortItem::onPortDataChanged()
 {
-	m_pToolTip->setData(m_pPort->data()->variant);
 }
 
 void PortItem::hoverEnterEvent(QGraphicsSceneHoverEvent * event)
@@ -155,5 +154,6 @@ QImage PortItem::getImage()
 {
 	return QImage(g_InnerDataType[m_pPort->data()->dataType].strFile);
 }
+
 
 }

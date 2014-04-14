@@ -27,7 +27,7 @@
     </PostBuildEvent>
     <PostBuildEvent />
     <ClCompile>
-      <AdditionalIncludeDirectories>$(OPENCV_DIR)include;$(SolutionDir)src;$(SolutionDir)src\libs;$(SolutionDir)src\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OPENCV_DIR)include;$(SolutionDir)src;$(SolutionDir)src\libs;$(SolutionDir)src\shared;$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />

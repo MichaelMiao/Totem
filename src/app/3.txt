@@ -2,9 +2,23 @@
     <DesignNetSpace Name="DesignNetSpace" type="DesignNetSpace" ID="-1">
         <processors>
             <processor type="Labs/AdaboostSVM"/>
+            <processor Name="NormalImageLoader" type="Loader/NormalImageLoader" ID="1">
+                <Property typeID="PropertyType/PathDialog" Name="PathDialogProperty" type="PropertyType/PathDialog" ID="ImageFilePath">
+                    <Paths/>
+                </Property>
+            </processor>
+            <processor Name="Image Folder Loader" type="Loader/Image Folder Loader" ID="2">
+                <Property typeID="PropertyType/PathDialog" Name="PathDialogProperty" type="PropertyType/PathDialog" ID="Path">
+                    <Paths/>
+                </Property>
+            </processor>
         </processors>
+        <Connections/>
     </DesignNetSpace>
     <Positions>
-        <Position X="-143" Y="-49" type="Position" id="2"/>
+        <Position X="-12" Y="-174" type="Position" id="1"/>
+        <Position X="-400" Y="21" type="Position" id="2"/>
+        <Position X="-250" Y="-56" type="Position" id="0"/>
     </Positions>
+    <GraphicsConnectionList/>
 </XML>

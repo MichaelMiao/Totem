@@ -60,7 +60,7 @@ Processor::Processor(DesignNetSpace *space, QObject* parent, ProcessorType proce
 	m_bDataDirty = true;
     m_name = "";
 	m_id = -1;
-	if (processorType == ProcessorType_Permanent)
+	if (1)
 	{
 		m_thread = new QThread(this);
 		m_worker.moveToThread(m_thread);
@@ -196,18 +196,21 @@ void Processor::afterProcess(bool status)
 	emit logout(tr("%1 id: %2 processing finished.").arg(name()).arg(id()));
 }
 
-void Processor::run( QFutureInterface<ProcessResult> &future )
+void Processor::run(QFutureInterface<ProcessResult> &future)
 {
-	ProcessResult pr;
+	ProcessResult *pr = new ProcessResult;
 	future.reportResult(pr, 0);
 	if(!beforeProcess(future) || !process(future))
 	{
-		pr = future.future().result();
-		pr.m_bSucessed = false;
+		*pr = future.future().result();
+		(*pr).m_bSucessed = false;
 		future.reportResult(pr, 0);
+		emit childProcessFinished();
+		if (m_thread)
+			m_thread->quit();
 		return;
 	}
-	pr = future.future().resultAt(0);
+	*pr = future.future().resultAt(0);
 	afterProcess(future.future().resultAt(0).m_bSucessed);
 	if (getOutputProcessor().size() == 0)
 		emit childProcessFinished();
@@ -217,10 +220,10 @@ void Processor::run( QFutureInterface<ProcessResult> &future )
 
 void Processor::start()
 {
-	if (m_eType == ProcessorType_Permanent)
+//	if (m_eType == ProcessorType_Permanent)
 		m_thread->start();
-	else
-		m_watcher.setFuture(QtConcurrent::run(&Processor::run, this));
+//	else
+//	m_watcher.setFuture(QtConcurrent::run(&Processor::run, this));
 }
 
 void Processor::waitForFinish()
@@ -355,7 +358,10 @@ bool Processor::connectTo(Processor* child)
 		while (itrInput != ports.end())
 		{
 			if ((*itr)->data()->dataType == (*itrInput)->data()->dataType)
+			{
 				(*itr)->connect(*itrInput);
+				break;
+			}
 			itrInput++;
 		}
 		itr++;
@@ -471,6 +477,19 @@ QList<DesignNet::ProcessData*> Processor::getData(QString sLabel)
 
 ProcessData Processor::getOneData(QString sLabel)
 {
+	if (getData(sLabel).size() == 0)
+	{
+		QList<DesignNet::ProcessData*> res;
+		Port *pPort = getPort(Port::IN_PORT, sLabel);
+		if (pPort)
+		{
+			QList<Port*> portsConnected = pPort->connectedPorts();
+			for (int i = 0; i < portsConnected.size(); i++)
+			{
+				res << portsConnected[i]->data();
+			}
+		}
+	}
 	return *(getData(sLabel)).at(0);
 }
 
@@ -513,29 +532,29 @@ void Processor::notifyDataWillChange()
 	QList<Processor*> processors = getOutputProcessor();
 	for (QList<Processor*>::iterator itr = processors.begin(); itr != processors.end(); itr++)
 	{
-		(*itr)->onNotifyDataChanged();
+		(*itr)->notifyDataWillChange();
 	}
 }
 
 void Processor::notifyProcess()
 {
+	QWriteLocker lock(&m_workingLock);
 	m_bDataDirty = false;
 	QList<Processor*> processors = getOutputProcessor();
 	m_waitProcessors = processors;
 	for (QList<Processor*>::iterator itr = processors.begin(); itr != processors.end(); itr++)
-	{
 		(*itr)->onNotifyProcess();
-
-	}
 }
 
 void Processor::onNotifyDataChanged()
 {
+	QWriteLocker lock(&m_workingLock);
 	m_bDataDirty = true;
 }
 
 void Processor::onNotifyProcess()
 {
+	QReadLocker lock(&m_workingLock);
 	for (QList<Port*>::iterator itr = m_inputPort.begin(); itr != m_inputPort.end(); itr++)
 	{
 		QList<Processor*> processors = (*itr)->connectedProcessors();
@@ -550,6 +569,7 @@ void Processor::onNotifyProcess()
 
 void Processor::onChildProcessFinished()
 {
+	QReadLocker lock(&m_workingLock);
 	onChildProcessorFinish((Processor*)sender());
 }
 

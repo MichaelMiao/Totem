@@ -3,7 +3,6 @@
 #include <QtPlugin>
 #include "../../designnet_core/designnetbase/processorconfigmanager.h"
 #include "graphicsnormalimageloader.h"
-#include "imagefolderconfigwidget.h"
 #include "ImageFolderLoader.h"
 #include "LabelLoader.h"
 
@@ -22,9 +21,6 @@ void InputLoaderPlugin::extensionsInitialized()
 	m_imageFolderLoader = new ImageFolderLoader(0);
 	m_imageLoader		= new GraphicsNormalImageLoader(0);
 	m_labelLoader		= new LabelLoader(0);
-	ProcessorConfigManager::instance()->registerConfigWidget(m_imageFolderLoader->typeID().toString(),
-		new ImageFolderConfigWidget(0, 0));
-
 	addAutoReleasedObject(m_imageFolderLoader);
 	addAutoReleasedObject(m_imageLoader);
 	addAutoReleasedObject(m_labelLoader);

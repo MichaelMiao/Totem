@@ -43,13 +43,11 @@ QString HSColorFeature::category() const
 
 bool HSColorFeature::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
-	MatrixData* pMatrix = (MatrixData*)getOneData("HSV Color Image").variant.value<IData*>();
-	HistogramData* pHistogram = (HistogramData*)getOneData("Binary Color Image").variant.value<IData*>();
-	cv::Mat hsvMat = pMatrix->getMatrix();
-	cv::Mat hist = pHistogram->histogram();
+	cv::Mat hsvMat = getOneData("HSV Color Image").variant.value<cv::Mat>();
+	cv::Mat hist = getOneData("Binary Color Image").variant.value<cv::Mat>();
 	notifyDataWillChange();
 	cv::Mat mat = extractColor(hsvMat, hist);
-	QVariant::fromValue(mat);
+	pushData(qVariantFromValue(mat), DATATYPE_HISTOGRAM, "Matrix Histogram");
 	notifyProcess();
 	return true;
 }
@@ -62,7 +60,7 @@ void HSColorFeature::propertyChanged( DesignNet::Property *prop )
 cv::Mat HSColorFeature::extractColor(cv::Mat& hsvMat, cv::Mat& binaryMat)
 {
 	cv::Mat matRet;
-	int hbins = 40, sbins = 50;
+	int hbins = 10, sbins = 15;
 	int histSize[] = { hbins, sbins };
 	float hranges[] = { 0, 180 };
 	float sranges[] = { 0, 256 };
@@ -77,19 +75,21 @@ cv::Mat HSColorFeature::extractColor(cv::Mat& hsvMat, cv::Mat& binaryMat)
 	double maxVal=0;
 	cv::minMaxLoc(hist, 0, &maxVal, 0, 0);
 
-	int scale = 10;
-	cv::Mat histImg = cv::Mat::zeros(sbins * scale, hbins * 10, CV_8UC3);
 	std::vector<std::pair<cv::Point2i, float> > fVec;
-	for( int h = 0; h < hbins; h++ )
+
+	for(int h = 0; h < hbins; h++)
 	{
+		float fSum = 0;
 		for( int s = 0; s < sbins; s++ )
-			fVec.push_back(std::make_pair(cv::Point2i(h, s), hist.at<float>(h, s)));
+			fSum += hist.at<float>(h, s);
+		matRet.push_back(fSum);
 	}
-	sort(fVec.begin(), fVec.end(), compareDis);
-	for (int i = 0; i < 64; i++)
+	for (int s = 0; s < sbins; s++)
 	{
-		matRet.push_back(fVec.at(i).first.x);
-		matRet.push_back(fVec.at(i).first.y);
+		float fSum = 0;
+		for( int h = 0; h < hbins; h++ )
+			fSum += hist.at<float>(h, s);
+		matRet.push_back(fSum);
 	}
 	matRet = matRet.reshape(1, 1);
 	matRet.convertTo(matRet, CV_32F);

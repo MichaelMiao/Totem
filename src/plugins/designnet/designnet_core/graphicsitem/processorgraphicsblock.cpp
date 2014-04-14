@@ -110,11 +110,11 @@ ProcessorGraphicsBlock::ProcessorGraphicsBlock(Processor *processor /*= 0*/, QGr
 
 	QObject::connect(this, SIGNAL(processorLog(QString)),
 		Core::ICore::messageManager(),
-		SLOT(printToOutputPanePopup(QString)));
+		SLOT(printToOutputPanePopup(QString)), Qt::QueuedConnection);
 	
 	if (m_processor)
 	{
-		QObject::connect(m_processor, SIGNAL(logout(QString)), this, SLOT(onShowLog(QString)));
+		QObject::connect(m_processor, SIGNAL(logout(QString)), this, SLOT(onShowLog(QString)), Qt::BlockingQueuedConnection);
 		QObject::connect(m_processor, SIGNAL(portAdded(Port*)), this, SLOT(onAddPort(Port*)));
 		QObject::connect(m_processor, SIGNAL(portRemoved(Port*)), this, SLOT(relayoutPort()));
 	}
@@ -174,6 +174,7 @@ QVariant ProcessorGraphicsBlock::itemChange(QGraphicsItem::GraphicsItemChange ch
     {
         if(value.toBool() == false)
             emit selectionChanged(false);
+		setEmphasized(value.toBool());
     }
 	else if (change == ItemPositionChange && scene())
 	{
@@ -297,9 +298,9 @@ void ProcessorGraphicsBlock::setState( const State &s, const bool &bAdd /*= fals
 
 void ProcessorGraphicsBlock::onShowLog( const QString &log )
 {
-	QString strTimeLog = QTime::currentTime().toString("hh:mm:ss.zzz");
-	strTimeLog = strTimeLog + "> " + sender()->objectName() + ": " + log;
-	emit processorLog(strTimeLog);
+	m_strLog = QTime::currentTime().toString("hh:mm:ss.zzz");
+	m_strLog = m_strLog + "> " + sender()->objectName() + ": " + log;
+	emit processorLog(m_strLog);
 }
 
 void ProcessorGraphicsBlock::mouseDoubleClickEvent(  QGraphicsSceneMouseEvent * event )
@@ -411,9 +412,10 @@ QPointF ProcessorGraphicsBlock::getCrossPoint(const QLineF &line)
 // 	return ptTemp + ptCenter;
 }
 
-void ProcessorGraphicsBlock::setEmphasized( bool bEmphasized /*= true*/ )
+void ProcessorGraphicsBlock::setEmphasized( bool bEmphasized )
 {
 	setState(STATE_EMPHASIZE, bEmphasized);
+	setZValue(!bEmphasized ? DesignNet::Constants::ZValue_GraphicsBlock_Normal : DesignNet::Constants::ZValue_GraphicsBlock_Emphasize);
 //	m_dropdownShadowEffect->setBlurRadius(bEmphasized ? 35 : 0);
 //	m_dropdownShadowEffect->setEnabled(bEmphasized);
 }

@@ -35,6 +35,7 @@ public:
 	void addListener(ProcessorConfigListener *listener);
 
 public slots:
+
 	void onSettingsChanged();
 
 protected:

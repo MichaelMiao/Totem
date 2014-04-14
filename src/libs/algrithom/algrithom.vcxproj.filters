@@ -28,12 +28,30 @@
     <ClCompile Include="algrithom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="opencvlibsvm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\include\libsvm\svm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="algrithom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="algrithom_global.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="opencvlibsvm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\libsvm\svm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -158,7 +158,9 @@
     <ClInclude Include="conversion_global.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Conversion.pluginspec" />
+    <None Include="Conversion.pluginspec">
+      <SubType>Designer</SubType>
+    </None>
     <CustomBuild Include="conversion.qrc">
       <FileType>Document</FileType>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath);%(AdditionalInputs)</AdditionalInputs>

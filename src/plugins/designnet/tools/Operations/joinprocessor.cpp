@@ -8,7 +8,6 @@
 using namespace DesignNet;
 enum PortIndex
 {
-	PortIndex_In,
 	PortIndex_Out,
 };
 
@@ -44,23 +43,35 @@ QString JoinProcessor::category() const
 
 bool JoinProcessor::process(QFutureInterface<ProcessResult> &future)
 {
+	notifyDataWillChange();
 	int iRows = 0, iCols = 0;
 	QList<Port*> ports = getPorts(Port::IN_PORT);
 	QList<Port*>::iterator itr = ports.begin();
+	cv::Mat matOut;
 	while (itr != ports.end())
 	{
-		cv::Mat m = (*itr)->data()->variant.value<cv::Mat>();
-		m.reshape(1, 1);
-		m.convertTo(m, CV_32FC1);
-		if (m_mat.rows == 0)
-			m_mat.push_back(m);
-		else if (m.rows != m_mat.rows || m.cols != m_mat.cols)
+		cv::Mat m = (*itr)->getInputData()->variant.value<cv::Mat>();
+		if (m.empty())
+		{
+			emit logout(tr("Port %1 data error!").arg((*itr)->name()));
 			return false;
+		}
+
+		m = m.reshape(1, m.cols * m.rows);
+		m.convertTo(m, CV_32FC1);
+		if (matOut.rows == 0)
+			matOut.push_back(m);
 		else
-			m_mat.push_back(m);
+			matOut.push_back(m);
 		itr++;
 	}
-	pushData(qVariantFromValue(m_mat), DATATYPE_MATRIX, s_ports[PortIndex_Out].strName);
+	matOut = matOut.reshape(1, 1);
+	cv::FileStorage fsfesture("I:/data/test2.xml", cv::FileStorage::WRITE);
+	fsfesture << "minmax" << matOut;
+	fsfesture.release();
+
+	pushData(qVariantFromValue(matOut), DATATYPE_MATRIX, s_ports[PortIndex_Out].strName);
+	notifyProcess();
 	return true;
 }
 

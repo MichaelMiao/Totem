@@ -25,6 +25,8 @@ public:
 	
 private:
 	
+	void updateLabel();
+
 	virtual void propertyChanged(DesignNet::Property *prop);
 
 	QMap<int, int> m_mapLabel;

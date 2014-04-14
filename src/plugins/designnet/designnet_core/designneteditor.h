@@ -15,6 +15,7 @@ class DesignNetEditor : public Core::IEditor
 	Q_OBJECT
 
 public:
+
 	DesignNetEditor(QObject *parent);
 	~DesignNetEditor();
 	// IEditor

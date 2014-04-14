@@ -20,7 +20,7 @@ PortArrowLink::PortArrowLink(QGraphicsItem *parent)
 
 PortArrowLink::~PortArrowLink()
 {
-
+	
 }
 
 void PortArrowLink::connectPort(PortItem* pSrc, PortItem* pTarget)
@@ -66,6 +66,9 @@ void PortArrowLink::updatePosition()
 
 QVariant PortArrowLink::itemChange(GraphicsItemChange change, const QVariant & v)
 {
+	if (change == ItemSceneHasChanged)
+	{
+	}
 	return v;
 }
 

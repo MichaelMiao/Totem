@@ -20,6 +20,7 @@ public:
 	QVariant	variant;		//!< 真正的数据
 	int			processorID;	//!< 产生该数据的处理器
 	DataType	dataType;		//!< 数据类型
+	int			m_iIndex;		//!< 数据索引
 };
 
 /**
@@ -40,7 +41,7 @@ public:
 
     explicit Port(PortType portType, DataType dt,
 			const QString &label = "", bool bRemovable = false, QObject *parent = 0);
-	virtual ~Port();
+	virtual ~Port() { }
     PortType portType() const{ return m_portType; }
     void setPortType(const PortType &portType){ m_portType = portType; }
 
@@ -94,6 +95,7 @@ public:
     ///
     void addData(ProcessData* data);  //!< 向端口添加数据
     ProcessData* data();        //!< 端口中存放的数据
+	ProcessData* getInputData();
 
 signals:
 

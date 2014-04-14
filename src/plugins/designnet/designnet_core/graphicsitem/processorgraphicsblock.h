@@ -186,6 +186,7 @@ protected:
 	int							m_state;		//!< block状态
 	Processor*					m_processor;
 	ProcessorConfigWidget*		m_configWidget;
+	QString						m_strLog;
 };
 }
 

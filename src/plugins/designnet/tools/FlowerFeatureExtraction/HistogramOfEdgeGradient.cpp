@@ -1,18 +1,21 @@
 #include "HistogramOfEdgeGradient.h"
-#include "../../designnet_core/designnetbase/port.h"
+#include <qmath.h>
+#include "../../../designnet/designnet_core/designnetbase/port.h"
 
 
+using namespace DesignNet;
 namespace FlowerFeatureExtraction{
 
 enum PortIndex
 {
-	PortIndex_In,
-	PortIndex_Out,
+	PortIndex_In_Binary,
+	PortIndex_Out_HOEG_Features
 };
 
 static PortData s_ports[] =
 {
-	{ Port::OUT_PORT,	DATATYPE_MATRIX,	"Binary Image" },
+	{ Port::IN_PORT,	DATATYPE_BINARYIMAGE,	"Binary Image" },
+	{ Port::OUT_PORT,	DATATYPE_MATRIX,		"HOEG feature" }
 };
 
 HistogramOfEdgeGradient::HistogramOfEdgeGradient(DesignNet::DesignNetSpace *space, QObject *parent /*= 0*/)
@@ -34,20 +37,18 @@ QString HistogramOfEdgeGradient::title() const
 
 QString HistogramOfEdgeGradient::category() const
 {
-	return tr("");
+	return tr("FlowerFeatureExtraction/Shape");
 }
 
 bool HistogramOfEdgeGradient::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
-	/// 求中心
-	cv::Point2d centroid(0, 0);
-	vector<vector<cv::Point> > countours;
-	cv::findContours(m_binaryMat.clone(), countours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
-	size_t counts = countours.size();
+	cv::Mat matBinary = getPortData<cv::Mat>(s_ports[PortIndex_In_Binary]);
+	std::vector<std::vector<cv::Point> > countours;
+	cv::findContours(matBinary.clone(), countours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
 	double maxarea = 0;
 	cv::Rect maxrect(0, 0, 2, 2);
 	size_t max_index = -1;
-	for (size_t i = 0; i < counts ; ++i)
+	for (size_t i = 0; i < countours.size() ; ++i)
 	{
 		cv::Rect rect = cv::boundingRect(countours.at(i));
 		if(rect.area() > maxarea)
@@ -57,91 +58,45 @@ bool HistogramOfEdgeGradient::process(QFutureInterface<DesignNet::ProcessResult>
 			max_index = i;
 		}
 	}
-
-	//////////////////////////////////////////////////////////////////////////
-	/// 求重心 坐标求和后求平均值
-	int iCount = 0;
-	int iX = 0;
-	int iY = 0;
-	int iBottom = maxrect.y + maxrect.height;
-	int iRight	= maxrect.x + maxrect.width;
-	int iLeft	= maxrect.x;
-	int iTop	= maxrect.y;
-	for(int r = maxrect.y; r <= iBottom; ++r)
+	const int iR = 10;
+	std::vector<cv::Point> &max_countours = countours.at(max_index);
+	std::vector<int> vecCounts;
+	for (size_t t = 0; t < max_countours.size(); t++)
 	{
-		for(int c = maxrect.x; c <= iRight; ++c)
+		cv::Point p = max_countours.at(t);
+		cv::Rect rc(cv::Point(p.x - iR, p.y - iR), cv::Size(2 * iR, 2 * iR));
+		int iCount = 0;
+		for (int r = rc.y; r < rc.y + rc.height; r++)
 		{
-			if (m_binaryMat.at<uchar>(r, c) == 255)
+			for (int c = rc.x; c < rc.x + rc.width; c++)
 			{
-				iX += c;
-				iY += r;
-				iCount++;
+				if (r < 0 || c < 0 || r >= matBinary.rows || c >= matBinary.cols)
+					continue;
+
+				uchar u = matBinary.at<uchar>(r,c);
+				int irr = sqrt(double(r - p.y) * (r - p.y) + (c - p.x) * (c - p.x));
+				if (irr < iR && u == 255)
+					iCount++;
 			}
 		}
+		vecCounts.push_back(iCount);
 	}
-	centroid.x = iX * 1.0 / iCount;
-	centroid.y = iY * 1.0 / iCount;
-
-	double radius = qMax(qMax(iRight - centroid.x, centroid.x - iLeft), qMax(centroid.y - iTop, iBottom - centroid.y));/// 半径
-	float fFeature[4];
-	memset(fFeature, 0, sizeof(float) * 4);
-	vector<cv::Point> &vecPoints = countours.at(max_index);
-	std::vector<float> vecD;
-	float fSum = 0;
-	for (size_t t = 0; t < vecPoints.size(); t++)
-	{
-		cv::Point dis = vecPoints.at(t) - cv::Point(centroid.x, centroid.y);
-		float f = sqrt((double)dis.dot(dis));
-		fSum += f;
-		vecD.push_back(f);
-	}
-	fSum /= vecPoints.size();
-	std::vector<int> vecKey;
-	if (vecD.size() >= 2)
-	{
-		float fTemp = vecD.at(1) - vecD.at(0);
-		float f = fTemp;
-		float fMax = 0, fMin = 10000;
-		int iPosLast = 0;
-		for (size_t t = 2; t < vecD.size() - 1; t++)
-		{
-			fTemp = vecD.at(t) - vecD.at(t - 1);
-			//			if (f < 0 && fTemp > 0 || (f > 0 && fTemp < 0) && fTemp > 0)
-			if (vecD.at(t) < vecD.at(t - 1) && vecD.at(t) < vecD.at(t + 1))
-			{
-				if (fMax < vecD.at(t))
-					fMax = vecD.at(t);
-				else if (fMin > vecD.at(t))
-					fMin = vecD.at(t);
-				iPosLast = t;
-				vecKey.push_back(t);
-				f = fTemp;
-			}
-		}
-		float fThreshold = (fMax + fMin) / 2;
-		std::vector<int> goodKey;
-		for (size_t t = 1; t < vecKey.size(); t++)
-		{
-			if (vecD.at(vecKey.at(t)) < fThreshold)
-			{
-				goodKey.push_back(vecKey.at(t));
-			}
-		}
-		int iCount = goodKey.size();
-		for (size_t t = 0; t < goodKey.size(); t++)
-		{
-			cv::Rect rc(vecPoints.at(goodKey.at(t)).x, vecPoints.at(goodKey.at(t)).y, 10, 10);
-			cv::rectangle(m_srcMat, rc, cv::Scalar(255, 0, 0));
-		}
-	}
-
-	cv::Mat mat;
-	for (int i = 0; i < 4; i++)
-	{
-		mat.push_back(fFeature[i]);
-	}
-	mat.reshape(1, 1);
-	return mat;
+	int iMaxArea = M_PI * iR * iR;
+	cv::MatND hist;
+	float hranges[] = { 0, iMaxArea };
+	const float *ranges[] = { hranges };
+	int channels[] = { 0 };
+	int hbins = 15;
+	int histSize[] = { hbins };
+	cv::Mat matCounts(vecCounts);
+	matCounts.convertTo(matCounts, CV_32FC1);
+	cv::calcHist(&matCounts, 1, channels, cv::Mat(),
+		hist, 1, &hbins, ranges,
+		true,
+		false);
+	hist = hist.reshape(1,1);
+	pushData(qVariantFromValue(hist), DATATYPE_MATRIX, s_ports[PortIndex_Out_HOEG_Features].strName);
+	notifyProcess();
 	return true;
 }
 

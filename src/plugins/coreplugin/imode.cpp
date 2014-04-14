@@ -3,7 +3,7 @@ using namespace Core;
 
 IMode::IMode(QObject *parent) :
     IContext(parent),
-    m_isEnabled(true)
+    m_isEnabled(true), m_priority(0)
 {
 
 }

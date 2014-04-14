@@ -38,7 +38,8 @@ bool Port::connect(Port *port)
     port->addConnectedPort(this);/// 直接将自己放到inputPort的列表中
 	if (!bConnected)
 	{
-		QObject::connect(port->processor(), SIGNAL(childProcessFinished()), m_processor, SLOT(onChildProcessFinished()));
+		QObject::connect(port->processor(), SIGNAL(childProcessFinished()),
+			m_processor, SLOT(onChildProcessFinished()));
 		emit connectPort(this, port);
 		emit m_processor->connected(m_processor, port->processor());
 	}
@@ -141,12 +142,11 @@ bool Port::isMultiInputSupported() const
 QList<Processor *> Port::connectedProcessors() const
 {
     QList<Processor *> result;
-    foreach(Port* port, m_portsConnected)
+	QList<Port*>::const_iterator itr = m_portsConnected.begin();
+    for(; itr != m_portsConnected.end(); itr++)
     {
-        if(!result.contains(port->processor()))
-        {
-            result.append(port->processor());
-        }
+        if(!result.contains((*itr)->processor()))
+            result.append((*itr)->processor());
     }
     return result;
 }
@@ -204,8 +204,12 @@ ProcessData *Port::data()
 	return &m_data;
 }
 
-Port::~Port()
+ProcessData* Port::getInputData()
 {
+	QList<Port*> portsConnected = connectedPorts();
+	for (int i = 0; i < portsConnected.size(); i++)
+		return portsConnected[i]->data();
+	return 0;
 }
 
 void Port::setMultiInputSupported( const bool &bSupported /*= true*/ )
@@ -238,7 +242,7 @@ void Port::setProcessor(Processor* processor)
 	m_processor = processor; m_data.processorID = processor->id();
 }
 
-ProcessData::ProcessData(DataType dt /*= DATATYPE_INVALID*/) : dataType(dt)
+ProcessData::ProcessData(DataType dt) : dataType(dt), m_iIndex(-1)
 {
 }
 

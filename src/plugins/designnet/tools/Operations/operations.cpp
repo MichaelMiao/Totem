@@ -1,10 +1,13 @@
 #include "operations.h"
-#include "joinprocessor.h"
+#include <QtPlugin>
+#include "designnetbase/processorconfigmanager.h"
 #include "bufferprocessor.h"
+#include "ClassifierStatistic.h"
 #include "FeatureSaver.h"
 #include "featuresaverconfig.h"
-#include "designnetbase/processorconfigmanager.h"
-#include <QtPlugin>
+#include "joinprocessor.h"
+
+
 using namespace DesignNet;
 
 Operations::Operations()
@@ -34,5 +37,6 @@ void Operations::extensionsInitialized()
 	addAutoReleasedObject(m_featureSaver);
 	addAutoReleasedObject(m_join);
 	addAutoReleasedObject(m_buffer);
+	addAutoReleasedObject(new ClassiferStatistic(0));
 }
 Q_EXPORT_PLUGIN2(Operations, Operations)

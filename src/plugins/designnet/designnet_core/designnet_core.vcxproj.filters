@@ -611,6 +611,33 @@
     <ClCompile Include="GeneratedFiles\Release\moc_portitemdataviewer.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="widgets\processorfrontwidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_processorfrontwidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_processorfrontwidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetfrontwidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designnetfrontwidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designnetfrontwidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="DesignNetUserMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DesignNetUserMode.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DesignNetUserMode.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="designnet_core_global.h">
@@ -639,6 +666,9 @@
     </ClInclude>
     <ClInclude Include="graphicsitem\designnet_define.h">
       <Filter>Header Files\graphicsitem</Filter>
+    </ClInclude>
+    <ClInclude Include="BroadcastMsg.h">
+      <Filter>Header Files\designnetbase</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -875,6 +905,15 @@
     </CustomBuild>
     <CustomBuild Include="graphicsitem\portitemdataviewer.h">
       <Filter>Header Files\graphicsitem</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\processorfrontwidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetfrontwidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DesignNetUserMode.h">
+      <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

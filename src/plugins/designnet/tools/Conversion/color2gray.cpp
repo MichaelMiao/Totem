@@ -35,13 +35,11 @@ bool Color2Gray::process(QFutureInterface<ProcessResult> &future)
 {
 	notifyDataWillChange();
 	Port* port = getPort(Port::IN_PORT, DATA_LABEL_COLORIMAGE);
-	ImageData *idata = qobject_cast<ImageData *>(getData(DATA_LABEL_COLORIMAGE).at(0)->variant.value<IData*>());
-	if (idata)
+	cv::Mat mat = getData(DATA_LABEL_COLORIMAGE).at(0)->variant.value<cv::Mat>();
+	if (!mat.empty())
 	{
-		cv::Mat mat;
-		cv::cvtColor(idata->imageData(), mat, CV_RGB2GRAY);
-		m_grayData.setImageData(mat);
-		pushData(&m_grayData, DATA_LABEL_GRAYIMAGE);
+		cv::cvtColor(mat, mat, CV_BGR2GRAY);
+		pushData(qVariantFromValue(mat), DATATYPE_GRAYIMAGE, DATA_LABEL_GRAYIMAGE);
 		notifyProcess();
 		emit logout("Color2Gray::process() OK");
 		return true;

@@ -8,6 +8,7 @@
 namespace DesignNet{
 class Processor;
 class Property;
+class ProcessorFrontWidget;
 }
 namespace InputLoader {
 /*!
@@ -15,6 +16,7 @@ namespace InputLoader {
  *
  * 一般图片载入，支持类型为OpenCV所支持的所有类型
  */
+class NormalImageLoaderWidget;
 class GraphicsNormalImageLoader : public DesignNet::Processor
 {
     Q_OBJECT
@@ -31,8 +33,13 @@ public:
 	QString path() const;
 
 protected:
-	virtual void propertyChanged(DesignNet::Property *prop);
+
+	void propertyChanged(DesignNet::Property *prop);
+	DesignNet::ProcessorFrontWidget* processorFrontWidget() override;
+
+
 	QString					m_filePath;
+	NormalImageLoaderWidget*m_pWidget;
 	mutable QReadWriteLock	m_lock;
 };
 }

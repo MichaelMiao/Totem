@@ -40,7 +40,6 @@ protected:
 	void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
 	void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
 
-
 public slots:
 
 	void onPortConnected(Port* src, Port* target);

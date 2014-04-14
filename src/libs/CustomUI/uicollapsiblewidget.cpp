@@ -68,9 +68,8 @@ void uiCollapsibleWidget::insertRegion(const QString &text, QWidget *widget, int
 		CollapsibleButton *pButton = new CollapsibleButton(text, this);
 		QVBoxLayout *vLayout = new QVBoxLayout;
 		if(widget)
-		{
 			vLayout->addWidget(widget);
-		}
+
 		pButton->setLayout(vLayout);
 		d->m_layout->insertWidget(index, pButton);
 	}
@@ -100,6 +99,5 @@ void uiCollapsibleWidget::removeRegion(const int &index)
         }
     }
 }
-
 
 }

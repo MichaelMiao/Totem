@@ -322,7 +322,7 @@ cv::Mat FlowerFeatureExtractor::extractShape()
 
 cv::Mat FlowerFeatureExtractor::extractShape2()
 {
-//	return getGradient();
+	return getGradient();
 	cv::Moments m = cv::moments(m_binaryMat, true);
 	double dhu[7];
 	cv::HuMoments(m, dhu);
@@ -393,6 +393,8 @@ cv::Mat FlowerFeatureExtractor::getGradient()
 
 cv::Mat FlowerFeatureExtractor::extractGLCM()
 {
+	cv::imwrite("I:/data/binary.bmp", m_binaryMat);
+	cv::imwrite("I:/data/grayMat.bmp", m_grayMat);
 	/// 求中心
 	cv::Point2d centroid(0, 0);
 	vector<vector<cv::Point> > countours;
@@ -446,15 +448,26 @@ cv::Mat FlowerFeatureExtractor::extractGLCM()
 	/// 求灰度共生矩阵(包括原灰度图的glcm和经过sobel算子滤波后的图像的glcm)
 	cv::Mat sobelMat;
 	cv::Sobel(m_grayMat, sobelMat, -1, 1, 0);
-
-	double deltaBin = 255 / 8; /// 每个bin的范围
+	{
+		char ch[255];
+		static int i = 0;
+		sprintf(ch, "I:/data/miao/%d_test_before.xml", i++);
+		cv::FileStorage fsfesture(ch, cv::FileStorage::WRITE);
+		fsfesture << "grayMat" << m_grayMat;
+		sprintf(ch, "I:/data/miao/%d_test_before.bmp", i++);
+		cv::imwrite(ch, m_grayMat);
+		fsfesture << "sobelMat" << sobelMat;
+		fsfesture.release();
+	}
+	
+	double deltaBin = 255.0 / 8; /// 每个bin的范围
 	cv::Point2i p1, p2;
 	for (int sita = 0; sita < 360; ++sita)
 	{
-		for(int r = B_min; r < B_max; ++r)
+		for(int r = 0; r < radius; ++r)
 		{
-			p1.x = m_centroid.x + r * cos(float(sita));
-			p1.y = m_centroid.y - r * sin(float(sita));
+			p1.x = centroid.x + r * cos(float(sita));
+			p1.y = centroid.y - r * sin(float(sita));
 			p2.x = p1.x + cos(float(sita));		/// 等价于p2.x = centroid.x + (r+1) * cos(sita);
 			p2.y = p1.y - sin(float(sita));		/// 等价于p2.y = centroid.y - (r+1) * sin(sita);
 			if (p2.x < 0 || p2.y < 0 || p1.x < 0 || p1.y < 0 || 
@@ -464,30 +477,83 @@ cv::Mat FlowerFeatureExtractor::extractGLCM()
 				continue;
 			}
 			///找到P1, p2 两个点的灰度级
-			int v1 = m_grayMat.at<uchar>(p1.y, p1.x) / deltaBin;
-			int v2 = m_grayMat.at<uchar>(p2.y, p2.x) / deltaBin;
+			int v1 = m_grayMat.at<uchar>(p1.y, p1.x)/deltaBin;
+			int v2 = m_grayMat.at<uchar>(p2.y, p2.x)/deltaBin;
 			v1 = v1 >= m_glcm.rows ? m_glcm.rows - 1 : v1;
 			v2 = v2 >= m_glcm.cols ? m_glcm.cols - 1 : v2;
-
 			if (v1 < 0)
+			{
 				v1 = 0;
-
+			}
 			if (v2 < 0)
+			{
 				v2 = 0;
+			}
 			m_glcm.at<float>(v1, v2)++;
 
-			v1 = sobelMat.at<uchar>(p1.y, p1.x) / deltaBin;
-			float f = sobelMat.at<uchar>(p2.y, p2.x);
-			v2 = sobelMat.at<uchar>(p2.y, p2.x) / deltaBin;
+			v1 = sobelMat.at<uchar>(p1.y, p1.x)/deltaBin;
+			uchar f = sobelMat.at<uchar>(p2.y, p2.x);
+			v2 = sobelMat.at<uchar>(p2.y, p2.x)/deltaBin;
 			v1 = v1 >= m_glcm.rows ? m_glcm.rows - 1 : v1;
 			v2 = v2 >= m_glcm.cols ? m_glcm.cols - 1 : v2;
 			if (v1 < 0)
+			{
 				v1 = 0;
+			}
 			if (v2 < 0)
+			{
 				v2 = 0;
+			}
 			m_glcm_sobel.at<float>(v1, v2)++;
 		}
 	}
+	char ch[255];
+	static int i = 0;
+	sprintf(ch, "I:/data/miao/%d_test_after.xml", i++);
+	cv::FileStorage fsfesture(ch, cv::FileStorage::WRITE);
+	fsfesture << "m_glcm" << m_glcm;
+	fsfesture << "m_glcm_sobel" << m_glcm_sobel;
+	fsfesture.release();
+
+// 	for (int sita = 0; sita < 360; ++sita)
+// 	{
+// 		for(int r = B_min; r < B_max; ++r)
+// 		{
+// 			p1.x = m_centroid.x + r * cos(float(sita));
+// 			p1.y = m_centroid.y - r * sin(float(sita));
+// 			p2.x = p1.x + cos(float(sita));		/// 等价于p2.x = centroid.x + (r+1) * cos(sita);
+// 			p2.y = p1.y - sin(float(sita));		/// 等价于p2.y = centroid.y - (r+1) * sin(sita);
+// 			if (p2.x < 0 || p2.y < 0 || p1.x < 0 || p1.y < 0 || 
+// 				p2.x >= m_grayMat.cols || p1.x >= m_grayMat.cols ||
+// 				p2.y >= m_grayMat.rows || p1.y >= m_grayMat.rows)
+// 			{
+// 				continue;
+// 			}
+// 			///找到P1, p2 两个点的灰度级
+// 			int v1 = m_grayMat.at<uchar>(p1.y, p1.x) / deltaBin;
+// 			int v2 = m_grayMat.at<uchar>(p2.y, p2.x) / deltaBin;
+// 			v1 = v1 >= m_glcm.rows ? m_glcm.rows - 1 : v1;
+// 			v2 = v2 >= m_glcm.cols ? m_glcm.cols - 1 : v2;
+// 
+// 			if (v1 < 0)
+// 				v1 = 0;
+// 
+// 			if (v2 < 0)
+// 				v2 = 0;
+// 			m_glcm.at<float>(v1, v2)++;
+// 
+// 			v1 = sobelMat.at<uchar>(p1.y, p1.x) / deltaBin;
+// 			float f = sobelMat.at<uchar>(p2.y, p2.x);
+// 			v2 = sobelMat.at<uchar>(p2.y, p2.x) / deltaBin;
+// 			v1 = v1 >= m_glcm.rows ? m_glcm.rows - 1 : v1;
+// 			v2 = v2 >= m_glcm.cols ? m_glcm.cols - 1 : v2;
+// 			if (v1 < 0)
+// 				v1 = 0;
+// 			if (v2 < 0)
+// 				v2 = 0;
+// 			m_glcm_sobel.at<float>(v1, v2)++;
+// 		}
+// 	}
 	//////////////////////////////////////////////////////////////////////////
 	///计算灰度共生矩阵的特征值
 	/// 归一化灰度共生矩阵
@@ -593,7 +659,7 @@ cv::Mat FlowerFeatureExtractor::extractShapeDistance()
 	std::vector<int> vecCounts;
 	std::vector<float> vecDis;
 	float fMax = 0;
-	float fMin = 1000;
+	float fMin = 1000000;
 	for (size_t t = 0; t < max_countours.size(); t++)
 	{
 		cv::Point p = max_countours.at(t);

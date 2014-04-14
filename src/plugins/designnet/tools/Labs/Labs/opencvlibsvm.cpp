@@ -122,6 +122,7 @@ double OpenCVLibSVM::crossValidation()
 			
 			free(target);
 			c += c_step;
+			return 0;
 		}
 		g += gamma_step;
 	}

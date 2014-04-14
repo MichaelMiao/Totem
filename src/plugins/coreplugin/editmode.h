@@ -22,6 +22,7 @@ public:
     ~EditMode();
 
 private slots:
+
     void grabEditorManager(Core::IMode *mode);
 
 private:

@@ -17,13 +17,14 @@ public:
 	~BufferProcessor();
 	virtual QString title() const;
 	virtual QString category() const;//!< 种类
+	virtual bool prepareProcess();		//!< 处理之前的准备,这里会确保数据已经准备好了
 	virtual bool process(QFutureInterface<DesignNet::ProcessResult> &future);     //!< 处理函数
 
 signals:
 protected:
 
 	virtual void propertyChanged(DesignNet::Property *prop);
-	std::vector<cv::Mat>		m_mats;
+	cv::Mat		m_mats;
 };
 
 #endif // BUFFERPROCESSOR_H

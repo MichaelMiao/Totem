@@ -61,7 +61,7 @@ private:
 	DesignNet::DoubleRangeProperty* m_binCountProperty;//!< 灰度级，默认为8
 	cv::Mat m_glcm;					//!< 灰度共生矩阵
 	cv::Mat m_glcm_sobel;			//!< sobel滤波后的灰度共生矩阵
-	cv::Point2d m_centroid;			//!< 图像中心坐标
+	cv::Point m_centroid;			//!< 图像中心坐标
 };
 }
 #endif // POLORGLCMBLOCK_H

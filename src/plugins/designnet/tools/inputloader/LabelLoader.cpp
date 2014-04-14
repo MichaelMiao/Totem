@@ -14,8 +14,8 @@ namespace InputLoader{
 LabelLoader::LabelLoader(DesignNet::DesignNetSpace *space, QObject *parent)
 {
 	setName(tr("Label File Loader"));
-	addPort(Port::IN_PORT, DATATYPE_STRING, INPORT_FILENAME);
-	addPort(Port::OUT_PORT, DATATYPE_INT, OUTPORT_DATALABEL);
+	addPort(Port::IN_PORT,	DATATYPE_STRING, INPORT_FILENAME);
+	addPort(Port::OUT_PORT, DATATYPE_MATRIX, OUTPORT_DATALABEL);
 
 	QStringList fileTypes;
 	fileTypes << "*.label";
@@ -45,16 +45,24 @@ QString LabelLoader::category() const
 
 bool LabelLoader::prepareProcess()
 {
+	PathDialogProperty* pProperty = (PathDialogProperty*)getProperty("Path");
+	if (pProperty->paths().size() == 0)
+		return false;
+	updateLabel();
 	return true;
 }
 
 bool LabelLoader::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
-	Port* pPort = getPort(Port::IN_PORT, INPORT_FILENAME);
-	QString fileName = pPort->data()->variant.toString();
-	int iId = fileName.toInt();
+	notifyDataWillChange();
+	QString fileName = getOneData(INPORT_FILENAME).variant.toString();
+	QFileInfo info(fileName);
+	int iId = info.baseName().toInt();
 	int iLabel = m_mapLabel.value(iId);
-	pushData(QVariant::fromValue(iLabel), DATATYPE_INT, OUTPORT_DATALABEL);
+	cv::Mat m(1, 1, CV_32SC1);
+	m.at<int>(0, 0) = iLabel;
+	pushData(QVariant::fromValue(m.clone()), DATATYPE_MATRIX, OUTPORT_DATALABEL);
+	notifyProcess();
 	return true;
 }
 
@@ -80,7 +88,13 @@ QString LabelLoader::path() const
 
 void LabelLoader::propertyChanged(Property *prop)
 {
-	PathDialogProperty* pProperty = (PathDialogProperty*)prop;
+	updateLabel();
+	Processor::propertyChanged(prop);
+}
+
+void LabelLoader::updateLabel()
+{
+	PathDialogProperty* pProperty = (PathDialogProperty*)getProperty("Path");
 	if (pProperty)
 	{
 		QList<Utils::Path> listPath;
@@ -102,7 +116,6 @@ void LabelLoader::propertyChanged(Property *prop)
 			fileLabel.close();
 		}
 	}
-	Processor::propertyChanged(prop);
 }
 
 }

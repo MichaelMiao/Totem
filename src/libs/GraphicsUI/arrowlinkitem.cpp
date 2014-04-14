@@ -30,6 +30,10 @@ ArrowLinkItem::ArrowLinkItem(QGraphicsItem *parent) :
 
 ArrowLinkItem::~ArrowLinkItem()
 {
+	if (m_controlPoint_1->scene())
+		m_controlPoint_1->scene()->removeItem(m_controlPoint_1);
+	if (m_controlPoint_2->scene())
+		m_controlPoint_2->scene()->removeItem(m_controlPoint_2);
 }
 
 QPainterPath ArrowLinkItem::shape() const

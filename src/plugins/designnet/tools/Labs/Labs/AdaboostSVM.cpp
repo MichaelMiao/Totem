@@ -21,7 +21,7 @@
 #define TEST_PATH_SRC	"I:/data/test/"
 #define TRAIN_PATH_SRC	"I:/data/train/"
 
-#define LABEL_FILE		"I:/data/labels.txt"
+#define LABEL_FILE		"I:/data/labels.label"
 #define TYPE_NAME		"I:/data/typename.txt"
 #define SVM_MODEL_FILE	"I:/data/svm.xml"
 #define SVM_MODEL_FILE2	"I:/data/svm2.xml"
@@ -153,7 +153,7 @@ void normalizeFeature(cv::Mat &mat, cv::Mat &matMaxMin)
 		matMaxMin = cv::Mat(2, mat.cols, CV_32FC1);
 		for (int c = 0; c < mat.cols; c++)
 		{
-			float fMax = -30000, fMin = 30000;
+			float fMax = -3000000, fMin = 3000000;
 			for (int r = 0; r < mat.rows; r++)
 			{
 				float* pData = mat.ptr<float>(r);
@@ -300,11 +300,14 @@ void AdaboostSVMProcessor::train()
 		colorTrain.push_back(clrF);
 		shapeTrain.push_back(shapeF);
 		textureTrain.push_back(glcmF);
+		cv::FileStorage fsfesture("I:/data/test.xml", cv::FileStorage::WRITE);
+		fsfesture << "minmax" << trainData;
+		fsfesture.release();
 	}
 // 	trainData.convertTo(trainData, CV_32F);
   	cv::Mat matNormalize;
  	emit logout("normalizeFeature..");
- 	normalizeFeature(colorTrain, matNormalize);
+ 	normalizeFeature(trainData, matNormalize);
 	cv::FileStorage fsfesture(SVM_MODEL_FILE_NORM, cv::FileStorage::WRITE);
 	fsfesture << "minmax" << matNormalize;
 	fsfesture.release();
@@ -316,7 +319,7 @@ void AdaboostSVMProcessor::train()
 // 	
 // 
 	OpenCVLibSVM svm;
-	svm.train(colorTrain, labels, SVM_MODEL_FILE);
+	svm.train(trainData, labels, SVM_MODEL_FILE);
 	svm.crossValidation();
 	return;
 // 	int *labelVoted = new int[svm.getClassCount()];
@@ -426,6 +429,7 @@ void AdaboostSVMProcessor::test()
 	LoadLabel(imgLabel);
 	OpenCVLibSVM svm;
 	svm.loadModel();
+//	svm.crossValidation();
 	cv::FileStorage fsMinMax(SVM_MODEL_FILE_NORM, cv::FileStorage::READ);
 	cv::FileNode node = fsMinMax.root();
 	cv::FileNodeIterator itr = node.begin();
@@ -457,17 +461,21 @@ void AdaboostSVMProcessor::test()
 		F.push_back(clrF.reshape(1, clrF.cols));
 		F.push_back(shapeF.reshape(1, shapeF.cols));
 		F.push_back(glcmF.reshape(1, glcmF.cols));
-		clrF = clrF.reshape(1, 1);
-		for (int c = 0; c < clrF.cols; c++)
+		F = F.reshape(1, 1);
+		
+		for (int c = 0; c < F.cols; c++)
 		{
 			float fMin = featureMinMax.at<float>(0, c);
 			float fMax = featureMinMax.at<float>(1, c);
-			clrF.at<float>(0, c) = (clrF.at<float>(0, c) - fMin) / (fMax - fMin);
+			if (qAbs(fMax - fMin) < 0.000001)
+				F.at<float>(0, c) = 1;
+			else
+				F.at<float>(0, c) = (F.at<float>(0, c) - fMin) / (fMax - fMin);
 		}
 		
 		int *labelVoted = new int[svm.getClassCount()];
 		double *probility = new double[svm.getClassCount()];
-		svm.predict_probility(clrF, labelVoted, probility);
+		svm.predict_probility(F, labelVoted, probility);
 // 		cv::Mat matLabel;
 // 		knn.predict(F, matLabel);
 // 		
@@ -526,11 +534,14 @@ void AdaboostSVMProcessor::test()
 // 		}
 		if (labelVoted[0] == iLabel)
 			fSum++;
-
+		emit logout(tr("%1 ------ %2").arg(labelVoted[0]).arg(iLabel));
 		for (int i = 0; i < 5; i++)
 		{
 			if (labelVoted[i] == iLabel)
+			{
 				fSum5++;
+				break;
+			}
 		}
 //		cv::Mat labelF(1, 5, CV_32SC1);//		QSet<int> labelTrain;
 //		cv::Mat prob(1, 5, CV_32FC1);

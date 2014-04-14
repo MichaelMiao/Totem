@@ -56,15 +56,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ImageFolderLoader.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="imagefolderconfigwidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_imagefolderconfigwidget.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_imagefolderconfigwidget.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\qrc_resource.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -95,6 +86,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_LabelConversion.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="normalimageloaderwidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_normalimageloaderwidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_normalimageloaderwidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -120,9 +120,6 @@
     <CustomBuild Include="ImageFolderLoader.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="imagefolderconfigwidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="resource.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
@@ -133,6 +130,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="LabelConversion.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="normalimageloaderwidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

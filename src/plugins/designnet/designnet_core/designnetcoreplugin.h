@@ -8,7 +8,9 @@ class DesignNetCorePluginPrivate;
 class DESIGNNET_CORE_EXPORT DesignNetCorePlugin : public ExtensionSystem::IPlugin
 {
 	Q_OBJECT
+
 public:
+
 	DesignNetCorePlugin();
 	~DesignNetCorePlugin();
 	bool initialize(const QStringList &arguments, QString *errorMessage = 0);
