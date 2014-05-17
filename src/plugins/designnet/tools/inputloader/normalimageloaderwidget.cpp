@@ -3,6 +3,8 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QUrl>
+#include "../../designnet_core/designnetbase/designnetspace.h"
+#include "../../designnet_core/designnetbase/processor.h"
 #include "graphicsnormalimageloader.h"
 
 
@@ -73,6 +75,7 @@ void NormalImageLoaderWidget::dropEvent(QDropEvent *event)
 			{
 				text = urlList.at(i).toLocalFile();
 				m_processor->setPath(text);
+				m_processor->space()->prepareProcess();
 				m_processor->start();
 				break;
 			}

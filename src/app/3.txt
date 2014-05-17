@@ -12,13 +12,15 @@
                     <Paths/>
                 </Property>
             </processor>
+            <processor Name="GrabCut" type="Preprocessor/GrabCut" ID="3"/>
         </processors>
         <Connections/>
     </DesignNetSpace>
     <Positions>
+        <Position X="-250" Y="-56" type="Position" id="0"/>
         <Position X="-12" Y="-174" type="Position" id="1"/>
         <Position X="-400" Y="21" type="Position" id="2"/>
-        <Position X="-250" Y="-56" type="Position" id="0"/>
+        <Position X="-156" Y="-185" type="Position" id="3"/>
     </Positions>
     <GraphicsConnectionList/>
 </XML>

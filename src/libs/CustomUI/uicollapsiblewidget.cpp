@@ -32,13 +32,9 @@ uiCollapsibleWidget::uiCollapsibleWidget(Qt::Alignment alignment, QWidget *paren
     d(new uiCollapsibleWidgetPrivate(this))
 {
     if(alignment == Qt::AlignTop || alignment == Qt::AlignBottom)
-    {
         d->m_layout = new QVBoxLayout;
-    }
     else
-    {
         d->m_layout = new QHBoxLayout;
-    }
     d->m_alignment = alignment;
     d->m_layout->setSpacing(0);
     d->m_layout->setMargin(0);
@@ -85,7 +81,7 @@ void uiCollapsibleWidget::insertRegion(const QString &text, QLayout *pLayout, in
 void uiCollapsibleWidget::removeRegion(const int &index)
 {
     int i = 0;
-    foreach(QObject *obj, d->m_layout->children())
+    foreach(QObject *obj, children())
     {
         CollapsibleButton *pButton = qobject_cast<CollapsibleButton*>(obj);
         if(pButton)
@@ -98,6 +94,30 @@ void uiCollapsibleWidget::removeRegion(const int &index)
             i++;
         }
     }
+}
+
+QSize uiCollapsibleWidget::sizeHint() const
+{
+	QSize sz(0, 0);
+	
+	foreach(QObject *obj, children())
+	{
+		CollapsibleButton *pButton = qobject_cast<CollapsibleButton*>(obj);
+		if(pButton)
+		{
+			if(d->m_alignment == Qt::AlignTop || d->m_alignment == Qt::AlignBottom)
+			{
+				sz.setHeight(sz.height() + pButton->sizeHint().height());
+				sz.setWidth(qMax(sz.width(), pButton->sizeHint().width()));
+			}
+			else
+			{
+				sz.setHeight(qMax(sz.height(), pButton->sizeHint().height()));
+				sz.setWidth(sz.width() + pButton->sizeHint().width());
+			}
+		}
+	}
+	return sz;
 }
 
 }

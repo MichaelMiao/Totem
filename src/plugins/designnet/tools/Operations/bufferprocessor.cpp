@@ -50,7 +50,6 @@ bool BufferProcessor::process(QFutureInterface<ProcessResult> &future)
 	mat = mat.reshape(1, 1);
 	m_mats.push_back(mat);
 	int iIndex = getPortData<int>(s_ports[PortIndex_In_DataIndex]);
-	qDebug() << "=================" << m_mats.rows << "----" << iIndex;
 	if (m_mats.rows != iIndex)
 	{
 		qDebug() << "Error";

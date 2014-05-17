@@ -51,12 +51,15 @@ ProcessorArrowLink::~ProcessorArrowLink()
 {
 }
 
-void ProcessorArrowLink::connectProcessor( ProcessorGraphicsBlock* pSrc, ProcessorGraphicsBlock* pTarget )
+void ProcessorArrowLink::connectProcessor(ProcessorGraphicsBlock* pSrc, ProcessorGraphicsBlock* pTarget)
 {
 	m_srcProcessor = pSrc;
 	m_targetProcessor = pTarget;
-	m_controlPoint_1->setParentItem(m_srcProcessor);
-	m_controlPoint_2->setParentItem(m_targetProcessor);
+	QGraphicsItemGroup* pGroup = new QGraphicsItemGroup(NULL);
+	pGroup->addToGroup(m_controlPoint_1);
+	pGroup->addToGroup(m_controlPoint_1);
+//	m_controlPoint_1->setParentItem(m_srcProcessor);
+//	m_controlPoint_2->setParentItem(m_targetProcessor);
 
 
 	connect(m_srcProcessor, SIGNAL(positionChanged()), this, SLOT(onProcessorPosChanged()));

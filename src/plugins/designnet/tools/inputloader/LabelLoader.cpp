@@ -110,7 +110,7 @@ void LabelLoader::updateLabel()
 			{
 				QString str = s.readLine();
 				QTextStream sTemp(&str);
-				sTemp >> id >> iLabel;
+				sTemp >> iLabel >> id;
 				m_mapLabel[id] = iLabel;
 			}
 			fileLabel.close();

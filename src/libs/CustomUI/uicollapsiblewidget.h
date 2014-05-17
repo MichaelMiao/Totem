@@ -27,6 +27,8 @@ public:
 
     void removeRegion(const int &index);
 
+	QSize sizeHint() const override;
+
 signals:
 
 public slots:

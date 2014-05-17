@@ -14,6 +14,8 @@ public:
 	ProcessorFrontWidget(Processor* processor);
 	~ProcessorFrontWidget();
 
+	Processor* getProcessor() const { return m_processor; }
+
 private:
 
 	Processor* m_processor;

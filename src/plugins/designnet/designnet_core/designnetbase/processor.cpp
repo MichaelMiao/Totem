@@ -60,7 +60,7 @@ Processor::Processor(DesignNetSpace *space, QObject* parent, ProcessorType proce
 	m_bDataDirty = true;
     m_name = "";
 	m_id = -1;
-	if (1)
+	if (m_eType == ProcessorType_Permanent)
 	{
 		m_thread = new QThread(this);
 		m_worker.moveToThread(m_thread);
@@ -183,10 +183,10 @@ int Processor::indegree(QList<Processor *> exclusions) const
 
 bool Processor::beforeProcess(QFutureInterface<ProcessResult> &future)
 {
-	ProcessResult pr;
-	pr.m_bNeedLoop = false;
-	pr.m_bSucessed = true;
-	future.reportResult(pr, 0);
+	ProcessResult *pr = new ProcessResult;
+	pr->m_bNeedLoop = false;
+	pr->m_bSucessed = true;
+	future.reportResult(*pr, 0);
 	return true;
 }
 
@@ -198,8 +198,8 @@ void Processor::afterProcess(bool status)
 
 void Processor::run(QFutureInterface<ProcessResult> &future)
 {
-	ProcessResult *pr = new ProcessResult;
-	future.reportResult(pr, 0);
+ 	ProcessResult *pr = new ProcessResult;
+ 	future.reportResult(pr, 0);
 	if(!beforeProcess(future) || !process(future))
 	{
 		*pr = future.future().result();
@@ -220,10 +220,10 @@ void Processor::run(QFutureInterface<ProcessResult> &future)
 
 void Processor::start()
 {
-//	if (m_eType == ProcessorType_Permanent)
+	if (m_eType == ProcessorType_Permanent)
 		m_thread->start();
-//	else
-//	m_watcher.setFuture(QtConcurrent::run(&Processor::run, this));
+ 	else
+ 		m_watcher.setFuture(QtConcurrent::run(&Processor::run, this));
 }
 
 void Processor::waitForFinish()

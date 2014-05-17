@@ -26,6 +26,10 @@ public:
 
 	ProcessorFrontWidget* processorFrontWidget() override;
 
+Q_SIGNALS:
+
+	void classifyFinished(cv::Mat);
+
 private:
 
 	BoolProperty*			m_propBoolTrain;

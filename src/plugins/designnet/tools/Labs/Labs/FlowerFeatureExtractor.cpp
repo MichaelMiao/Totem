@@ -573,7 +573,7 @@ cv::Mat FlowerFeatureExtractor::extractGLCM()
 cv::Mat FlowerFeatureExtractor::extractColor()
 {
 	cv::Mat matRet;
-	int hbins = 10, sbins = 15;
+	int hbins = 30, sbins = 35;
 	int histSize[] = { hbins, sbins };
 	float hranges[] = { 0, 180 };
 	float sranges[] = { 0, 256 };
@@ -584,6 +584,9 @@ cv::Mat FlowerFeatureExtractor::extractColor()
 		hist, 2, histSize, ranges,
 		true, // the histogram is uniform
 		false );
+
+	//πÈ“ªªØ
+	cv::normalize(hist, hist);
 
 	double maxVal=0;
 	cv::minMaxLoc(hist, 0, &maxVal, 0, 0);

@@ -4,8 +4,8 @@
 #include "SVMFrontWidget.h"
 
 
-#define SVM_MODEL_FILE_NORM	"I:/data/svm_normalize.xml"
-
+#define SVM_MODEL_FILE_NORM	"G:/data/68Data/svm_normalize.xml"
+#define SVM_MODEL_FILE		"G:/data/68Data/svm.xml"
 
 enum PortIndex
 {
@@ -98,7 +98,7 @@ bool SVMClassifer::process(QFutureInterface<DesignNet::ProcessResult> &future)
 		fsfesture.release();
 
 		OpenCVLibSVM svm;
-		svm.train(matExample, matLabel);
+		svm.train(matExample, matLabel, SVM_MODEL_FILE);
 	}
 	else
 	{
@@ -123,6 +123,7 @@ bool SVMClassifer::process(QFutureInterface<DesignNet::ProcessResult> &future)
 		pushData(qVariantFromValue(fLabel), DATATYPE_MATRIX, s_ports[PortIndex_In_PredictedLabel].strName);
 		delete []labelVoted;
 		delete []probility;
+		emit classifyFinished(fLabel);
 	}
 	notifyProcess();
 	return true;
@@ -131,7 +132,7 @@ bool SVMClassifer::process(QFutureInterface<DesignNet::ProcessResult> &future)
 bool SVMClassifer::prepareProcess()
 {
 	bool bTrain = m_propBoolTrain->value();
-	if (!bTrain) // ÑµÁ·½×¶Î
+	if (!bTrain) // ²âÊÔ½×¶Î
 	{
 		cv::FileStorage fsMinMax(SVM_MODEL_FILE_NORM, cv::FileStorage::READ);
 		cv::FileNode node = fsMinMax.root();
@@ -143,7 +144,7 @@ bool SVMClassifer::prepareProcess()
 				(*itr) >> m_matNormalize;
 			itr++;
 		}
-		m_svm.loadModel();
+		m_svm.loadModel(SVM_MODEL_FILE);
 	}
 	return true;
 }

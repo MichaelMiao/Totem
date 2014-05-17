@@ -22,6 +22,9 @@ DesignNetFrontWidget::DesignNetFrontWidget(DesignNetEditor* pEditor)
 		this, SLOT(onProcessorAdded(Processor*)));
 	connect(m_pSpace, SIGNAL(processorRemoved(Processor*)), 
 		this, SLOT(onProcessorRemoved(Processor*)));
+
+	setWidget(&m_widget);
+	setWidgetResizable(true);
 }
 
 DesignNetFrontWidget::~DesignNetFrontWidget()
@@ -43,7 +46,10 @@ void DesignNetFrontWidget::onProcessorAdded(Processor* processor)
 {
 	ProcessorFrontWidget* pWidget = processor->processorFrontWidget();
 	if (pWidget && !m_vecWidget.contains(pWidget))
-		addRegion(processor->name(), pWidget);
+	{
+		m_widget.addRegion(processor->name(), pWidget);
+		m_vecWidget.push_back(pWidget);
+	}
 }
 
 void DesignNetFrontWidget::onProcessorRemoved(Processor* processor)
@@ -51,7 +57,13 @@ void DesignNetFrontWidget::onProcessorRemoved(Processor* processor)
 	ProcessorFrontWidget* pWidget = processor->processorFrontWidget();
 	int iIndex = m_vecWidget.indexOf(pWidget);
 	if (iIndex >= 0)
-		removeRegion(iIndex);
+		m_widget.removeRegion(iIndex);
+}
+
+void DesignNetFrontWidget::resizeEvent(QResizeEvent* e)
+{
+	QSize sz = m_widget.sizeHint();
+	m_widget.setGeometry(0, 0, e->size().width(), sz.height());
 }
 
 }

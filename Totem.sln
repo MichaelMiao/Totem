@@ -71,6 +71,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Classifier", "src\plugins\d
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Operations", "src\plugins\designnet\tools\Operations\Operations.vcxproj", "{4A4ECD97-1A6D-4A8B-9EAC-BAD5DB21CCA4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Preprocessor", "src\plugins\designnet\tools\Preprocessor\Preprocessor.vcxproj", "{C52E46E2-BEFB-4A3B-879C-D561F29BEAEC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -149,6 +151,10 @@ Global
 		{4A4ECD97-1A6D-4A8B-9EAC-BAD5DB21CCA4}.Debug|Win32.Build.0 = Debug|Win32
 		{4A4ECD97-1A6D-4A8B-9EAC-BAD5DB21CCA4}.Release|Win32.ActiveCfg = Release|Win32
 		{4A4ECD97-1A6D-4A8B-9EAC-BAD5DB21CCA4}.Release|Win32.Build.0 = Release|Win32
+		{C52E46E2-BEFB-4A3B-879C-D561F29BEAEC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C52E46E2-BEFB-4A3B-879C-D561F29BEAEC}.Debug|Win32.Build.0 = Debug|Win32
+		{C52E46E2-BEFB-4A3B-879C-D561F29BEAEC}.Release|Win32.ActiveCfg = Release|Win32
+		{C52E46E2-BEFB-4A3B-879C-D561F29BEAEC}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -175,9 +181,10 @@ Global
 		{F955F37D-EC4E-4CBB-B5C1-99101A5D18DD} = {39A3CB56-FC4E-4267-93AF-7FC266A74D3F}
 		{2F0479C8-A28A-4F6A-BE87-BF810842062F} = {39A3CB56-FC4E-4267-93AF-7FC266A74D3F}
 		{4A4ECD97-1A6D-4A8B-9EAC-BAD5DB21CCA4} = {39A3CB56-FC4E-4267-93AF-7FC266A74D3F}
+		{C52E46E2-BEFB-4A3B-879C-D561F29BEAEC} = {39A3CB56-FC4E-4267-93AF-7FC266A74D3F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		Qt5Version = 4.8.5
 		QtVersion = 4.8.5
+		Qt5Version = 4.8.5
 	EndGlobalSection
 EndGlobal

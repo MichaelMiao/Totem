@@ -15,21 +15,41 @@
 #include "MultiLabelKNN.h"
 #include "OpenCVKNN.h"
 
-#define TEST_PATH		"I:/data/_test/"
-#define TRAIN_PATH		"I:/data/_train/"
-#define TRAIN_SIFT_PATH	"I:/data/sift/"
-#define TEST_PATH_SRC	"I:/data/test/"
-#define TRAIN_PATH_SRC	"I:/data/train/"
+// #define TEST_PATH		"I:/data/_test/"
+// #define TRAIN_PATH		"I:/data/_train/"
+// #define TRAIN_SIFT_PATH	"I:/data/sift/"
+// #define TEST_PATH_SRC	"I:/data/test/"
+// #define TRAIN_PATH_SRC	"I:/data/train/"
+// 
+// #define LABEL_FILE		"I:/data/labels.label"
+// #define TYPE_NAME		"I:/data/typename.txt"
+// #define SVM_MODEL_FILE	"I:/data/svm.xml"
+// #define SVM_MODEL_FILE2	"I:/data/svm2.xml"
+// #define SVM_MODEL_FILE_NORM	"I:/data/svm_normalize.xml"
+// #define SVM_MODEL_FILE_NORM2	"I:/data/svm_normalize2.xml"
+// #define SVM_BOW_FILE	"I:/data/bow.xml"
+// #define BOW_MAT_NAME	"bow"
+// #define SVM_PREDICT_LABEL "I:/data/predictlabel.xml"
 
-#define LABEL_FILE		"I:/data/labels.label"
+//#define USE_KNN
+
+
+#define TEST_PATH		"G:/data/68Data/test"
+#define TRAIN_PATH		"G:/data/68Data/train"
+#define TRAIN_SIFT_PATH	"I:/data/sift/"
+#define TEST_PATH_SRC	"G:/data/68Data/test/"
+#define TRAIN_PATH_SRC	"G:/data/68Data/train/"
+
+#define LABEL_FILE		"G:/data/68Data/label_map.txt"
 #define TYPE_NAME		"I:/data/typename.txt"
-#define SVM_MODEL_FILE	"I:/data/svm.xml"
-#define SVM_MODEL_FILE2	"I:/data/svm2.xml"
-#define SVM_MODEL_FILE_NORM	"I:/data/svm_normalize.xml"
-#define SVM_MODEL_FILE_NORM2	"I:/data/svm_normalize2.xml"
-#define SVM_BOW_FILE	"I:/data/bow.xml"
+#define SVM_MODEL_FILE	"G:/data/68Data/svm.xml"
+#define SVM_MODEL_FILE2	"G:/data/68Data/svm2.xml"
+#define SVM_MODEL_FILE_NORM	"G:/data/68Data/svm_normalize.xml"
+#define SVM_MODEL_FILE_NORM2	"G:/data/68Data/svm_normalize2.xml"
+#define SVM_BOW_FILE	"G:/data/68Data/bow.xml"
 #define BOW_MAT_NAME	"bow"
-#define SVM_PREDICT_LABEL "I:/data/predictlabel.xml"
+#define SVM_PREDICT_LABEL "G:/data/68Data/predictlabel.xml"
+
 
 AdaboostSVMProcessor::AdaboostSVMProcessor(DesignNet::DesignNetSpace *space, QObject *parent /*= 0*/)
 {
@@ -176,8 +196,77 @@ void normalizeFeature(cv::Mat &mat, cv::Mat &matMaxMin)
 bool AdaboostSVMProcessor::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
 //	prepareData();
-//	train();
-	test();
+ 	train();
+ 	test();
+ 	return true;
+	QStringList ls;
+	QStringList folderList;
+	folderList << QString::fromLocal8Bit("G:/data/68/");
+	QStringList classList;
+	QMultiMap<int, int> labelMap;
+	int iIndex = 0;
+	while (!folderList.empty())
+	{
+		QString folder = folderList.front();
+		folderList.pop_front();
+		classList << folder;
+
+		QDir dirSub(folder);
+		QFileInfoList imgList = dirSub.entryInfoList(ls, QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+		QFileInfoList::iterator itr = imgList.begin();
+		for(; itr != imgList.end(); itr++)
+		{
+			if (itr->isDir())
+			{
+				folderList.push_back(itr->absoluteFilePath());
+			}
+			else
+			{
+				QImage img;
+				img.load((*itr).absoluteFilePath());
+				img = img.scaled(320, 240, Qt::KeepAspectRatioByExpanding);
+				QString s = (*itr).fileName();
+				QString path = QString::fromLocal8Bit("G:/data/68Data/所有数据/");
+				QString f = path + tr("%1.bmp").arg(iIndex);
+				img.save(f);
+				labelMap.insert(classList.size() - 1, iIndex);
+				iIndex++;
+			}
+		}
+	}
+	classList.pop_front();
+	QFile file_labelName("G:/data/68Data/label_name.txt");
+	QFile file_labelMap("G:/data/68Data/label_map.txt");
+	QFile file_labelCount("G:/data/68Data/label_mapCount.txt");
+	file_labelName.open(QFile::WriteOnly);
+	QStringList::iterator itr = classList.begin();
+	QTextStream fs(&file_labelName);
+	int iCount = 1;
+	for (; itr != classList.end(); itr++)
+	{
+		fs << iCount++ << "   " << *itr << endl;
+	}
+	file_labelName.close();
+	file_labelCount.open(QFile::WriteOnly);
+	QTextStream fc(&file_labelCount);
+
+	file_labelMap.open(QFile::WriteOnly);
+	{
+		QList<int> labels = labelMap.uniqueKeys();
+		QTextStream fs(&file_labelMap);
+		for (int i = 0; i < labels.size(); i++)
+		{
+			QList<int> v = labelMap.values(labels.at(i));
+			fc << labels.at(i) << "  " << v.size() << endl;
+			for (int j = 0; j < v.size(); j++)
+			{
+				fs << labels.at(i) << "   " << v[j] << endl;
+			}
+			
+		}
+	}
+	file_labelMap.close();
+	file_labelCount.close();
 //	createBowSiftData();
 	return true;
 }
@@ -208,7 +297,7 @@ void AdaboostSVMProcessor::LoadLabel(QMap<int, int> &imgLabel)
 	{
 		QString str = s.readLine();
 		QTextStream sTemp(&str);
-		sTemp >> id >> iLabel;
+		sTemp >> iLabel >> id;
 		imgLabel[id] = iLabel;
 	}
 	fileLabel.close();
@@ -276,6 +365,7 @@ void AdaboostSVMProcessor::train()
 	QFileInfoList fileList = dir.entryInfoList(filters, QDir::Files);
 	
 	QMultiMap<int, QString> categoryLabels;
+	emit logout("start extract");
 	for (int i = 0; i < fileList.size(); i++)
 	{
 		QString filePath = fileList.at(i).filePath();
@@ -300,14 +390,12 @@ void AdaboostSVMProcessor::train()
 		colorTrain.push_back(clrF);
 		shapeTrain.push_back(shapeF);
 		textureTrain.push_back(glcmF);
-		cv::FileStorage fsfesture("I:/data/test.xml", cv::FileStorage::WRITE);
-		fsfesture << "minmax" << trainData;
-		fsfesture.release();
 	}
+	emit logout("finish extract");
 // 	trainData.convertTo(trainData, CV_32F);
   	cv::Mat matNormalize;
  	emit logout("normalizeFeature..");
- 	normalizeFeature(trainData, matNormalize);
+ 	normalizeFeature(m_textureTrain, matNormalize);
 	cv::FileStorage fsfesture(SVM_MODEL_FILE_NORM, cv::FileStorage::WRITE);
 	fsfesture << "minmax" << matNormalize;
 	fsfesture.release();
@@ -318,9 +406,11 @@ void AdaboostSVMProcessor::train()
  	normalizeFeature(textureTrain, matNormalize);
 // 	
 // 
+#ifndef USE_KNN
 	OpenCVLibSVM svm;
-	svm.train(trainData, labels, SVM_MODEL_FILE);
+	svm.train(m_textureTrain, labels, SVM_MODEL_FILE);
 	svm.crossValidation();
+#endif
 	return;
 // 	int *labelVoted = new int[svm.getClassCount()];
 // 	double *probility = new double[svm.getClassCount()];
@@ -428,7 +518,7 @@ void AdaboostSVMProcessor::test()
 	QMap<int, int> imgLabel;	// img: id, label
 	LoadLabel(imgLabel);
 	OpenCVLibSVM svm;
-	svm.loadModel();
+	svm.loadModel(SVM_MODEL_FILE);
 //	svm.crossValidation();
 	cv::FileStorage fsMinMax(SVM_MODEL_FILE_NORM, cv::FileStorage::READ);
 	cv::FileNode node = fsMinMax.root();
@@ -444,8 +534,14 @@ void AdaboostSVMProcessor::test()
 	QFileInfoList fileList = dir.entryInfoList(filters, QDir::Files);
 	double fSum = 0;
 	double fSum5 = 0;
+
+#ifdef USE_KNN
 	OpenCVKNN knn;
-//	knn.train(m_train, m_labelMat, 50);
+	knn.train(m_textureTrain, m_labelMat, 50);
+#endif
+	QFile fileError("G:/data/68Data/error.txt");
+	fileError.open(QFile::WriteOnly);
+	QTextStream s(&fileError);
 	for (int i = 0; i < fileList.size(); i++)
 	{
 		QString filePath = fileList.at(i).filePath();
@@ -458,12 +554,12 @@ void AdaboostSVMProcessor::test()
 		cv::Mat shapeF = f.extractShape2();
 		cv::Mat glcmF = f.extractGLCM();
 		cv::Mat F;
-		F.push_back(clrF.reshape(1, clrF.cols));
-		F.push_back(shapeF.reshape(1, shapeF.cols));
+//		F.push_back(clrF.reshape(1, clrF.cols));
+//		F.push_back(shapeF.reshape(1, shapeF.cols));
 		F.push_back(glcmF.reshape(1, glcmF.cols));
 		F = F.reshape(1, 1);
 		
-		for (int c = 0; c < F.cols; c++)
+		for (int c = 0; c < featureMinMax.cols; c++)
 		{
 			float fMin = featureMinMax.at<float>(0, c);
 			float fMax = featureMinMax.at<float>(1, c);
@@ -472,68 +568,16 @@ void AdaboostSVMProcessor::test()
 			else
 				F.at<float>(0, c) = (F.at<float>(0, c) - fMin) / (fMax - fMin);
 		}
-		
+
+#ifndef USE_KNN
+
 		int *labelVoted = new int[svm.getClassCount()];
 		double *probility = new double[svm.getClassCount()];
 		svm.predict_probility(F, labelVoted, probility);
-// 		cv::Mat matLabel;
-// 		knn.predict(F, matLabel);
-// 		
-// 		QList<int> vecLabel;
-// 		for (int i = 0; i < matLabel.cols; i++)
-// 			vecLabel.push_back(matLabel.at<float>(0, i));
-// 		QList<int> vecUsed;
-// 		while (vecLabel.size() > 0)
-// 		{
-// 			QMap<int, int> labelMap;
-// 			for (int i = 0; i < 10; i++)
-// 			{
-// 				if (vecLabel.size() - 1 < i)
-// 					break;
-// 				int temp = vecLabel[i];
-// 				if (!labelMap.contains(temp))
-// 					labelMap[temp] = 0;
-// 				else
-// 					labelMap[temp]++;
-// 			}
-// 
-// 			QMap<int, int>::iterator itr = labelMap.begin();
-// 			int iMax = 0;
-// 			int iIndex = -1;
-// 			while (itr != labelMap.end())
-// 			{
-// 				if (iMax < itr.value())
-// 				{
-// 					iMax = itr.value();
-// 					iIndex = itr.key();
-// 				}
-// 				itr++;
-// 			}
-// 			if (iIndex >= 0)
-// 				vecLabel.removeAll(iIndex);
-// 			vecUsed.push_back(iIndex);
-// 			if (vecUsed.size() >= 5)
-// 				break;
-// 		}
-// 		if (vecUsed.size() == 0)
-// 		{
-// 			continue;
-// 		}
-// 		else
-// 		{
-// 			if (vecUsed[0] == iLabel)
-// 				fSum++;
-// 			for (int i = 0; i < 5; i++)
-// 			{
-// 				if (vecUsed[i] == iLabel)
-// 				{
-// 					fSum5++;
-// 					break;
-// 				}
-// 			}
-// 		}
 		if (labelVoted[0] == iLabel)
 			fSum++;
+		else
+			s << filePath << endl;
 		emit logout(tr("%1 ------ %2").arg(labelVoted[0]).arg(iLabel));
 		for (int i = 0; i < 5; i++)
 		{
@@ -543,6 +587,66 @@ void AdaboostSVMProcessor::test()
 				break;
 			}
 		}
+#endif		
+#ifdef USE_KNN
+		cv::Mat matLabel;
+		knn.predict(F, matLabel);
+
+		QList<int> vecLabel;
+		for (int i = 0; i < matLabel.cols; i++)
+			vecLabel.push_back(matLabel.at<float>(0, i));
+		QList<int> vecUsed;
+		while (vecLabel.size() > 0)
+		{
+			QMap<int, int> labelMap;
+			for (int i = 0; i < 10; i++)
+			{
+				if (vecLabel.size() - 1 < i)
+					break;
+				int temp = vecLabel[i];
+				if (!labelMap.contains(temp))
+					labelMap[temp] = 0;
+				else
+					labelMap[temp]++;
+			}
+
+			QMap<int, int>::iterator itr = labelMap.begin();
+			int iMax = 0;
+			int iIndex = -1;
+			while (itr != labelMap.end())
+			{
+				if (iMax < itr.value())
+				{
+					iMax = itr.value();
+					iIndex = itr.key();
+				}
+				itr++;
+			}
+			if (iIndex >= 0)
+				vecLabel.removeAll(iIndex);
+			vecUsed.push_back(iIndex);
+			if (vecUsed.size() >= 5)
+				break;
+		}
+		if (vecUsed.size() == 0)
+		{
+			continue;
+		}
+		else
+		{
+			if (vecUsed[0] == iLabel)
+				fSum++;
+			for (int i = 0; i < 5; i++)
+			{
+				if (vecUsed[i] == iLabel)
+				{
+					fSum5++;
+					break;
+				}
+			}
+		}
+#endif
+
 //		cv::Mat labelF(1, 5, CV_32SC1);//		QSet<int> labelTrain;
 //		cv::Mat prob(1, 5, CV_32FC1);
 //		for (int i = 0; i < 5; i++)
@@ -610,6 +714,8 @@ void AdaboostSVMProcessor::test()
 // 		delete []labelVoted;
 // 		delete []probility;
 	}
+	fileError.close();
+
 	emit logout(tr("Top1 Accurrate %1%").arg(fSum / fileList.size() * 100));
 	emit logout(tr("Top5 Accurrate %1%").arg(fSum5 / fileList.size() * 100));
 }
