@@ -15,7 +15,7 @@
       <AdditionalIncludeDirectories>$(OPENCV_DIR)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opencv_core$(OPENCV_VERSION)d.lib;opencv_imgproc$(OPENCV_VERSION)d.lib;opencv_features2d$(OPENCV_VERSION)d.lib;opencv_highgui$(OPENCV_VERSION)d.lib;opencv_video$(OPENCV_VERSION)d.lib;opencv_objdetect$(OPENCV_VERSION)d.lib;opencv_contrib$(OPENCV_VERSION)d.lib;opencv_nonfree$(OPENCV_VERSION)d.lib;opencv_ml$(OPENCV_VERSION)d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core$(OPENCV_VERSION).lib;opencv_imgproc$(OPENCV_VERSION).lib;opencv_features2d$(OPENCV_VERSION).lib;opencv_highgui$(OPENCV_VERSION).lib;opencv_video$(OPENCV_VERSION).lib;opencv_objdetect$(OPENCV_VERSION).lib;opencv_contrib$(OPENCV_VERSION).lib;opencv_nonfree$(OPENCV_VERSION).lib;opencv_ml$(OPENCV_VERSION).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OPENCV_LIB);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference>

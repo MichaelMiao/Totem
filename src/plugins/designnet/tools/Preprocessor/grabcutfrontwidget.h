@@ -15,19 +15,32 @@ class Processor;
 }
 
 class GrabCutFrontWidget;
+class GrabCutLabel;
+struct GrabCutData
+{
+	cv::Mat m_srcMat;
+	cv::Mat m_mask;
+	cv::Mat m_foreground;
+	cv::Rect m_rc;
+};
 
 class ImageNode : public QGraphicsPixmapItem
 {
 
 public:
+	
+	enum ShowType{
+		SRC,
+		FORE,
+		BACK,
+		BIND,	// «∞æ∞”Î±≥æ∞ªÏ∫œ
+	};
 
-	ImageNode(GrabCutFrontWidget* pWidget);
+	ImageNode(GrabCutFrontWidget* pWidget, GrabCutData*	pData);
 	~ImageNode();
 
-	void setImage(cv::Mat src);
 	void setWidth(const int iWidth) { m_iWidth = iWidth; }
-
-	cv::Mat getForeground() { return m_foreground; }
+	void show(ImageNode::ShowType eType);
 
 protected:
 
@@ -37,16 +50,13 @@ protected:
 
 private:
 
-	cv::Mat		m_srcMat;
-	cv::Mat		m_mask;
-	cv::Mat		m_fgModel;
-	cv::Mat		m_bgModel;
-	cv::Mat		m_foreground;
 	int			m_iWidth;
 
 	cv::Point2i m_ptOld;
 
 	GrabCutFrontWidget* m_pWidget;
+	GrabCutData*		m_pData;
+	ImageNode::ShowType	m_eType;
 };
 
 class GrabCutLabel : public QGraphicsView
@@ -54,11 +64,15 @@ class GrabCutLabel : public QGraphicsView
 	Q_OBJECT
 public:
 
-	GrabCutLabel(GrabCutFrontWidget *pParent);
+	
+	GrabCutLabel(GrabCutFrontWidget *pParent, GrabCutData* pData);
 	~GrabCutLabel() {}
 
 	ImageNode &getNode() { return m_Item; }
-	cv::Mat getMat() { return m_srcMat; }
+
+	void refresh();
+
+	void show(ImageNode::ShowType eType);
 
 protected:
 
@@ -71,14 +85,16 @@ protected:
 
 	QSize sizeHint() const;
 	void scaleView(qreal scaleFactor);
+
 private:
 
-	cv::Mat m_srcMat;
-	QImage	m_srcImage;
-	ImageNode m_Item;
+	QImage			m_srcImage;
+	ImageNode		m_Item;
+	GrabCutData*	m_pData;
+	GrabCutFrontWidget* m_pWidget;
 };
 
-
+class GrabCutThread;
 class GrabCutFrontWidget : public DesignNet::ProcessorFrontWidget
 {
 	Q_OBJECT
@@ -92,16 +108,22 @@ public:
 	bool isShowForeground();
 	bool isShowBackground();
 
+	void setImage(QString strPath);
+
 public slots:
 
 	void onValueChanged();
 	void onCheckChanged();
 	void onBtnClicked();
 
+	void onProcessFinished();
+
 private:
 
 	Ui_Form	ui;
-	GrabCutLabel m_label;
+	GrabCutLabel		m_label;
+	GrabCutThread*		m_pThread;
+	GrabCutData			m_data;
 };
 
 #endif // GRABCUTFRONTWIDGET_H

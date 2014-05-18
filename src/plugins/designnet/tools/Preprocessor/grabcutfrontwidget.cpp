@@ -28,8 +28,40 @@ using namespace DesignNet;
 
 //////////////////////////////////////////////////////////////////////////
 
+class GrabCutThread : public QThread
+{
+public:
 
-ImageNode::ImageNode(GrabCutFrontWidget* pWidget) : m_pWidget(pWidget)
+	GrabCutThread(QObject *parent) : QThread(parent) {}
+	~GrabCutThread() { }
+
+	void startProcess(GrabCutData* pData)
+	{
+		m_pData = pData;
+		start();
+	}
+
+	void run() override
+	{
+		cv::Rect rc(0, 0, m_pData->m_srcMat.rows, m_pData->m_srcMat.cols);
+		cv::Mat matBack;
+		cv::Mat matFore;
+		cv::grabCut(m_pData->m_srcMat, m_pData->m_mask, rc, cv::Mat(), cv::Mat(), 5, cv::GC_INIT_WITH_MASK);
+		m_pData->m_foreground = cv::Mat(m_pData->m_mask.size(), CV_8UC3, cv::Scalar(0));
+		cv::compare(m_pData->m_mask, cv::GC_PR_FGD, matFore, cv::CMP_EQ);
+		m_pData->m_srcMat.copyTo(m_pData->m_foreground, matFore);
+		cv::compare(m_pData->m_mask, cv::GC_FGD, matFore, cv::CMP_EQ) ;
+		m_pData->m_srcMat.copyTo(m_pData->m_foreground, matFore);
+		cv::imwrite("D:/miao1.bmp", m_pData->m_foreground);
+	}
+
+private:
+	
+	GrabCutData* m_pData;
+};
+
+ImageNode::ImageNode(GrabCutFrontWidget* pWidget, GrabCutData*	pData)
+	: m_pWidget(pWidget), m_pData(pData)
 {
 	setAcceptHoverEvents(true);
 	m_iWidth = 2;
@@ -40,26 +72,68 @@ ImageNode::~ImageNode()
 
 }
 
-void ImageNode::setImage(cv::Mat src)
+void ImageNode::show(ImageNode::ShowType eType)
 {
-	m_srcMat = src;
-	m_mask = cv::Mat::zeros(m_srcMat.rows, m_srcMat.cols, CV_8UC1);
-	m_mask = cv::Scalar(cv::GC_PR_BGD);
-	cv::Rect rc(m_srcMat.rows / 4, m_srcMat.cols / 4, m_srcMat.cols / 2, m_srcMat.rows / 2);
-	cv::Mat roi(m_mask, rc);
-	roi = cv::Scalar(cv::GC_PR_FGD);
-	m_fgModel = cv::Mat();
-	m_foreground = cv::Mat();
-	setPixmap(QPixmap::fromImage(Utils::OpenCVHelper::Mat2QImage(m_srcMat)));
+	m_eType = eType;
+	cv::Mat m;
+	switch(eType)
+	{
+	case SRC:
+		m = m_pData->m_srcMat;
+		break;
+	case FORE:
+		m = m_pData->m_foreground;
+		break;
+	default:
+		;
+	}
+	if (eType == ImageNode::BIND)
+	{
+		QImage img = Utils::OpenCVHelper::Mat2QImage(m_pData->m_srcMat);
+		img = img.convertToFormat(QImage::Format_ARGB32);
+
+		int width = img.width();
+		int height = img.height();
+		uchar *line = img.bits();
+		uchar *pixel = 0;
+		for (int y = 0; y < height; y++)
+		{
+			pixel = line;
+			for (int x = 0; x < width; x++)
+			{
+				uchar uTemp = m_pData->m_mask.at<uchar>(y, x);
+				*(pixel + 3) = (uTemp == cv::GC_PR_FGD || uTemp == cv::GC_FGD) ? 255 : 125;
+				pixel += 4;
+			}
+			line += img.bytesPerLine();
+		}
+
+		for(int y = 0; y < img.height(); y++)
+		{
+			for(int x = 0;x < img.width(); x++)
+			{
+				uchar uTemp = m_pData->m_mask.at<uchar>(y, x);
+//				QRgb rgb = img.pixel(y, x);
+//				img.setPixel(y, x, qRgba(qRed(rgb), qGreen(rgb), qBlue(rgb),
+//					(uTemp == cv::GC_PR_FGD || uTemp == cv::GC_FGD) ? 255 : 125));
+			}
+		}
+		setPixmap(QPixmap::fromImage(img));
+	}
+	else
+	{
+		setPixmap(QPixmap::fromImage(Utils::OpenCVHelper::Mat2QImage(m)));
+	}
 }
 
 void ImageNode::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
 	if (event->buttons() & Qt::LeftButton)
 	{
+		cv::Mat &mask = m_pData->m_mask;
 		QPoint pt = event->pos().toPoint();
 		cv::Point2i p(pt.x(), pt.y());
-		cv::line(m_mask, p, m_ptOld, m_pWidget->isDrawingForeground() ? cv::GC_FGD : cv::GC_BGD, m_iWidth);
+		cv::line(mask, p, m_ptOld, m_pWidget->isDrawingForeground() ? cv::GC_FGD : cv::GC_BGD, m_iWidth);
 		QPixmap px = pixmap();
 		QPainter painter(&px);
 		QColor clr = Qt::red;
@@ -83,7 +157,6 @@ void ImageNode::mousePressEvent(QGraphicsSceneMouseEvent* event)
 		QPoint pt = event->pos().toPoint();
 		m_ptOld.x = pt.x();
 		m_ptOld.y = pt.y();
-		grabMouse();
 	}
 }
 
@@ -91,33 +164,15 @@ void ImageNode::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
 	if (event->button() == Qt::LeftButton)
 	{
-		ungrabMouse();
-		cv::Rect rc(0, 0, m_srcMat.rows, m_srcMat.cols);
-		cv::grabCut(m_srcMat, m_mask, rc, m_fgModel, m_bgModel, 1, cv::GC_INIT_WITH_MASK);
-		cv::Mat matOut;
-		cv::Mat matFore;
-		cv::compare(m_mask, cv::GC_PR_FGD, matOut, cv::CMP_EQ) ;
-		cv::compare(m_mask, cv::GC_FGD, matFore, cv::CMP_EQ) ;  
-		m_foreground = cv::Mat(m_mask.size(), CV_8UC3, cv::Scalar(0));
-		m_srcMat.copyTo(m_foreground, matOut);
-		m_srcMat.copyTo(m_foreground, matFore);
-		QImage img = Utils::OpenCVHelper::Mat2QImage(m_srcMat);
-		img = img.convertToFormat(QImage::Format_ARGB32);
-		for(int y = 0; y < img.height(); y++)
-		{
-			for(int x = 0;x < img.width(); x++)
-			{
-				QRgb rgb = img.pixel(x, y);
-				img.setPixel(x, y, qRgba(qRed(rgb), qGreen(rgb), qBlue(rgb), (matFore.at<uchar>(y, x) == 0 && matOut.at<uchar>(y, x) == 0) ? 0 : 255));
-			}
-		}
-		setPixmap(QPixmap::fromImage(img));
+		m_ptOld.x = 0;
+		m_ptOld.y = 0;
 	}
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-GrabCutLabel::GrabCutLabel(GrabCutFrontWidget *pParent) : QGraphicsView(pParent), m_Item(pParent)
+GrabCutLabel::GrabCutLabel(GrabCutFrontWidget *pParent, GrabCutData* pData) : QGraphicsView(pParent),
+	m_pWidget(pParent), m_Item(pParent, pData), m_pData(pData)
 {
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
 	setAcceptDrops(true);
@@ -164,8 +219,7 @@ void GrabCutLabel::dropEvent(QDropEvent *e)
 			if (urlList.at(i).isLocalFile())
 			{
 				text = urlList.at(i).toLocalFile();
-				m_srcMat = cv::imread(text.toLocal8Bit().data());
-				m_Item.setImage(m_srcMat);
+				m_pWidget->setImage(text);
 				break;
 			}
 		}
@@ -187,10 +241,19 @@ void GrabCutLabel::scaleView(qreal scaleFactor)
 	scale(scaleFactor, scaleFactor);
 }
 
+void GrabCutLabel::refresh()
+{
+}
+
+void GrabCutLabel::show(ImageNode::ShowType eType)
+{
+	m_Item.show(eType);
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 GrabCutFrontWidget::GrabCutFrontWidget(Processor* processor, QWidget *parent)
-	: ProcessorFrontWidget(processor), m_label(this)
+	: ProcessorFrontWidget(processor), m_label(this, &m_data)
 {
 	ui.setupUi(this);
 	ui.horizontalLayout->addWidget(&m_label);
@@ -198,7 +261,11 @@ GrabCutFrontWidget::GrabCutFrontWidget(Processor* processor, QWidget *parent)
 	connect(ui.horizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(onValueChanged()));
 	connect(ui.cbBackground, SIGNAL(stateChanged(int)), this, SLOT(onCheckChanged()));
 	connect(ui.cbForeground, SIGNAL(stateChanged(int)), this, SLOT(onCheckChanged()));
-	connect(ui.btnGo, SIGNAL(clicked()), this, SLOT(onBtnClicked()));
+	connect(ui.btnFragment, SIGNAL(clicked()), this, SLOT(onBtnClicked()));
+	connect(ui.btnRecognize, SIGNAL(clicked()), this, SLOT(onBtnClicked()));
+
+	m_pThread = new GrabCutThread(this);
+	connect(m_pThread, SIGNAL(finished()), this, SLOT(onProcessFinished()));
 }
 
 GrabCutFrontWidget::~GrabCutFrontWidget()
@@ -226,6 +293,13 @@ bool GrabCutFrontWidget::isShowBackground()
 	return ui.cbBackground->isChecked();
 }
 
+void GrabCutFrontWidget::setImage(QString strPath)
+{
+	m_data.m_srcMat = cv::imread(strPath.toLocal8Bit().data());
+	m_data.m_mask = cv::Mat(m_data.m_srcMat.rows, m_data.m_srcMat.cols, CV_8UC1, cv::Scalar(cv::GC_PR_FGD));
+	m_label.show(ImageNode::SRC);
+}
+
 void GrabCutFrontWidget::onCheckChanged()
 {
 	m_label.getNode().update();
@@ -233,11 +307,33 @@ void GrabCutFrontWidget::onCheckChanged()
 
 void GrabCutFrontWidget::onBtnClicked()
 {
-	GrabCutProcessor* p = (GrabCutProcessor*)getProcessor();
-	bool bRet = p->space()->prepareProcess();
-	if (bRet == false || m_label.getMat().empty())
-		return;
+	if (sender() == ui.btnFragment)	// 分割前景
+	{
+		m_pThread->startProcess(&m_data);
+	}
+	else if (sender() == ui.btnRecognize)	// 识别
+	{
+// 		GrabCutProcessor* p = (GrabCutProcessor*)getProcessor();
+// 		bool bRet = p->space()->prepareProcess();
+// 		if (bRet == false || m_label.getMat().empty())
+// 			return;
+// 
+// 		p->setOutputValue(m_label.m_maskMat);
+// 		p->start();
+	}
+}
 
-	p->setOutputValue(m_label.getNode().getForeground());
-	p->start();
+void GrabCutFrontWidget::onProcessFinished()
+{
+	m_label.show(ImageNode::BIND);
+// 	QImage img = Utils::OpenCVHelper::Mat2QImage(m_srcMat);
+// 	img = img.convertToFormat(QImage::Format_ARGB32);
+// 	for(int y = 0; y < img.height(); y++)
+// 	{
+// 		for(int x = 0;x < img.width(); x++)
+// 		{
+// 			QRgb rgb = img.pixel(x, y);
+// 			img.setPixel(x, y, qRgba(qRed(rgb), qGreen(rgb), qBlue(rgb), (matFore.at<uchar>(y, x) == 0 && matOut.at<uchar>(y, x) == 0) ? 0 : 255));
+// 		}
+// 	}
 }

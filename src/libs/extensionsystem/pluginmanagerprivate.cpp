@@ -218,7 +218,7 @@ void PluginManagerPrivate::loadPlugin(PluginSpec *spec, PluginSpec::State destSt
         profilingReport(">loadLibrary", spec);
         if(!spec->d->loadLibrary())
 		{
-			QMessageBox::warning(NULL, spec->errorString(), spec->filePath(), QMessageBox::Yes);
+			QMessageBox::warning(NULL, spec->filePath(), spec->errorString(), QMessageBox::Yes);
 		}
         profilingReport("<loadLibrary", spec);
         break;

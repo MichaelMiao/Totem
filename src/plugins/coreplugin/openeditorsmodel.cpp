@@ -7,8 +7,10 @@
 #include <QFileInfo>
 #include <QDir>
 namespace Core{
-struct OpenEditorsModelPrivate
+class OpenEditorsModelPrivate
 {
+public:
+
     OpenEditorsModelPrivate();
 
     const QIcon m_lockedIcon;

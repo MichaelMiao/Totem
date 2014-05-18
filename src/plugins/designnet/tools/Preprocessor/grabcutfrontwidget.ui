@@ -125,9 +125,16 @@
          </layout>
         </item>
         <item>
-         <widget class="QPushButton" name="btnGo">
+         <widget class="QPushButton" name="btnFragment">
           <property name="text">
-           <string>Go</string>
+           <string>Fragment</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnRecognize">
+          <property name="text">
+           <string>Recognize</string>
           </property>
          </widget>
         </item>
