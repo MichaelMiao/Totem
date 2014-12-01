@@ -222,15 +222,9 @@
     <CustomBuild Include="basepopupwidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="basepopupwidget_p.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="collapsiblebutton.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="customui_global.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="dockwindow.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -240,9 +234,6 @@
     <CustomBuild Include="filterlineedit.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="flowlayout.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="iconbutton.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -261,9 +252,6 @@
     <CustomBuild Include="uipopupwidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="uipopupwidget_p.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="wizard.h">
       <Filter>Source Files</Filter>
     </CustomBuild>
@@ -288,6 +276,48 @@
     <CustomBuild Include="styledbar.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_filewizardpage.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="basepopupwidget_p.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="customui_global.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="flowlayout.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="uipopupwidget_p.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\add_file.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\add_folder.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\delete.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\editclear.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\lt.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\rt.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\x_down.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\x_hover.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\x_normal.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="debug\moc_collapsiblebutton.cpp">
@@ -301,40 +331,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="media\add_file.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\add_folder.png">
-      <Filter>Resource Files</Filter>
-    </None>
     <CustomBuild Include="customui.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <None Include="media\delete.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\editclear.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\lt.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\rt.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\x_down.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\x_hover.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\x_normal.png">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_filewizardpage.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

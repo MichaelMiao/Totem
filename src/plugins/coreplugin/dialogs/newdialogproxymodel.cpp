@@ -125,8 +125,9 @@ QVariant ItemProxyModel::data( const QModelIndex & index, int role /*= Qt::Displ
 
 void ItemProxyModel::setRootIndex( const QModelIndex &root )
 {
+	beginResetModel();
 	m_wizards = m_model->wizards(root);
-	reset();
+	endResetModel();
 }
 
 IWizard * ItemProxyModel::wizard(const QModelIndex &index) const

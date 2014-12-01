@@ -3,7 +3,6 @@
 #include <QPaintEvent>
 #include <QPainter>
 #include <QApplication>
-#include <QCleanlooksStyle>
 namespace CustomUI{
 
 class CollapsibleButtonPrivate
@@ -358,14 +357,7 @@ void CollapsibleButton::paintEvent(QPaintEvent *_event)
     fopt.init(this);
     // HACK: on some styles, the frame doesn't exactly touch the button.
     // this is because the button has some kind of extra border.
-    if (qobject_cast<QCleanlooksStyle*>(this->style()) != 0)
-    {
-        fopt.rect.setTop(buttonHeight - 1);
-    }
-    else
-    {
-        fopt.rect.setTop(buttonHeight);
-    }
+	fopt.rect.setTop(buttonHeight);
     fopt.frameShape = d->m_contentsFrameShape;
     switch (d->m_contentsFrameShadow)
     {

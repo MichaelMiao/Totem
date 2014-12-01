@@ -13,7 +13,6 @@
 #include <QStatusBar>
 #include <QStackedLayout>
 #include <QPalette>
-#include <QWindowsStyle>
 #include <QPushButton>
 #include <QToolBar>
 namespace Core{
@@ -50,7 +49,6 @@ ModeTabBar::ModeTabBar(QWidget *parent)
     m_hoverIndex = -1;
     m_currentIndex = -1;
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-    setStyle(new QWindowsStyle);
     setMinimumWidth(qMax(2 * m_rounding, 40));
     setAttribute(Qt::WA_Hover, true);
     setFocusPolicy(Qt::NoFocus);

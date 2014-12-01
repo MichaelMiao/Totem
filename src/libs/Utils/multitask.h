@@ -40,7 +40,7 @@
 #include <QList>
 #include <QEventLoop>
 #include <QFutureWatcher>
-#include <QtConcurrentRun>
+#include <QtConcurrent/QtConcurrentRun>
 #include <QThreadPool>
 
 #include <QtDebug>

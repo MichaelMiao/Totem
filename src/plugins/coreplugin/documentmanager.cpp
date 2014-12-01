@@ -50,8 +50,10 @@ struct FileState
     FileStateItem expected;
 };
 
-struct DocumentManagerPrivate
+class DocumentManagerPrivate
 {
+public:
+
     explicit DocumentManagerPrivate(QMainWindow *mw);
     QFileSystemWatcher *fileWatcher();
 

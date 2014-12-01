@@ -63,7 +63,7 @@ QtSingleApplication::QtSingleApplication(const QString &appId, int &argc, char *
 }
 
 
-QtSingleApplication::QtSingleApplication(int &argc, char **argv, Type type)
+QtSingleApplication::QtSingleApplication(int &argc, char **argv, int type)
     : QApplication(argc, argv, type)
 {
     sysInit();

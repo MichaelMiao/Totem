@@ -175,7 +175,7 @@ QString PluginManager::fileExtension() const
 
 void PluginManager::remoteArguments(const QString &serializedArguments)
 {
-
+	Q_UNUSED(serializedArguments)
 }
 
 void PluginManager::shutdown()

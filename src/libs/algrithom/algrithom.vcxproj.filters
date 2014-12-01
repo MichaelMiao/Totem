@@ -30,11 +30,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="algrithom.h">
+    <CustomBuild Include="algrithom.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="algrithom_global.h">
+    </CustomBuild>
+    <CustomBuild Include="algrithom_global.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
+    </CustomBuild>
   </ItemGroup>
 </Project>

@@ -33,4 +33,3 @@ IPlugin::ShutdownFlag WelcomePlugin::aboutToShutdown()
 }
 
 }
-Q_EXPORT_PLUGIN2(Welcome::WelcomePlugin, Welcome::WelcomePlugin)

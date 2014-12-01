@@ -27,8 +27,8 @@ PluginView::PluginView(PluginManager *pm, QWidget *parent) :
 {
     m_ui->setupUi(this);
     QHeaderView *header = m_ui->categoryWidget->header();
-    header->setResizeMode(0, QHeaderView::ResizeToContents);
-    header->setResizeMode(2, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+	header->setSectionResizeMode(2, QHeaderView::ResizeToContents);
 
     m_ui->categoryWidget->setColumnWidth(1, 40);
 

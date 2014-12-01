@@ -94,14 +94,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="graphicsui_global.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\totem_gui_pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="arrowlinkcontrolitem.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -118,6 +110,12 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="textanimationblock.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\totem_gui_pch.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="graphicsui_global.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

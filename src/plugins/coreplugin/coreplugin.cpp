@@ -62,5 +62,3 @@ ExtensionSystem::IPlugin::ShutdownFlag CorePlugin::aboutToShutdown()
 void CorePlugin::remoteCommand(const QStringList &, const QStringList &args)
 {
 }
-
-Q_EXPORT_PLUGIN(CorePlugin)

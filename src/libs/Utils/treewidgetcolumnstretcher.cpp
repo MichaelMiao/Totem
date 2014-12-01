@@ -22,18 +22,18 @@ bool TreeWidgetColumnStretcher::eventFilter(QObject *obj, QEvent *ev)
         {
             QHeaderView *hv = qobject_cast<QHeaderView*>(obj);
             for (int i = 0; i < hv->count(); ++i)
-                hv->setResizeMode(i, QHeaderView::Interactive);
+				hv->setSectionResizeMode(i, QHeaderView::Interactive);
         }
         else if (ev->type() == QEvent::Hide)
         {
             QHeaderView *hv = qobject_cast<QHeaderView*>(obj);
             for (int i = 0; i < hv->count(); ++i)
-                hv->setResizeMode(i, i == m_columnToStretch ? QHeaderView::Stretch : QHeaderView::ResizeToContents);
+				hv->setSectionResizeMode(i, i == m_columnToStretch ? QHeaderView::Stretch : QHeaderView::ResizeToContents);
         }
         else if (ev->type() == QEvent::Resize)
         {
             QHeaderView *hv = qobject_cast<QHeaderView*>(obj);
-            if (hv->resizeMode(m_columnToStretch) == QHeaderView::Interactive)
+            if (hv->sectionResizeMode(m_columnToStretch) == QHeaderView::Interactive)
             {
                 QResizeEvent *re = static_cast<QResizeEvent*>(ev);
                 int diff = re->size().width() - re->oldSize().width() ;

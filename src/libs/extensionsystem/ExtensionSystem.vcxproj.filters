@@ -170,24 +170,12 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="extensionsystem_global.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="futureprogress.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="invoker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="iplugin.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="ipluginprivate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="plugincollection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="plugindetailsview.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -200,9 +188,6 @@
     <CustomBuild Include="pluginmanagerprivate.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="pluginspec.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="pluginspecprivate.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -218,15 +203,30 @@
     <CustomBuild Include="progressmanagerprivate.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="GeneratedFiles\ui_plugindetailsview.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_pluginerrorview.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_pluginview.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
+    <CustomBuild Include="extensionsystem_global.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="invoker.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ipluginprivate.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="plugincollection.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="pluginspec.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\error.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\notloaded.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\ok.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\totem_gui_pch.h.cpp">
@@ -249,17 +249,17 @@
     <CustomBuild Include="Release\futureprogress.moc">
       <Filter>Generated Files\Release</Filter>
     </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_plugindetailsview.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_pluginerrorview.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_pluginview.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="images\error.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\notloaded.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\ok.png">
-      <Filter>Resource Files</Filter>
-    </None>
     <CustomBuild Include="pluginview.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>

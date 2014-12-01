@@ -4,6 +4,7 @@
 #include "extensionsystem_global.h"
 
 #include <QObject>
+#include "qobject.h"
 
 namespace ExtensionSystem {
 
@@ -50,5 +51,7 @@ private:
 };
 
 } // namespace ExtensionSystem
+
+Q_DECLARE_INTERFACE(ExtensionSystem::IPlugin, "org.qt-project.Qt.Examples.PlugAndPaint.FilterInterface")
 
 #endif // IPLUGIN_H

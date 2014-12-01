@@ -17,7 +17,7 @@
 #include <QDesktopServices>
 #include <QTranslator>
 #include <QFile>
-#include <QtConcurrentRun>
+#include <QtConcurrent/QtConcurrentRun>
 #include <QMetaObject>
 
 const char appNameC[] = "Totem"; //!< 应用程序名称
@@ -76,7 +76,7 @@ static inline QStringList getPluginPaths()
     pluginPath += QLatin1Char('/');
     pluginPath += QLatin1String("plugins");
     rc.push_back(pluginPath);
-    pluginPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+	pluginPath = QStandardPaths::standardLocations(QStandardPaths::DataLocation).at(0);
     pluginPath += QLatin1Char('/')
             + QLatin1String(Core::Constants::TOTEM_SETTINGSVARIANT_STR)
             + QLatin1Char('/');

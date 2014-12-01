@@ -97,26 +97,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_app.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="app_version.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_pluginloader.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\totem_gui_pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\qtlockedfile\qtlockedfile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="app.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
@@ -141,11 +121,27 @@
     <CustomBuild Include="..\shared\qtsingleapplication\qtsinglecoreapplication.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="totem.ico" />
+    <CustomBuild Include="..\shared\qtlockedfile\qtlockedfile.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\shared\totem_gui_pch.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="app_version.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_app.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_pluginloader.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="totem.ico" />
   </ItemGroup>
 </Project>

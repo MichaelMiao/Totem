@@ -479,12 +479,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="core_global.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="coreconstants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="coreplugin.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -512,9 +506,6 @@
     <CustomBuild Include="icorelistener.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="id.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="idocument.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -548,9 +539,6 @@
     <CustomBuild Include="messageoutputwindow.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="minisplitter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <CustomBuild Include="modemanager.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -608,15 +596,54 @@
     <CustomBuild Include="actionmanager\commandprivate.h">
       <Filter>Header Files\actionmanager</Filter>
     </CustomBuild>
-    <ClInclude Include="settingsdatabase.h">
-      <Filter>Header Files\dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_newdialog.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="generatedfile.h">
+    <CustomBuild Include="coreconstants.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
+    </CustomBuild>
+    <CustomBuild Include="generatedfile.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="id.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="minisplitter.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="settingsdatabase.h">
+      <Filter>Header Files\dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\about-totem.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\category_core.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\clear.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\close.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\document-new.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\edit-clear.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\go-down.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\go-up.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\mode_edit.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\option.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="images\stock-plugin-16.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="debug\moc_coreplugin.cpp">
@@ -681,52 +708,23 @@
     <CustomBuild Include="dialogs\newdialogproxymodel.h">
       <Filter>Header Files\dialogs</Filter>
     </CustomBuild>
+    <CustomBuild Include="Core.pluginspec" />
+    <CustomBuild Include="GeneratedFiles\ui_commandmappings.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_newdialog.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_saveitemsdialog.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="core_global.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="images\about-totem.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\category_core.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\clear.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\close.png">
-      <Filter>Resource Files</Filter>
-    </None>
     <CustomBuild Include="core.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <None Include="images\document-new.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\edit-clear.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\go-down.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\go-up.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\mode_edit.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\option.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\stock-plugin-16.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Core.pluginspec" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_commandmappings.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_saveitemsdialog.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

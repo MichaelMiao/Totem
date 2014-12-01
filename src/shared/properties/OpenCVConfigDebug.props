@@ -2,9 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <OPENCV_DIR>F:\SDKs\opencv247\buildx86\install\</OPENCV_DIR>
-    <OPENCV_VERSION>247</OPENCV_VERSION>
-    <OPENCV_LIB>F:\SDKs\opencv247\buildx86\lib\Debug\</OPENCV_LIB>
+    <OPENCV_DIR>D:\SDKs\opencv\build\</OPENCV_DIR>
+    <OPENCV_VERSION>300</OPENCV_VERSION>
+    <OPENCV_LIB>D:\SDKs\opencv\build\lib\Debug\</OPENCV_LIB>
   </PropertyGroup>
   <PropertyGroup>
     <LinkIncremental>true</LinkIncremental>
@@ -16,7 +16,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(OPENCV_LIB);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_core$(OPENCV_VERSION)d.lib;opencv_imgproc$(OPENCV_VERSION)d.lib;opencv_features2d$(OPENCV_VERSION)d.lib;opencv_highgui$(OPENCV_VERSION)d.lib;opencv_video$(OPENCV_VERSION)d.lib;opencv_objdetect$(OPENCV_VERSION)d.lib;opencv_contrib$(OPENCV_VERSION)d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world300d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>

@@ -12,6 +12,9 @@ class MainWindow;
 class CorePlugin : public ExtensionSystem::IPlugin
 {
     Q_OBJECT
+	Q_PLUGIN_METADATA(IID "com.michaelmiao.totem.core")
+	Q_INTERFACES(ExtensionSystem::IPlugin)
+
 public:
     CorePlugin();
     ~CorePlugin();
