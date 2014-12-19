@@ -5,7 +5,7 @@
   <PropertyGroup>
     <OutDir>$(Configuration)</OutDir>
     <IntDir>$(Platform)\$(Configuration)</IntDir>
-    <TargetName>$(ProjectName)d</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
     <EnableManagedIncrementalBuild>true</EnableManagedIncrementalBuild>
     <LinkIncremental>true</LinkIncremental>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>

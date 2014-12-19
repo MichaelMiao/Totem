@@ -245,3 +245,14 @@ void FancyLineEdit::updateButtonPositions()
     }
 }
 }
+
+
+
+void AAA::func()
+{}
+
+CUSTOMUI_EXPORT int testfunc()
+{
+	return 100;
+}
+

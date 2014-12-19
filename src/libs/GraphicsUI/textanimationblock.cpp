@@ -1,3 +1,4 @@
+#include "totem_gui_pch.h"
 #include "textanimationblock.h"
 #include <QPropertyAnimation>
 #include <QPainter>

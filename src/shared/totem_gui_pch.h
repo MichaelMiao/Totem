@@ -12,3 +12,4 @@
 #include <QPixmap>
 #include <QStyle>
 #include <QWidget>
+#include <QMap>

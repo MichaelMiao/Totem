@@ -1,3 +1,4 @@
+#include "totem_gui_pch.h"
 #include "arrowlinkitem.h"
 #include "arrowlinkcontrolitem.h"
 #include <QPainter>

@@ -1,3 +1,4 @@
+#include "totem_gui_pch.h"
 #include "graphicsautoshowhideitem.h"
 
 #include <QParallelAnimationGroup>

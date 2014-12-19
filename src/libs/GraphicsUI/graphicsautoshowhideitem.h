@@ -46,9 +46,12 @@ public:
 
     void setSize(QSize size){m_size = size;}
     QSize size(){return m_size;}
+
 signals:
     void clicked();
+
 protected:
+
     bool    m_autoHide;                 //!< 是否自动隐藏
     int     m_iFadeSpeed;               //!< 淡入淡出速度，默认60ms
     float   m_iconOpacity;              //!< 图标透明度(0~1)

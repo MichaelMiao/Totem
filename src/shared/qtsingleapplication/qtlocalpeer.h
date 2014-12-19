@@ -30,7 +30,7 @@
 **
 **************************************************************************/
 
-#include "qtlockedfile.h"
+#include "qtlockedfile/qtlockedfile.h"
 
 #include <QLocalServer>
 #include <QLocalSocket>
