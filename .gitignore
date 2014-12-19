@@ -50,3 +50,4 @@ UpgradeLog*.XML
 GeneratedFiles/
 *.exp
 *.jpg
+Win32/
