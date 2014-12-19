@@ -49,3 +49,4 @@ UpgradeLog*.XML
 # Qt
 GeneratedFiles/
 *.exp
+*.jpg
