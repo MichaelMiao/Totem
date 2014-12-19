@@ -145,7 +145,8 @@ bool ToolTipGraphicsItem::topmost() const
 void ToolTipGraphicsItem::setData(QVariant v)
 {
 	prepareGeometryChange();
-	d->m_customWidget->setVisible(true);
+	if (d->m_customWidget)
+		d->m_customWidget->setVisible(true);
     update();
 }
 

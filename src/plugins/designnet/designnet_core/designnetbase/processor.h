@@ -87,6 +87,7 @@ public:
 	virtual ProcessorFrontWidget* processorFrontWidget() { return 0; }
 
 	void waitForFinish();
+	void waitChildrenFinished();
 	ProcessResult result() { return m_watcher.result(); }
 
 	int indegree(QList<Processor*> exclusions = QList<Processor*>()) const; //!< 计算入度
@@ -156,9 +157,13 @@ public:
 	bool isConnectTo(Processor* pChild);
 	void detach();
 
-	bool isDataDirty() { return m_bDataDirty; }
+	bool isDataDirty();
 
 	bool isResizableInput() { return m_bResizableInput; }
+
+
+	void notifyDataWillChange();	//!< 通知数据有变化
+	void notifyProcess();			//!< 通知处理器处理
 
 	QReadWriteLock m_workingLock;
 
@@ -190,8 +195,7 @@ public slots:
 
 protected:
 
-	void notifyDataWillChange();	//!< 通知数据有变化
-	void notifyProcess();			//!< 通知处理器处理
+	
 	virtual void onNotifyDataChanged();
 	virtual void onNotifyProcess();
 	virtual void onChildProcessorFinish(Processor* p);

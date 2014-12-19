@@ -39,7 +39,7 @@ bool Port::connect(Port *port)
 	if (!bConnected)
 	{
 		QObject::connect(port->processor(), SIGNAL(childProcessFinished()),
-			m_processor, SLOT(onChildProcessFinished()));
+			m_processor, SLOT(onChildProcessFinished()), Qt::QueuedConnection);
 		emit connectPort(this, port);
 		emit m_processor->connected(m_processor, port->processor());
 	}

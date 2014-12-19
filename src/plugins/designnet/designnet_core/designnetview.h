@@ -34,6 +34,7 @@ class DesignNetView : public QGraphicsView
 	Q_OBJECT
 
 public:
+
 	DesignNetView(DesignNetSpace *space, QWidget *parent = 0);
 	virtual ~DesignNetView();
 	void setEditState(EditState e);
@@ -52,6 +53,8 @@ public:
 
 	ProcessorGraphicsBlock *getGraphicsProcessor(const int &id);
 	PortItem*	getPortItem(Port* port);
+
+	void relayout();
 
 signals:
 	void showAvailiableData(Processor* processor);

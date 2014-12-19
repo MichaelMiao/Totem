@@ -45,9 +45,13 @@ bool HSColorFeature::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
 	cv::Mat hsvMat = getOneData("HSV Color Image").variant.value<cv::Mat>();
 	cv::Mat hist = getOneData("Binary Color Image").variant.value<cv::Mat>();
-	notifyDataWillChange();
-	cv::Mat mat = extractColor(hsvMat, hist);
-	pushData(qVariantFromValue(mat), DATATYPE_HISTOGRAM, "Matrix Histogram");
+	if (hsvMat.empty())
+	{
+		return false;
+	}
+	cv::imwrite("G:/temphsv.bmp", hsvMat);
+	cv::Mat mat = extractColor(hsvMat.clone(), hist.clone());
+	pushData(qVariantFromValue(mat.clone()), DATATYPE_HISTOGRAM, "Matrix Histogram");
 	notifyProcess();
 	return true;
 }
@@ -60,7 +64,7 @@ void HSColorFeature::propertyChanged( DesignNet::Property *prop )
 cv::Mat HSColorFeature::extractColor(cv::Mat& hsvMat, cv::Mat& binaryMat)
 {
 	cv::Mat matRet;
-	int hbins = 10, sbins = 15;
+	int hbins = 40, sbins = 45;
 	int histSize[] = { hbins, sbins };
 	float hranges[] = { 0, 180 };
 	float sranges[] = { 0, 256 };

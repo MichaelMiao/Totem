@@ -100,7 +100,7 @@ bool ImageFolderLoader::process(QFutureInterface<DesignNet::ProcessResult> &futu
 			emit logout(tr("loading %1...").arg(file));
 			ProcessData pd;
 			
-			pd.m_iIndex = m_iCurIndex++;
+			pd.m_iIndex = ++m_iCurIndex;
 			pd.variant.setValue(mat);
 			DataType dt = DATATYPE_MATRIX;
 			if (mat.type() == CV_8UC1)
@@ -129,13 +129,22 @@ bool ImageFolderLoader::finishProcess()
 bool ImageFolderLoader::waitForAccept()
 {
 	m_waitLock.lock();
-	m_listWaitProcessors = getOutputProcessor();
+	{
+		QWriteLocker lock(&m_lock);
+		m_listWaitProcessors = getOutputProcessor();
+	}
 	return true;
 }
 
 void ImageFolderLoader::onChildProcessorFinish(Processor* p)
 {
+	QWriteLocker lock(&m_lock);
+	if (!m_listWaitProcessors.contains(p))
+	{
+		qDebug() << "error";
+	}
 	m_listWaitProcessors.removeOne(p);
+
 	if (m_listWaitProcessors.empty())
 		m_waitLock.unlock();
 }

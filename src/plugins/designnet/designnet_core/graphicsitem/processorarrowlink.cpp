@@ -1,6 +1,5 @@
 #include "processorarrowlink.h"
 #include <QEvent>
-#include <QGraphicsItemGroup>
 #include <QGraphicsScene>
 #include <QLineF>
 #include "../designnetbase/designnetspace.h"
@@ -55,35 +54,14 @@ void ProcessorArrowLink::connectProcessor(ProcessorGraphicsBlock* pSrc, Processo
 {
 	m_srcProcessor = pSrc;
 	m_targetProcessor = pTarget;
-	QGraphicsItemGroup* pGroup = new QGraphicsItemGroup(NULL);
-	pGroup->addToGroup(m_controlPoint_1);
-	pGroup->addToGroup(m_controlPoint_1);
-//	m_controlPoint_1->setParentItem(m_srcProcessor);
-//	m_controlPoint_2->setParentItem(m_targetProcessor);
+	m_controlPoint_1->setParentItem(m_srcProcessor);
+	m_controlPoint_2->setParentItem(m_targetProcessor);
 
 
 	connect(m_srcProcessor, SIGNAL(positionChanged()), this, SLOT(onProcessorPosChanged()));
 	connect(m_targetProcessor, SIGNAL(positionChanged()), this, SLOT(onProcessorPosChanged()));
-	
-	QPointF posStartProcessor = m_srcProcessor->scenePos();
-	QPointF posTargetProcessor = m_targetProcessor->scenePos();
-	QRectF rcSrc(mapRectToScene(m_srcProcessor->boundingRect()));
-	QRectF rcTarget(mapRectToScene(m_targetProcessor->boundingRect()));
-	QPointF ptTemp1(posStartProcessor.x(), posStartProcessor.y() - 10);
-	QPointF ptTemp2(posTargetProcessor.x(), posTargetProcessor.y() - 10);
-	QLineF lineTemp1(posStartProcessor, ptTemp1);
-	QLineF lineTemp2(posTargetProcessor, ptTemp2);
-	lineTemp1.setAngle(30);
-	lineTemp2.setAngle(30);
-	lineTemp1.setLength(200);
-	lineTemp2.setLength(200);
-	m_controlPoint_1->setPos(m_controlPoint_1->mapFromScene(lineTemp1.p2()));
-	m_controlPoint_2->setPos(m_controlPoint_2->mapFromScene(lineTemp2.p2()));
-	QLineF lineSrc(posStartProcessor, m_controlPoint_1->scenePos());
-	m_startPoint = mapFromScene(m_srcProcessor->getCrossPoint(lineSrc));
-	QLineF lineTarget(posTargetProcessor, m_controlPoint_2->scenePos());
-	m_endPoint = mapFromScene(m_targetProcessor->getCrossPoint(lineTarget));
-	m_arrowLinkEndPoint.setPos(m_startPoint);
+
+	relayout();
 }
 
 void ProcessorArrowLink::onProcessorPosChanged()
@@ -118,20 +96,17 @@ QVariant ProcessorArrowLink::itemChange( GraphicsItemChange change, const QVaria
 			m_srcProcessor->setEmphasized(value.toBool());
 			m_targetProcessor->setEmphasized(value.toBool());
 		}
-		if (value.toBool())
-		{
-			QList<QGraphicsItem *> list = collidingItems();
-			for (QList<QGraphicsItem*>::iterator itr = list.begin(); itr != list.end(); itr++)
-				(*itr)->stackBefore(this);
-			list = m_controlPoint_1->collidingItems();
-			for (QList<QGraphicsItem*>::iterator itr = list.begin(); itr != list.end(); itr++)
-				(*itr)->stackBefore(m_controlPoint_1);
-			list = m_controlPoint_2->collidingItems();
-			for (QList<QGraphicsItem*>::iterator itr = list.begin(); itr != list.end(); itr++)
-				(*itr)->stackBefore(m_controlPoint_2);
-		}
 	}
 	return ArrowLinkItem::itemChange(change, value);
+}
+
+void ProcessorArrowLink::relayout()
+{
+	QPointF ptSrc		= m_srcProcessor->scenePos();
+	QPointF ptTarget	= m_targetProcessor->scenePos();
+	int iPosX = (ptSrc.x() + ptTarget.x()) / 2;
+	m_controlPoint_1->setPos(m_srcProcessor->mapFromScene(iPosX, ptSrc.y()));
+	m_controlPoint_2->setPos(m_targetProcessor->mapFromScene(iPosX, ptTarget.y()));
 }
 
 }

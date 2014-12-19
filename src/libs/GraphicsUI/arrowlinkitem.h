@@ -80,6 +80,7 @@ public:
 public slots:
 
     void controlItemPositionChanged();
+	void onControlDeleted(QObject *obj);
 
 protected:
 

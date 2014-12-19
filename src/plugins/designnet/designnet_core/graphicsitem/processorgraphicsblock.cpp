@@ -136,6 +136,7 @@ ProcessorGraphicsBlock::~ProcessorGraphicsBlock()
 		m_configWidget->close();
 		delete m_configWidget;
 	}
+	
 }
 
 QRectF ProcessorGraphicsBlock::boundingRect() const
@@ -454,6 +455,7 @@ void ProcessorGraphicsBlock::setPortVisible(bool bVisible, int iType)
 	if (m_outputPorts.size() > 0 && iType >= 0)
 	{
 		iHeight = m_outputPorts.size() * (PORTITEM_WIDTH + PORTITEM_SPACE) - PORTITEM_SPACE;
+		qDebug() << m_outputPorts.size() << "-------" << iHeight;
 		iTop = boundingRect().top() + (boundingRect().height() - iHeight) / 2;
 		for (QList<PortItem*>::iterator itr = m_outputPorts.begin(); itr != m_outputPorts.end(); itr++)
 		{
@@ -487,7 +489,6 @@ void ProcessorGraphicsBlock::onPortConnected(Port* src, Port* target)
 		QObject::connect(pSrcPortItem, SIGNAL(visibleChanged()), pLink, SLOT(onPortVisibleChanged()));
 		pLink->connectPort(pSrcPortItem, pTargetPortItem);
 		m_portArrowLinks.append(pLink);
-		scene()->addItem(pLink);
 		if (src->processor() == this->processor() && m_bOutputPortVisible
 			|| target->processor() == this->processor() && m_bInputPortVisible)
 		{

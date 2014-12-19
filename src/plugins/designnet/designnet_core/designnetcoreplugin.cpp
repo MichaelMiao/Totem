@@ -73,7 +73,7 @@ bool DesignNetCorePlugin::initialize( const QStringList &arguments, QString *err
 	param.setIcon(QIcon(":/media/DesignNet.png"));
 	param.setCategory(tr("DesignNet"));
 	param.setDescription(tr("DesignNet about pattern recognition."));
-	param.setDisplayCategory(tr("nimeia"));
+	param.setDisplayCategory(tr("DesignNet File"));
 	param.setDisplayName(tr("miao"));
 	addAutoReleasedObject(d->m_mode);
 	addAutoReleasedObject(d->m_userMode);

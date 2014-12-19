@@ -162,8 +162,8 @@ EditorManagerPrivate::EditorManagerPrivate(QWidget *parent)
       m_splitter(0),
       m_autoSaveTimer(0),
       m_revertToSavedAction(new QAction(EditorManager::tr("Revert to Saved"), parent)),
-      m_saveAction(new QAction(parent)),
-      m_saveAsAction(new QAction(parent)),
+      m_saveAction(0),
+      m_saveAsAction(0),
       m_closeCurrentEditorAction(new QAction(EditorManager::tr("Close"), parent)),
       m_closeAllEditorsAction(new QAction(EditorManager::tr("Close All"), parent)),
       m_closeOtherEditorsAction(new QAction(EditorManager::tr("Close Others"), parent)),
@@ -201,8 +201,11 @@ EditorManager::EditorManager(QWidget *parent) :
 
 	const Context editManagerContext(Constants::C_EDITORMANAGER);
 	// menu
-	ActionManager::registerAction(d->m_saveAction, Constants::SAVE, editManagerContext);
+	d->m_saveAction = ActionManager::command(Constants::SAVE)->action();
+	d->m_saveAsAction = ActionManager::command(Constants::SAVEAS)->action();
+//	ActionManager::registerAction(d->m_saveAction, Constants::SAVE, editManagerContext);
 	connect(d->m_saveAction, SIGNAL(triggered(bool)), this, SLOT(saveDocument()));
+	connect(d->m_saveAsAction, SIGNAL(triggered(bool)), this, SLOT(saveDocumentAsFromContextMenu()));
     updateActions();
 
 }
@@ -674,6 +677,7 @@ bool EditorManager::saveDocument(IDocument *documentParam)
 
 bool EditorManager::saveDocumentAs(IDocument *documentParam)
 {
+	return true;
     IDocument *document = documentParam;
     if (!document && currentEditor())
         document = currentEditor()->document();
@@ -1118,4 +1122,9 @@ void EditorManager::updateActions()
     d->m_closeOtherEditorsAction->setEnabled(openedCount > 1);
     d->m_closeOtherEditorsAction->setText((openedCount > 1 ? tr("Close All Except %1").arg(quotedName) : tr("Close Others")));
 }
+
+void EditorManager::saveDocumentAsFromContextMenu()
+{
+}
+
 }

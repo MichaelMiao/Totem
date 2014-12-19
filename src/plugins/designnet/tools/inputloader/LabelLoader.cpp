@@ -54,7 +54,7 @@ bool LabelLoader::prepareProcess()
 
 bool LabelLoader::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
-	notifyDataWillChange();
+	emit logout("LabelLoader.....");
 	QString fileName = getOneData(INPORT_FILENAME).variant.toString();
 	QFileInfo info(fileName);
 	int iId = info.baseName().toInt();
@@ -62,6 +62,8 @@ bool LabelLoader::process(QFutureInterface<DesignNet::ProcessResult> &future)
 	cv::Mat m(1, 1, CV_32SC1);
 	m.at<int>(0, 0) = iLabel;
 	pushData(QVariant::fromValue(m.clone()), DATATYPE_MATRIX, OUTPORT_DATALABEL);
+	static int i = 0;
+	qDebug() << i++ << endl;
 	notifyProcess();
 	return true;
 }

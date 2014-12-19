@@ -33,6 +33,7 @@ Q_SIGNALS:
 private:
 
 	BoolProperty*			m_propBoolTrain;
+
 	DoubleRangeProperty*	m_propDoubleRange;
 	cv::Mat			m_matNormalize;
 	OpenCVLibSVM	m_svm;

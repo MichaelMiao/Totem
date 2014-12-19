@@ -47,13 +47,12 @@ QString BinaryImage::category() const
 
 bool BinaryImage::process(QFutureInterface<ProcessResult> &future)
 {
-	notifyDataWillChange();
 	cv::Mat grayMat = getOneData(DATA_LABEL_GRAYIMAGE).variant.value<cv::Mat>();
 	double valueThreshold = m_doubleRangeProperty->value();///ãÐÖµ
 	cv::Mat binaryImage;
 	
 	cv::threshold(grayMat, binaryImage, valueThreshold, 255, CV_THRESH_BINARY);
-	pushData(qVariantFromValue(binaryImage), DATATYPE_BINARYIMAGE, DATA_LABEL_BINARYIMAGE);
+	pushData(qVariantFromValue(binaryImage.clone()), DATATYPE_BINARYIMAGE, DATA_LABEL_BINARYIMAGE);
 	notifyProcess();
 	return true;
 }

@@ -1,24 +1,27 @@
 #include "designnetformmanager.h"
-
-#include "designnetmainwindow.h"
-#include "designneteditor.h"
-#include "designnetmode.h"
+#include <QAction>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QStyle>
+#include <QToolBar>
+#include <QVBoxLayout>
+#include "../../coreplugin/actionmanager/actionmanager.h"
+#include "../../coreplugin/actionmanager/command.h"
+#include "../../coreplugin/editormanager.h"
+#include "../../coreplugin/editortoolbar.h"
+#include "../../coreplugin/icore.h"
+#include "../../coreplugin/minisplitter.h"
+#include "../../coreplugin/outputpaneplaceholder.h"
 #include "designnetconstants.h"
 #include "designnetcontext.h"
+#include "designneteditor.h"
+#include "designnetmainwindow.h"
+#include "designnetmode.h"
+#include "designnetview.h"
 
-#include "coreplugin/minisplitter.h"
-#include "coreplugin/outputpaneplaceholder.h"
-#include "coreplugin/icore.h"
-#include "coreplugin/actionmanager/command.h"
-#include "coreplugin/actionmanager/actionmanager.h"
-#include "coreplugin/editortoolbar.h"
-#include "coreplugin/editormanager.h"
-#include <QToolBar>
-#include <QAction>
-#include <QStyle>
-#include <QVBoxLayout>
-#include <QPushButton>
-#include <QMessageBox>
+
+
+
 using namespace Core;
 namespace DesignNet{
 class DesignNetFormManagerPrivate
@@ -163,8 +166,15 @@ void DesignNetFormManager::setupActions()
 	pAction->setCheckable(true);
 	pCommand = Core::ActionManager::registerAction(pAction, d->m_toolActionIds.back(), d->m_context);
 	pCommand->setAttribute(Core::Command::CA_Hide);
-
 	QObject::connect(pAction, SIGNAL(triggered(bool)), d->m_mainWindow, SLOT(onConnectAction(bool)));
+
+	d->m_toolActionIds.push_back(Core::Id(Constants::DESIGNNET_EDITSTATE_RELAYOUT_ACTION));
+	pAction = pActionGroup->addAction(QIcon(":/media/layout.png"), tr(""));
+	pAction->setCheckable(false);
+	pCommand = Core::ActionManager::registerAction(pAction, d->m_toolActionIds.back(), d->m_context);
+	pCommand->setAttribute(Core::Command::CA_Hide);
+
+	QObject::connect(pAction, SIGNAL(triggered()), this, SLOT(onRelayout()));
 }
 
 void DesignNetFormManager::addToolAction( QAction* pAction, const Core::Context& context, const Core::Id &id, Core::ActionContainer *pContainer, const QString& keySequence )
@@ -190,6 +200,12 @@ void DesignNetFormManager::onDesignNetFinished()
 	disconnect(pEditor, SIGNAL(designNetFinished()), this, SLOT(onDesignNetFinished()));
 	Command *pRun = ActionManager::instance()->command(Constants::DESIGNNET_PROCESS_ID);
 	pRun->action()->setDisabled(false);
+}
+
+void DesignNetFormManager::onRelayout()
+{
+	DesignNetEditor *pEditor = qobject_cast<DesignNetEditor *>(Core::EditorManager::instance()->currentEditor());
+	pEditor->designNetView()->relayout();
 }
 
 }

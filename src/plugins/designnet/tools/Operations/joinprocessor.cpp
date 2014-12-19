@@ -43,7 +43,6 @@ QString JoinProcessor::category() const
 
 bool JoinProcessor::process(QFutureInterface<ProcessResult> &future)
 {
-	notifyDataWillChange();
 	int iRows = 0, iCols = 0;
 	QList<Port*> ports = getPorts(Port::IN_PORT);
 	QList<Port*>::iterator itr = ports.begin();

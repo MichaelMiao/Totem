@@ -79,13 +79,14 @@ MainWindow::MainWindow(QWidget *parent)
     m_modeManager = new ModeManager(this, m_modeStack);
     this->setCentralWidget(m_modeStack);
 
-    m_statusBarManager  = new StatusBarManager(this);//锟斤拷锟斤拷锟斤拷锟斤拷锟�
-    m_messageManager    = new MessageManager();      //濞�拷锟界�锛�拷锟斤拷锟�utputpane
+    m_statusBarManager  = new StatusBarManager(this);
+    m_messageManager    = new MessageManager();
     m_editorManager = new EditorManager(this);
     m_editorManager->hide();
 
     connect(QApplication::instance(), SIGNAL(focusChanged(QWidget*,QWidget*)),
             this, SLOT(updateFocusWidget(QWidget*,QWidget*)));
+
 	m_progressView = new ProgressView(this);
 	statusBar()->insertPermanentWidget(0, m_progressView);
 	setWindowIcon(QIcon(":/core/images/totem.ico"));
@@ -392,6 +393,7 @@ void MainWindow::registerDefaultActions()
 	cmdSave->setAttribute(Command::CA_UpdateText);
 	cmdSave->setDescription(tr("Save"));
 	mFile->addAction(cmdSave, Constants::G_FILE_SAVE);
+	connect(cmdSave, SIGNAL(triggered()), this, SLOT(saveAll()));
 	// Save As Action
 	icon = QIcon::fromTheme(QLatin1String("document-save-as"));
 	tmpaction = new QAction(icon, tr("Save &As..."), this);
@@ -400,8 +402,8 @@ void MainWindow::registerDefaultActions()
 	cmdSaveAs->setAttribute(Command::CA_UpdateText);
 	cmdSaveAs->setDescription(tr("Save As..."));
 	mFile->addAction(cmdSaveAs, Constants::G_FILE_SAVE);
+	connect(cmdSaveAs, SIGNAL(triggered()), this, SLOT(saveAll()));
 
-	// ��������欢
 	ActionContainer* pRecentFiles = ActionManager::createMenu(Constants::RECENT_FILES);
 	pRecentFiles->menu()->setTitle(tr("Recent Files"));
 	mFile->addMenu(pRecentFiles, Constants::G_FILE_OPEN);
@@ -585,6 +587,15 @@ void Core::Internal::MainWindow::openRecentFile()
 		const DocumentManager::RecentFile file = action->data().value<DocumentManager::RecentFile>();
 		EditorManager::openEditor(file.first, file.second);
 	}
+}
+
+void Core::Internal::MainWindow::saveAll()
+{
+	DocumentManager::saveModifiedDocumentsSilently(DocumentManager::modifiedDocuments());
+}
+
+void Core::Internal::MainWindow::updateAction()
+{
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

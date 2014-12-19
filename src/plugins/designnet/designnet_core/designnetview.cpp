@@ -612,4 +612,13 @@ void DesignNetView::setEditState(EditState e)
 	}
 }
 
+void DesignNetView::relayout()
+{
+	for (int i = 0; i < d->m_links.size(); i++)
+	{
+		ProcessorArrowLink* pLink = d->m_links.at(i);
+		pLink->relayout();
+	}
+}
+
 }

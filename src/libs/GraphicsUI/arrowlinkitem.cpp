@@ -21,6 +21,11 @@ ArrowLinkItem::ArrowLinkItem(QGraphicsItem *parent) :
     connect(m_controlPoint_2, SIGNAL(positionChanged()),
             this, SLOT(controlItemPositionChanged()));
 
+	connect(m_controlPoint_1, SIGNAL(destroyed(QObject *)),
+		this, SLOT(onControlDeleted(QObject *)));
+	connect(m_controlPoint_2, SIGNAL(destroyed(QObject *)),
+		this, SLOT(onControlDeleted(QObject *)));
+
     setAcceptHoverEvents(true);
     setFlags(ItemIsSelectable);
 	setCacheMode(QGraphicsItem::ItemCoordinateCache);
@@ -30,10 +35,10 @@ ArrowLinkItem::ArrowLinkItem(QGraphicsItem *parent) :
 
 ArrowLinkItem::~ArrowLinkItem()
 {
-	if (m_controlPoint_1->scene())
-		m_controlPoint_1->scene()->removeItem(m_controlPoint_1);
-	if (m_controlPoint_2->scene())
-		m_controlPoint_2->scene()->removeItem(m_controlPoint_2);
+	if (m_controlPoint_1)
+		delete m_controlPoint_1;
+	if (m_controlPoint_2)
+		delete m_controlPoint_2;
 }
 
 QPainterPath ArrowLinkItem::shape() const
@@ -182,6 +187,14 @@ void ArrowLinkItem::controlItemPositionChanged()
 	update();
 }
 
+void ArrowLinkItem::onControlDeleted(QObject *obj)
+{
+	if (obj == m_controlPoint_1)
+		m_controlPoint_1 = 0;
+	if (obj == m_controlPoint_2)
+		m_controlPoint_2 = 0;
+}
+
 void ArrowLinkItem::updateGeometory()
 {
     prepareGeometryChange();
@@ -251,12 +264,12 @@ QVariant ArrowLinkItem::itemChange(GraphicsItemChange change, const QVariant &v)
 {
 	if (change == QGraphicsItem::ItemSceneHasChanged && !scene())
 	{
-		if (m_controlPoint_1->scene())
-			m_controlPoint_1->scene()->removeItem(m_controlPoint_1);
-		if (m_controlPoint_2->scene())
-			m_controlPoint_2->scene()->removeItem(m_controlPoint_2);
-		m_controlPoint_1->setParentItem(NULL);
-		m_controlPoint_2->setParentItem(NULL);
+// 		if (m_controlPoint_1->scene())
+// 			m_controlPoint_1->scene()->removeItem(m_controlPoint_1);
+// 		if (m_controlPoint_2->scene())
+// 			m_controlPoint_2->scene()->removeItem(m_controlPoint_2);
+// 		m_controlPoint_1->setParentItem(NULL);
+// 		m_controlPoint_2->setParentItem(NULL);
 	}
 	else if (change == QGraphicsItem::ItemVisibleChange)
 	{

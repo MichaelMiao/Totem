@@ -45,22 +45,28 @@ QString BufferProcessor::category() const
 
 bool BufferProcessor::process(QFutureInterface<ProcessResult> &future)
 {
+	int iIndex = getPortData<int>(s_ports[PortIndex_In_DataIndex]);
+	qDebug() << ("BufferProcessor.....") << id() << " index " << iIndex << this;
 	ProcessData pd = getOneData(s_ports[PortIndex_In_Data].strName);
 	cv::Mat mat = pd.variant.value<cv::Mat>();
+	qDebug() << (QString)(tr("%1----------mat:(%2, %3)").arg(this->id()).arg(mat.rows).arg(mat.cols));
 	mat = mat.reshape(1, 1);
 	m_mats.push_back(mat);
-	int iIndex = getPortData<int>(s_ports[PortIndex_In_DataIndex]);
-	if (m_mats.rows != iIndex)
-	{
-		qDebug() << "Error";
-	}
+	qDebug() << (QString)(tr("%1----------(%2, %3)").arg(this->id()).arg(m_mats.rows).arg(m_mats.cols));
 	if (iIndex == -1)
 	{
 		pushData(qVariantFromValue(m_mats), DATATYPE_MATRIX, s_ports[PortIndex_Out].strName);
 		notifyProcess();
 		return true;
 	}
+	else if (m_mats.rows != iIndex)
+	{
+		emit logout(tr("%1=========================================================").arg(id()));
+		qDebug() << "Error";
+		return false;
+	}
 	emit childProcessFinished();
+	qDebug() << ("after childProcessFinished.....") << id();
 	return true;
 }
 

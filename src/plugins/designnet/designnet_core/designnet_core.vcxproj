@@ -83,6 +83,7 @@
     <ClCompile Include="availabledatawidget.cpp" />
     <ClCompile Include="data\customdata.cpp" />
     <ClCompile Include="data\datatype.cpp" />
+    <ClCompile Include="data\resultdata.cpp" />
     <ClCompile Include="designnetbase\port.cpp" />
     <ClCompile Include="designnetfrontwidget.cpp" />
     <ClCompile Include="DesignNetUserMode.cpp" />
@@ -648,6 +649,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_XML_LIB -DDESIGNNET_CORE_LIB -DQT_OPENGL_LIB -D_WINDLL  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtXml" "-I$(ProjectDir)\data" "-I$(ProjectDir)\designnetbase" "-I$(ProjectDir)\property" "-I$(ProjectDir)\widgets" "-I$(ProjectDir)\graphicsitem" "-I$(QTDIR)\include\QtOpenGL" "-I$(SolutionDir)src" "-I$(SolutionDir)src\libs" "-I$(SolutionDir)src\plugins" "-I$(SolutionDir)src\shared" "-I$(SolutionDir)include" "-I$(OPENCV_DIR)include"</Command>
     </CustomBuild>
+    <ClInclude Include="data\resultdata.h" />
     <ClInclude Include="graphicsitem\designnet_define.h" />
     <CustomBuild Include="graphicsitem\portitem.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

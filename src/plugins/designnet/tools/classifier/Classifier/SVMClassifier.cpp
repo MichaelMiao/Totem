@@ -2,11 +2,12 @@
 #include "SVMClassifier.h"
 #include "algrithom/opencvlibsvm.h"
 #include "SVMFrontWidget.h"
+#include "../../../designnet_core/property/pathdialogproperty.h"
 
 
-#define SVM_MODEL_FILE_NORM	"G:/data/68Data/svm_normalize.xml"
-#define SVM_MODEL_FILE		"G:/data/68Data/svm.xml"
-
+#define SVM_MODEL_FILE_NORM	"D:/temp/svm_normalize.xml"
+#define SVM_MODEL_FILE		"D:/temp/svm.xml"
+#define SVM_MODEL_FILE_PROPERTY	"PathProperty"
 enum PortIndex
 {
 	PortIndex_In_ExampleMat,
@@ -32,6 +33,14 @@ SVMClassifer::SVMClassifer(DesignNet::DesignNetSpace *space, QObject *parent)
 	m_propDoubleRange->setDecimals(0);
 	m_propDoubleRange->setValue(5);
 	m_propBoolTrain->setValue(true);
+
+
+	QStringList nameFilters;
+	nameFilters << "*.xml";
+	PathDialogProperty *pProperty = new PathDialogProperty(SVM_MODEL_FILE_PROPERTY, "", nameFilters,
+		QDir::Files, true, this);
+	addProperty(pProperty);
+	
 	setName(tr("SVM"));
 	addProperty(m_propBoolTrain);
 	addProperty(m_propDoubleRange);
@@ -97,8 +106,17 @@ bool SVMClassifer::process(QFutureInterface<DesignNet::ProcessResult> &future)
 		fsfesture << "minmax" << matNormalize;
 		fsfesture.release();
 
-		OpenCVLibSVM svm;
-		svm.train(matExample, matLabel, SVM_MODEL_FILE);
+
+		PathDialogProperty * pProperty = (PathDialogProperty *)getProperty(SVM_MODEL_FILE_PROPERTY);
+		if (pProperty->paths().size())
+		{
+			OpenCVLibSVM svm;
+			svm.train(matExample, matLabel, pProperty->paths().at(0).m_path.toLocal8Bit().data());
+		}
+		else
+		{
+			return false;
+		}
 	}
 	else
 	{
@@ -144,7 +162,15 @@ bool SVMClassifer::prepareProcess()
 				(*itr) >> m_matNormalize;
 			itr++;
 		}
-		m_svm.loadModel(SVM_MODEL_FILE);
+		PathDialogProperty * pProperty = (PathDialogProperty *)getProperty(SVM_MODEL_FILE_PROPERTY);
+		if (pProperty->paths().size())
+		{
+			m_svm.loadModel(pProperty->paths().at(0).m_path.toLocal8Bit().data());
+		}
+		else
+		{
+			return false;
+		}
 	}
 	return true;
 }

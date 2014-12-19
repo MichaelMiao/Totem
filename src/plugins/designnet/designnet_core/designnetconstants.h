@@ -25,7 +25,7 @@ const char DESIGNNET_PROCESS_ID[]   = "DesignNet.Process";
 
 const char DESIGNNET_EDITSTATE_MOVE_ACTION[]	= "DesignNet.EditState.Move";
 const char DESIGNNET_EDITSTATE_LINK_ACTION[]	= "DesignNet.EditState.Link";
-
+const char DESIGNNET_EDITSTATE_RELAYOUT_ACTION[] = "DesignNet.EditState.Relayout";
 /// DockWidget Name
 const char DESIGN_DOCKNAME_TOOL[]       = "DockName.Tools";
 const char DESIGN_DOCKNAME_PROPERTY[]   = "DockName.Properties";

@@ -30,7 +30,6 @@ QString FeatureRingCCA::category() const
 
 bool FeatureRingCCA::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
-	notifyDataWillChange();
 	cv::Mat binaryImage = ((MatrixData*)getInputData(DATATYPE_MATRIX).at(0).variant.value<IData*>())->getMatrix();
 	cv::Mat centroidMat = ((MatrixData*)getInputData(DATATYPE_BINARYIMAGE).at(0).variant.value<IData*>())->getMatrix();
 	/// ÖÐÐÄ

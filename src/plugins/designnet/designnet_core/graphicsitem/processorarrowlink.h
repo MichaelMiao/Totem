@@ -26,6 +26,8 @@ public:
 	void onControlItemPostionChanged();
 	void updatePosition();
 
+	void relayout();
+
 protected slots:
 
 	void onProcessorPosChanged();

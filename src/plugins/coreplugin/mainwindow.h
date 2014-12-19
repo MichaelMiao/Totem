@@ -87,7 +87,11 @@ private slots:
 
 	void openRecentFile();
 
-	void addRecentFileMenu();	//!< 添加最近文件到菜单 
+	void addRecentFileMenu();	//!< 添加最近文件到菜单
+
+	void saveAll();
+
+	void updateAction();
 
 protected:
     virtual void closeEvent(QCloseEvent *event);

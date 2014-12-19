@@ -99,6 +99,8 @@ void DesignNetDocument::setModified(const bool &bModified)
         return;
     d->bModified = bModified;
     emit changed();
+	
+	emit titleChanged(bModified ? d->fileName + "*" : d->fileName);
 }
 
 bool DesignNetDocument::reload(QString *errorString, IDocument::ReloadFlag flag, IDocument::ChangeType type)

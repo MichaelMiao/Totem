@@ -34,6 +34,7 @@ public:
 	DECLARE_SERIALIZABLE(DesignNetSpace, DesignNetSpace)
     
 	explicit DesignNetSpace(DesignNetSpace *space = 0, QObject *parent = 0);
+	~DesignNetSpace() { }
 
     void addProcessor(Processor* processor, bool bNotifyModify = false);    //!< 添加处理器
     void removeProcessor(Processor* processor, bool bNotifyModify = false); //!< 移除处理器,并delete

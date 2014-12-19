@@ -8,6 +8,9 @@
 #include "../../../../designnet/designnet_core/widgets/processorfrontwidget.h"
 #include "opencv2/core/core.hpp"
 #include "ui_grabcutfrontwidget.h"
+#include "GrabcutServerWrapper.h"
+#include "GrabCutThread.h"
+
 
 namespace DesignNet
 {
@@ -16,13 +19,6 @@ class Processor;
 
 class GrabCutFrontWidget;
 class GrabCutLabel;
-struct GrabCutData
-{
-	cv::Mat m_srcMat;
-	cv::Mat m_mask;
-	cv::Mat m_foreground;
-	cv::Rect m_rc;
-};
 
 class ImageNode : public QGraphicsPixmapItem
 {
@@ -101,12 +97,17 @@ class GrabCutFrontWidget : public DesignNet::ProcessorFrontWidget
 
 public:
 
+	enum DrawType
+	{
+		DrawType_Fore,
+		DrawType_Back,
+		DrawType_Rect,
+	};
+
 	GrabCutFrontWidget(DesignNet::Processor* processor, QWidget *parent = 0);
 	~GrabCutFrontWidget();
 
-	bool isDrawingForeground();
-	bool isShowForeground();
-	bool isShowBackground();
+	DrawType getDrawType() const;
 
 	void setImage(QString strPath);
 
@@ -124,6 +125,7 @@ private:
 	GrabCutLabel		m_label;
 	GrabCutThread*		m_pThread;
 	GrabCutData			m_data;
+	GrabcutServerWrapper m_wrapper;
 };
 
 #endif // GRABCUTFRONTWIDGET_H

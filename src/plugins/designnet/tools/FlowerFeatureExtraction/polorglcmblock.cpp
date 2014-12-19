@@ -55,7 +55,6 @@ QString PolorGLCMBlock::category() const
 
 bool PolorGLCMBlock::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
-	notifyDataWillChange();
 	m_glcm = cv::Mat::zeros(8, 8, CV_32F);
 	m_glcm_sobel = cv::Mat::zeros(8, 8, CV_32F);
 	cv::Mat binaryImage = getOneData(PN_IN_BinaryImage).variant.value<cv::Mat>();

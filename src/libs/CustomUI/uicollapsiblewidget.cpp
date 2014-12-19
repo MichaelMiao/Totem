@@ -89,6 +89,7 @@ void uiCollapsibleWidget::removeRegion(const int &index)
             if(i == index)
             {
                 d->m_layout->removeWidget(pButton);
+				pButton->deleteLater();
                 return;
             }
             i++;

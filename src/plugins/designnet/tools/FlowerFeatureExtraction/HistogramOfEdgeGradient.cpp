@@ -60,7 +60,8 @@ bool HistogramOfEdgeGradient::process(QFutureInterface<DesignNet::ProcessResult>
 	}
 	const int iR = 10;
 	std::vector<cv::Point> &max_countours = countours.at(max_index);
-	std::vector<int> vecCounts;
+	std::vector<double> vecCounts;
+	double fMaxArea = M_PI * iR * iR;
 	for (size_t t = 0; t < max_countours.size(); t++)
 	{
 		cv::Point p = max_countours.at(t);
@@ -79,11 +80,12 @@ bool HistogramOfEdgeGradient::process(QFutureInterface<DesignNet::ProcessResult>
 					iCount++;
 			}
 		}
-		vecCounts.push_back(iCount);
+		vecCounts.push_back(iCount / fMaxArea);
 	}
-	int iMaxArea = M_PI * iR * iR;
+	cv::Mat m = cv::Mat::zeros(matBinary.rows, matBinary.cols, CV_8UC1);
+	cv::drawContours(m, countours, 0, cv::Scalar(255));
 	cv::MatND hist;
-	float hranges[] = { 0, iMaxArea };
+	float hranges[] = { 0, 1 };
 	const float *ranges[] = { hranges };
 	int channels[] = { 0 };
 	int hbins = 15;
@@ -95,6 +97,9 @@ bool HistogramOfEdgeGradient::process(QFutureInterface<DesignNet::ProcessResult>
 		true,
 		false);
 	hist = hist.reshape(1,1);
+	cv::FileStorage fs("G:/hist.xml", cv::FileStorage::WRITE);
+	fs << "hist" << hist;
+	fs.release();
 	pushData(qVariantFromValue(hist), DATATYPE_MATRIX, s_ports[PortIndex_Out_HOEG_Features].strName);
 	notifyProcess();
 	return true;

@@ -138,6 +138,8 @@ void DesignNetMainWindow::titleChanged()
 				{
 					d->m_pFileTabBar->setTabToolTip(i, str);
 					str = QFileInfo(str).fileName();
+					if (doc->isModified())
+						str += "*";
 					d->m_pFileTabBar->setTabText(i, str);
 					break;
 				}

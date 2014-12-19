@@ -33,7 +33,6 @@ QString Color2Gray::category() const
 
 bool Color2Gray::process(QFutureInterface<ProcessResult> &future)
 {
-	notifyDataWillChange();
 	Port* port = getPort(Port::IN_PORT, DATA_LABEL_COLORIMAGE);
 	cv::Mat mat = getData(DATA_LABEL_COLORIMAGE).at(0)->variant.value<cv::Mat>();
 	if (!mat.empty())

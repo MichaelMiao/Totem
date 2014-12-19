@@ -118,9 +118,12 @@ public slots:
     void handleContextChange(Core::IContext *context);
     bool saveDocument(Core::IDocument *documentParam = 0);
     bool saveDocumentAs(Core::IDocument *documentParam = 0);
+	void saveDocumentAsFromContextMenu();
+
     void makeCurrentEditorWritable();
     void autoSave();
     void handleEditorStateChange();
+
 private:
     void setCurrentEditor(IEditor *editor);
     void setCurrentView(Internal::SplitterOrView *view);

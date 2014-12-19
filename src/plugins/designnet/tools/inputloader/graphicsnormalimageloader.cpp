@@ -53,7 +53,11 @@ QString GraphicsNormalImageLoader::category() const
 
 bool GraphicsNormalImageLoader::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
-	QString path = m_filePath;
+	QString path;
+	PathDialogProperty * pProperty = (PathDialogProperty *)getProperty(PROPERTY_IMAGEFILE);
+	if (pProperty->paths().size())
+		path = pProperty->paths().at(0).m_path;
+
 	std::string str = path.toLocal8Bit().data();
 	cv::Mat mat = cv::imread(str);
 	if(!mat.data)
@@ -73,6 +77,12 @@ bool GraphicsNormalImageLoader::process(QFutureInterface<DesignNet::ProcessResul
 
 void GraphicsNormalImageLoader::propertyChanged( Property *prop )
 {
+	PathDialogProperty * pProperty = (PathDialogProperty *)getProperty(PROPERTY_IMAGEFILE);
+	if (pProperty == prop)
+	{
+		if (pProperty->paths().size())
+			m_filePath = pProperty->paths().at(0).m_path;
+	}
 }
 
 void GraphicsNormalImageLoader::setPath(const QString &f)

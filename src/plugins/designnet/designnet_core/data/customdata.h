@@ -10,12 +10,15 @@ class DESIGNNET_CORE_EXPORT CustomData : public IData
 	Q_OBJECT
 
 public:
-	CustomData(void* defaultValue = 0, const QString &strLabel = tr("CustomData"), QObject *parent = 0);
+	CustomData(void* defaultValue = 0, QObject *parent = 0);
 	~CustomData();
 	void setData(void *v, bool bAutoDelete = true) { m_value = v; }
-	void* data(const QString &strLabel) const;
+	void* data() const;
 
-	virtual Core::Id id() ;
+	void setId(Core::Id id) { m_id = id; }
+	
+	virtual Core::Id id() { return m_id; }
+
 	virtual IData* clone(QObject *parent = 0);
 	virtual bool copy(IData* data);
 	virtual bool isValid() const;
@@ -24,9 +27,9 @@ public:
 private:
 
 	void*	m_value;
-	QString m_label;
 
 	QImage m_image;
+	Core::Id m_id;
 };
 }
 

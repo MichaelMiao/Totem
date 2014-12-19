@@ -60,12 +60,12 @@ QString ColorSpaceConversion::category() const
 
 bool ColorSpaceConversion::process(QFutureInterface<ProcessResult> &future)
 {
-	notifyDataWillChange();
 	int iType = d->m_property->value().toInt(0);
 	if(iType != 0)
 	{
 		cv::Mat mat = getData(tr("ColorImage")).at(0)->variant.value<cv::Mat>();
 		cv::cvtColor(mat, mat, iType);
+		cv::imwrite("G:/temphsvinput.bmp", mat);
 		pushData(qVariantFromValue(mat), DATATYPE_8UC3IMAGE, "ColorImage");
 	}
 	notifyProcess();

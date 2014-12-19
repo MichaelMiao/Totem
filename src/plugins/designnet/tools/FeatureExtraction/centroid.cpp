@@ -43,7 +43,6 @@ QString Centroid::category() const
 
 bool Centroid::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
-	notifyDataWillChange();
 	cv::Mat binaryImage = getPortData<cv::Mat>(s_ports[PortIndex_In_BinaryImage]);
 	/// ÇóÖÐÐÄ
 	cv::Point2d centroid(0, 0);

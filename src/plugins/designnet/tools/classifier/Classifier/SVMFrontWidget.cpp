@@ -1,11 +1,15 @@
 #include "stdafx.h"
 #include "SVMFrontWidget.h"
 #include <QDebug>
-#include <QHBoxLayout>
 #include <QFile>
+#include <QHBoxLayout>
+#include "extensionsystem/pluginmanager.h"
 #include "SVMClassifier.h"
+#include "designnet/designnet_core/data/customdata.h"
 
 
+static const char chId[] = "svm_result";
+using namespace DesignNet;
 SVMFrontWidget::SVMFrontWidget(SVMClassifer *processor)
 	: DesignNet::ProcessorFrontWidget(processor), m_processor(processor)
 {
@@ -54,6 +58,10 @@ void SVMFrontWidget::onClassifyFinished(cv::Mat res)
 		m_pTable->setItem(i, 0, pItem);
 		pItem->setData(Qt::UserRole, qVariantFromValue(i));
 	}
+	CustomData* pData = new CustomData;
+	pData->setId(chId);
+	pData->setData((void*)&res, false);
+	ExtensionSystem::PluginManager::instance()->addObject(pData);
 }
 
 void SVMFrontWidget::onCellDoubleClicked(int row, int column)

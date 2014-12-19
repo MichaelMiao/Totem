@@ -638,6 +638,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_DesignNetUserMode.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="data\resultdata.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="designnet_core_global.h">
@@ -669,6 +672,9 @@
     </ClInclude>
     <ClInclude Include="BroadcastMsg.h">
       <Filter>Header Files\designnetbase</Filter>
+    </ClInclude>
+    <ClInclude Include="data\resultdata.h">
+      <Filter>Header Files\data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

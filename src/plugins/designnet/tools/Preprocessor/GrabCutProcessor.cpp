@@ -42,7 +42,6 @@ QString GrabCutProcessor::category() const
 
 bool GrabCutProcessor::process(QFutureInterface<DesignNet::ProcessResult> &future)
 {
-//	m_semaphore.acquire();
 	notifyProcess();
 	return true;
 }
@@ -69,5 +68,7 @@ ProcessorFrontWidget* GrabCutProcessor::processorFrontWidget()
 
 void GrabCutProcessor::setOutputValue(cv::Mat mat)
 {
+	cv::imwrite("G:/tempgrabcutout.bmp", mat);
+	notifyDataWillChange();
 	pushData(qVariantFromValue(mat), DATATYPE_8UC3IMAGE, s_ports[PortIndex_In_OutputMat].strName);
 }
