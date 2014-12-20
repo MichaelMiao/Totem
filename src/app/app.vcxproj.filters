@@ -50,8 +50,14 @@
     <ClCompile Include="GeneratedFiles\Release\moc_mainapp.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\shared\totem_gui_pch.cpp">
+    <ClCompile Include="pluginloaderview.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_pluginloaderview.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_pluginloaderview.cpp">
+      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\shared\qtsingleapplication\qtlocalpeer.cpp">
       <Filter>Source Files</Filter>
@@ -100,6 +106,9 @@
     <CustomBuild Include="pluginloader.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="pluginloaderview.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
     <CustomBuild Include="..\shared\qtsingleapplication\qtlocalpeer.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -111,9 +120,6 @@
     </CustomBuild>
     <CustomBuild Include="totem.ico" />
     <CustomBuild Include="..\shared\qtlockedfile\qtlockedfile.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\shared\totem_gui_pch.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="app_version.h">

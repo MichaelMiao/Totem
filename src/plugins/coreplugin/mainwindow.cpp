@@ -106,7 +106,6 @@ MainWindow::~MainWindow()
 
     delete m_coreImpl;
     m_coreImpl = 0;
-
 }
 
 bool MainWindow::initialize(QString *errorMessage)

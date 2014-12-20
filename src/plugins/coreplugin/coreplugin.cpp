@@ -21,11 +21,11 @@ CorePlugin::~CorePlugin()
     if(m_editMode)
     {
         removeObject(m_editMode);
-        delete m_editMode;
+		delete m_editMode;
     }
     if(m_mainWindow)
     {
-        delete m_mainWindow;
+		delete m_mainWindow;
         m_mainWindow = 0;
     }
 }

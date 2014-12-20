@@ -169,7 +169,8 @@ EditorManagerPrivate::EditorManagerPrivate(QWidget *parent)
       m_closeOtherEditorsAction(new QAction(EditorManager::tr("Close Others"), parent)),
       m_reloadSetting(IDocument::AlwaysAsk),
       m_autoSaveEnabled(true),
-      m_autoSaveInterval(5)//自动保存的时间间隔
+      m_autoSaveInterval(5),//自动保存的时间间隔
+	  m_coreListener(0)
 {
     m_editorModel = new OpenEditorsModel(parent);
 }
@@ -210,14 +211,8 @@ EditorManager::EditorManager(QWidget *parent) :
 EditorManager::~EditorManager()
 {
     m_instance = 0;
-    if(ICore::instance())
-    {
-        if(d->m_coreListener)
-        {
-            ExtensionSystem::PluginManager::instance()->removeObject(d->m_coreListener);
-            delete d->m_coreListener;
-        }
-    }
+	if (d->m_coreListener)
+		ExtensionSystem::PluginManager::instance()->removeObject(d->m_coreListener);
 
     if(d->m_splitter)
     {

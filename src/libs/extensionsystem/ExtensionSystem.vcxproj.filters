@@ -229,11 +229,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\totem_gui_pch.h.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="plugindetailsview.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>

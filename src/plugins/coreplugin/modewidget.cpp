@@ -61,7 +61,6 @@ ModeTabBar::ModeTabBar(QWidget *parent)
 
 ModeTabBar::~ModeTabBar()
 {
-    delete style();
 }
 
 bool ModeTabBar::event(QEvent *event)

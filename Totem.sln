@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{188B8AC8-B8F9-402D-A6E4-3F91828CB5E5}"
 EndProject
@@ -76,7 +76,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utils", "src\libs\Utils\Uti
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Classifications", "src\plugins\designnet\tools\Classifications\Classifications.vcxproj", "{1D361186-45E8-44C0-BACA-FE067B28FA35}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TotemApp", "src\TotemApp\TotemApp.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app", "src\app\app.vcxproj", "{BFFBBF6A-687E-4544-B389-BF104F3CEE17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -152,10 +152,10 @@ Global
 		{1D361186-45E8-44C0-BACA-FE067B28FA35}.Debug|Win32.Build.0 = Debug|Win32
 		{1D361186-45E8-44C0-BACA-FE067B28FA35}.Release|Win32.ActiveCfg = Release|Win32
 		{1D361186-45E8-44C0-BACA-FE067B28FA35}.Release|Win32.Build.0 = Release|Win32
-		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|Win32.ActiveCfg = Debug|Win32
-		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|Win32.Build.0 = Debug|Win32
-		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Win32.ActiveCfg = Release|Win32
-		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Win32.Build.0 = Release|Win32
+		{BFFBBF6A-687E-4544-B389-BF104F3CEE17}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BFFBBF6A-687E-4544-B389-BF104F3CEE17}.Debug|Win32.Build.0 = Debug|Win32
+		{BFFBBF6A-687E-4544-B389-BF104F3CEE17}.Release|Win32.ActiveCfg = Release|Win32
+		{BFFBBF6A-687E-4544-B389-BF104F3CEE17}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -181,10 +181,10 @@ Global
 		{D101DA56-5CD2-41B3-9FD6-0E82039185B7} = {96F2FED6-31A9-4041-8767-F72F91968D81}
 		{5EBFDFF9-3EFB-4FF1-B47C-28EC944C7604} = {22D1DA53-31C6-48E2-9914-0F77E92F49F1}
 		{1D361186-45E8-44C0-BACA-FE067B28FA35} = {0450E564-6717-47F4-AB5E-97598BC0D527}
-		{B12702AD-ABFB-343A-A199-8E24837244A3} = {188B8AC8-B8F9-402D-A6E4-3F91828CB5E5}
+		{BFFBBF6A-687E-4544-B389-BF104F3CEE17} = {188B8AC8-B8F9-402D-A6E4-3F91828CB5E5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		QtVersion = 4.8.5
 		Qt5Version = 4.8.5
+		QtVersion = 4.8.5
 	EndGlobalSection
 EndGlobal

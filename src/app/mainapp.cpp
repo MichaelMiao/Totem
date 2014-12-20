@@ -1,11 +1,11 @@
-﻿#include "totem_gui_pch.h"
-#include "mainapp.h"
+﻿#include "mainapp.h"
 #include "extensionsystem/pluginmanager.h"
 #include "extensionsystem/pluginmanagerprivate.h"
 #include "extensionsystem/pluginspec.h"
 #include "extensionsystem/progressmanagerprivate.h"
+#include "pluginloaderview.h"
 
-#include "app_version.h"
+#include <app_version.h>
 
 #include <QMessageBox>
 #include <QThreadPool>
@@ -16,8 +16,9 @@
 #include <QDesktopServices>
 #include <QTranslator>
 #include <QFile>
-#include <QtConcurrent/QtConcurrentRun>
+#include "QtConcurrent/QtConcurrent"
 #include <QMetaObject>
+#include "QStandardPaths"
 
 const char appNameC[] = "Totem"; //!< 应用程序名称
 static const char corePluginNameC[] = "Core"; //!< 核心插件的名称
@@ -191,11 +192,12 @@ int loadPluginThread(MainApp *receiver)
         }
     }
     int status;
+	qDebug() << "checking core...";
     if( status = checkPlugin(coreplugin, QLatin1String(corePluginNameC)))//如果核心插件检查有问题
     {
         return status;
     }
-
+	qDebug() << "Loading Skin";
     //载入皮肤
     receiver->loadSkin(defaultQssFileC);
     QList<ExtensionSystem::PluginSpec *> queue = pm->loadQueue();
@@ -230,6 +232,11 @@ MainApp::MainApp(const QString &id, int &argc, char **argv) :
 
 MainApp::~MainApp()
 {
+    if(m_pLoader)
+    {
+        delete m_pLoader;
+        m_pLoader = 0;
+    }
 }
 
 int MainApp::init()
@@ -262,16 +269,19 @@ int MainApp::init()
     }
 
 
+    m_pLoader = new PluginLoaderView();
     m_futureInterface = new QFutureInterface<void>();
     const int threadCount = QThreadPool::globalInstance()->maxThreadCount();
     QThreadPool::globalInstance()->setMaxThreadCount(qMax(4, 2 * threadCount));
 
 
     ExtensionSystem::PluginManager *pm = ExtensionSystem::PluginManager::instance();
-    ExtensionSystem::ProgressManagerPrivate *progressMgr = ExtensionSystem::ProgressManagerPrivate::instance();
-    progressMgr->addTask(m_futureInterface->future(), QLatin1String("LoadPlugin"), tr(""), NULL);
+    connect(pm->d, SIGNAL(showMessage(QString)), this->m_pLoader, SLOT(setProgressText(QString)));
+
+//    ExtensionSystem::ProgressManagerPrivate *progressMgr = ExtensionSystem::ProgressManagerPrivate::instance();
+//    progressMgr->addTask(m_futureInterface->future(), QLatin1String("LoadPlugin"), tr(""), m_pLoader);
+// 	m_pLoader->show();
     loadPluginThread(this);
-	
     return 0;
 }
 /**
@@ -298,8 +308,12 @@ bool MainApp::loadSkin(const QString &strFileName)
  */
 void MainApp::onStart()
 {
+    m_pLoader->show();
+	m_pLoader->raise();
 }
 
 void MainApp::onFinish()
 {
+    m_pLoader->hide();
+
 }
