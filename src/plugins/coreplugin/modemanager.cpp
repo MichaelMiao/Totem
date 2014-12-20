@@ -1,6 +1,6 @@
 #include "modemanager.h"
 #include "icontext.h"
-#include "command.h"
+#include "actionmanager/command.h"
 #include "mainwindow.h"
 #include "imode.h"
 #include "extensionsystem/pluginmanager.h"
@@ -209,6 +209,7 @@ void ModeManager::objectAdded(QObject *obj)
 
 void ModeManager::aboutToRemoveObject(QObject *obj)
 {
+
 }
 
 void ModeManager::currentTabAboutToChange(int index)

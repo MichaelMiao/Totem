@@ -21,11 +21,11 @@ CorePlugin::~CorePlugin()
     if(m_editMode)
     {
         removeObject(m_editMode);
-        delete m_editMode;
+		delete m_editMode;
     }
     if(m_mainWindow)
     {
-        delete m_mainWindow;
+		delete m_mainWindow;
         m_mainWindow = 0;
     }
 }
@@ -34,12 +34,12 @@ bool CorePlugin::initialize(const QStringList &arguments, QString *errorMessage)
 {
 	m_mainWindow = new MainWindow;
     const bool success = m_mainWindow->initialize(errorMessage);
-    if (success)
-    {
-		m_editMode = new EditMode;
-        addObject(m_editMode);
-        ModeManager::activateMode(m_editMode->id());
-    }
+//     if (success)
+//     {
+// 		m_editMode = new EditMode;
+//         addObject(m_editMode);
+//         ModeManager::activateMode(m_editMode->id());
+//     }
     return success;
 }
 

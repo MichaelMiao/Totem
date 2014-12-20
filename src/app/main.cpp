@@ -1,5 +1,4 @@
-﻿#include "totem_gui_pch.h"
-#include "mainapp.h"
+﻿#include "mainapp.h"
 #include <QTranslator>
 int main(int argc, char **argv)
 {

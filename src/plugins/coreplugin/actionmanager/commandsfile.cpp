@@ -31,7 +31,7 @@
 **************************************************************************/
 
 #include "commandsfile.h"
-#include "shortcutsettings.h"
+#include "dialogs/shortcutsettings.h"
 #include "commandprivate.h"
 
 #include <app/app_version.h>

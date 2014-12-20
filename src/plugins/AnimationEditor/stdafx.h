@@ -1,0 +1,10 @@
+#include <QWidget>
+#include <QDialog>
+#include <QtCore>
+#include <QMessageBox>
+#include <QComboBox>
+#include <QDataWidgetMapper>
+#include <QLineEdit>
+#include <QSpinBox>
+#include <QAbstractTableModel>
+#include <QEasingCurve>

@@ -2,11 +2,11 @@
 #define MAINAPP_H
 #include <QObject>
 #include "qtsingleapplication/qtsingleapplication.h"
-#include "qtsingleapplication/qtsinglecoreapplication.h"
 #include <QApplication>
 #include <QString>
 #include <QFutureInterface>
 
+class PluginLoaderView;
 /*!
  * \brief 主APP类，完成插件的加载以及保证只有一个该类型的应用程序
  *
@@ -32,6 +32,8 @@ signals:
 public slots:
     void onStart(); //!< 开始加载插件
     void onFinish();//!< 完成所有插件的加载
+private:
+    PluginLoaderView *m_pLoader;
 };
 
 #endif // MAINAPP_H

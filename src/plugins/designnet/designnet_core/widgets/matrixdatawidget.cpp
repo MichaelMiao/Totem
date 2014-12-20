@@ -147,7 +147,8 @@ cv::Mat & MatrixModel::matrix() const
 
 void MatrixModel::updateData()
 {
-	reset();
+	beginResetModel();
+	endResetModel();
 }
 
 

@@ -6,8 +6,8 @@
     <TargetName>$(ProjectName)d</TargetName>
     <LinkIncremental>true</LinkIncremental>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
-    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)</OutDir>
-    <IntDir>$(SolutionDir)$(Platform)\Intermediate\$(Configuration)\$(ProjectName)</IntDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\Intermediate\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
@@ -19,7 +19,7 @@
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
     </ProjectReference>
     <Link>
-      <OutputFile>$(SolutionDir)$(Platform)\$(ProjectName)d.dll</OutputFile>
+      <OutputFile>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)d.dll</OutputFile>
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
@@ -28,7 +28,7 @@ copy  "$(TargetDir)$(TargetName).lib" "$(SolutionDir)$(Platform)\libs\$(TargetNa
     </PostBuildEvent>
     <PostBuildEvent />
     <ClCompile>
-      <AdditionalIncludeDirectories>$(OPENCV_DIR)include;$(SolutionDir)src;$(SolutionDir)src\libs;$(SolutionDir)src\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OPENCV_DIR)include;$(SolutionDir)src;$(SolutionDir)src\libs;$(SolutionDir)src\shared;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include;$(QTDIR)\include\ActiveQt;debug;$(QTDIR)\mkspecs\default;.\GeneratedFiles;$(QTDIR)\include\QtXml;.\;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtOpenGL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />

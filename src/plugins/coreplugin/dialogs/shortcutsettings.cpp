@@ -33,8 +33,8 @@
 #include "shortcutsettings.h"
 #include "actionmanager/actionmanager.h"
 #include "actionmanager/command.h"
-#include "commandprivate.h"
-#include "commandsfile.h"
+#include "actionmanager/commandprivate.h"
+#include "actionmanager/commandsfile.h"
 #include "coreconstants.h"
 #include "documentmanager.h"
 

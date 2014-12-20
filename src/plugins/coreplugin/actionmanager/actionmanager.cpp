@@ -344,7 +344,7 @@ ActionManagerPrivate::~ActionManagerPrivate()
     foreach (ActionContainerPrivate *container, m_idContainerMap)
         disconnect(container, SIGNAL(destroyed()), this, SLOT(containerDestroyed()));
     qDeleteAll(m_idContainerMap.values());
-    qDeleteAll(m_idCmdMap.values());
+//    qDeleteAll(m_idCmdMap.values());
 }
 
 QDebug operator<<(QDebug in, const Context &context)

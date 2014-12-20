@@ -52,6 +52,6 @@ private:
 
 } // namespace ExtensionSystem
 
-Q_DECLARE_INTERFACE(ExtensionSystem::IPlugin, "org.qt-project.Qt.Examples.PlugAndPaint.FilterInterface")
+Q_DECLARE_INTERFACE(ExtensionSystem::IPlugin, "com.michaelmiao.totem.PluginInterface")
 
 #endif // IPLUGIN_H

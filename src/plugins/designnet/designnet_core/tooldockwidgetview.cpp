@@ -14,6 +14,7 @@
 #include <QToolButton>
 #include <QHash>
 #include <QDrag>
+#include <QMimeData>
 const int ExtraWidth = 3;
 using namespace CustomUI;
 namespace DesignNet{
@@ -77,7 +78,7 @@ void ToolDockWidgetView::clicked(QAbstractButton *button)
     QToolButton *pButton = qobject_cast<QToolButton*>(button);
     QModelIndex index = m_toolIndexs.value(pButton);
     QDrag *drag = new QDrag(this);
-    QMimeData *data = new QMimeData;
+    QMimeData *data = new QMimeData();
 //    DesignNetTool*pTool = (DesignNetTool*)(index.data().value<void*>());
 //    ProcessorGraphicsBlock *processor = pTool->getGraphicsProcessor();
 //    data->setData(Constants::MIME_TYPE_TOOLITEM, processor->metaObject()->className());

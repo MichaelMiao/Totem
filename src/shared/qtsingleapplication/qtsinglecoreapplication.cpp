@@ -29,7 +29,6 @@
 ** Nokia at qt-info@nokia.com.
 **
 **************************************************************************/
-#include "totem_gui_pch.h"
 #include "qtsinglecoreapplication.h"
 #include "qtlocalpeer.h"
 

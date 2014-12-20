@@ -13,7 +13,7 @@
 #include "minisplitter.h"
 #include "outputpaneplaceholder.h"
 #include "dialogs/settingsdialog.h"
-#include "shortcutsettings.h"
+#include "dialogs/shortcutsettings.h"
 #include "rightpane.h"
 #include "modewidget.h"
 #include "modemanager.h"
@@ -22,7 +22,7 @@
 #include "documentmanager.h"
 #include "progressview.h"
 #include "extensionsystem/progressmanagerprivate.h"
-#include "newdialog.h"
+#include "dialogs/newdialog.h"
 #include "iwizard.h"
 #include <QFileInfo>
 #include <QMenu>
@@ -37,6 +37,7 @@
 #include <QFileDialog>
 #include <QApplication>
 #include <QToolBar>
+#include "basefilewizard.h"
 using namespace Core;
 using namespace Core::Internal;
 using namespace ExtensionSystem;
@@ -47,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
       m_settings(ExtensionSystem::PluginManager::instance()->settings()),
       m_globalSettings(ExtensionSystem::PluginManager::instance()->globalSettings()),
       m_settingsDatabase(new SettingsDatabase(QFileInfo(m_settings->fileName()).path(),
-                                                                      QLatin1String("QtCreator"),
+                                                                      QLatin1String("Totem"),
                                                                       this)),
       m_actionManager(new ActionManager(this)),
       m_editorManager(0),
@@ -106,7 +107,6 @@ MainWindow::~MainWindow()
 
     delete m_coreImpl;
     m_coreImpl = 0;
-
 }
 
 bool MainWindow::initialize(QString *errorMessage)
@@ -548,10 +548,20 @@ void MainWindow::newFile()
 
 void MainWindow::openFile()
 {
-    QStringList fileNames = QFileDialog::getOpenFileNames(0,
-                                  "Select a file to open...",
-                                 QDir::currentPath(), "Text (*.txt)");
-    openFiles(fileNames);
+// 	QList<Core::IDocumentFactory*> docList = ExtensionSystem::PluginManager::instance()->getObjects<Core::IDocumentFactory>();
+// 	
+// 	if (!docList.empty())
+//     {
+// 		QSet<QString> docSet;
+// 		foreach (Core::IDocumentFactory* pFactory, docList)
+// 		{
+// 			docSet.unite(pFactory->);
+// 		}
+//     }
+// 	QStringList fileNames = QFileDialog::getOpenFileNames(0,
+//                                   "Select a file to open...",
+//                                  QDir::currentPath(), "Text (*.txt)");
+//     openFiles(fileNames);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
