@@ -3,7 +3,6 @@
 #include "extensionsystem/pluginmanagerprivate.h"
 #include "extensionsystem/pluginspec.h"
 #include "extensionsystem/progressmanagerprivate.h"
-#include "pluginloaderview.h"
 
 #include <app_version.h>
 
@@ -223,8 +222,6 @@ int loadPluginThread(MainApp *receiver)
     QObject::connect(&(receiver->app), SIGNAL(aboutToQuit()), pm, SLOT(shutdown()));
 
     QMetaObject::invokeMethod(receiver, "onFinish", Qt::QueuedConnection);
-
-
     return 0;
 }
 MainApp::MainApp(const QString &id, int &argc, char **argv) :
@@ -235,11 +232,6 @@ MainApp::MainApp(const QString &id, int &argc, char **argv) :
 
 MainApp::~MainApp()
 {
-    if(m_pLoader)
-    {
-        delete m_pLoader;
-        m_pLoader = 0;
-    }
 }
 
 int MainApp::init()
@@ -272,18 +264,10 @@ int MainApp::init()
     }
 
 
-    m_pLoader = new PluginLoaderView();
     m_futureInterface = new QFutureInterface<void>();
     const int threadCount = QThreadPool::globalInstance()->maxThreadCount();
     QThreadPool::globalInstance()->setMaxThreadCount(qMax(4, 2 * threadCount));
-
-
     ExtensionSystem::PluginManager *pm = ExtensionSystem::PluginManager::instance();
-    connect(pm->d, SIGNAL(showMessage(QString)), this->m_pLoader, SLOT(setProgressText(QString)));
-
-//    ExtensionSystem::ProgressManagerPrivate *progressMgr = ExtensionSystem::ProgressManagerPrivate::instance();
-//    progressMgr->addTask(m_futureInterface->future(), QLatin1String("LoadPlugin"), tr(""), m_pLoader);
-// 	m_pLoader->show();
     loadPluginThread(this);
     return 0;
 }
@@ -311,12 +295,8 @@ bool MainApp::loadSkin(const QString &strFileName)
  */
 void MainApp::onStart()
 {
-    m_pLoader->show();
-	m_pLoader->raise();
 }
 
 void MainApp::onFinish()
 {
-    m_pLoader->hide();
-
 }

@@ -58,7 +58,6 @@ FrameInfoWidget::FrameInfoWidget(FrameStorageStruct* pFS, QWidget *parent)
 	ui.comboBoxPosY->setIconSize(QSize(ICON_SIZE, ICON_SIZE));
 	ui.comboBoxAlpha->setIconSize(QSize(ICON_SIZE, ICON_SIZE));
 	ui.comboBoxScale->setIconSize(QSize(ICON_SIZE, ICON_SIZE));
-
 	QSignalMapper* pMapper = new QSignalMapper(this);
 	connect(ui.btnPreview, SIGNAL(clicked()), this, SLOT(onPreview()));
 	connect(ui.btnGen, SIGNAL(clicked()), this, SLOT(onGenCode()));
@@ -67,10 +66,6 @@ FrameInfoWidget::FrameInfoWidget(FrameStorageStruct* pFS, QWidget *parent)
 	connect(ui.comboBoxScale, SIGNAL(currentIndexChanged(int)), this, SLOT(onEasingCurveChanged(int)));
 	connect(ui.comboBoxPosX, SIGNAL(currentIndexChanged(int)), this, SLOT(onEasingCurveChanged(int)));
 	connect(ui.comboBoxPosY, SIGNAL(currentIndexChanged(int)), this, SLOT(onEasingCurveChanged(int)));
-
-	connect(&m_splineEditor, SIGNAL(easingCurveChanged()), &m_posModelX, SLOT(onCustomEasingCurveChanged()));
-	connect(&m_splineEditor, SIGNAL(easingCurveChanged()), &m_posModelX, SLOT(onCustomEasingCurveChanged()));
-	connect(&m_splineEditor, SIGNAL(easingCurveChanged()), &m_posModelX, SLOT(onCustomEasingCurveChanged()));
 }
 
 FrameInfoWidget::~FrameInfoWidget()
@@ -117,15 +112,24 @@ void FrameInfoWidget::onPreview()
 void FrameInfoWidget::onEasingCurveChanged(int iIndex)
 {
 	if (iIndex == QEasingCurve::Custom)
-		m_splineEditor.show();
+	{
+		QComboBox* pCombo = qobject_cast<QComboBox*>(sender());
+		if (pCombo)
+		{
+			EasingCurveModel* pModel = (EasingCurveModel*)pCombo->model();
+			SplineEditor* pEditor = pModel->GetCustomEditor();
+			if (pEditor && !pEditor->isVisible())
+				pEditor->show();
+		}
+	}
 }
 
 QString GenEasingCurveCode(QEasingCurve easingCurve, QString strLabel)
 {
 	QString str = strLabel + "\r\n";
-	for (int i = 0; i <= 100; ++i)
+	for (int i = 0; i <= 1000; ++i)
 	{
-		str += QString("%1, ").arg(easingCurve.valueForProgress(i / 100.0) * 1000);
+		str += QString("%1f, ").arg(easingCurve.valueForProgress((i * 1.0 / 1000)));
 		if (i % 10 == 0 && i != 0)
 		{
 			str += "\r\n";

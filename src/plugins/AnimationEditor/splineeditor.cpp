@@ -12,7 +12,7 @@ const int canvasHeight = 250;
 const int canvasMargin = 160;
 
 SplineEditor::SplineEditor(QWidget *parent) :
-    QWidget(parent), m_block(false)
+	QWidget(parent), m_block(false)
 {
     setFixedSize(canvasWidth + canvasMargin * 2, canvasHeight + canvasMargin * 2);
 

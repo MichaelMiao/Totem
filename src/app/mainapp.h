@@ -6,7 +6,6 @@
 #include <QString>
 #include <QFutureInterface>
 
-class PluginLoaderView;
 /*!
  * \brief 主APP类，完成插件的加载以及保证只有一个该类型的应用程序
  *
@@ -27,13 +26,14 @@ public:
     ///
     /// 加载皮肤
     bool loadSkin(const QString &strFileName);
-signals:
-    
+	
 public slots:
     void onStart(); //!< 开始加载插件
     void onFinish();//!< 完成所有插件的加载
+
+
 private:
-    PluginLoaderView *m_pLoader;
+
 };
 
 #endif // MAINAPP_H

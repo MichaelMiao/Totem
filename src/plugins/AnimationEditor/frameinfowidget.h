@@ -44,7 +44,6 @@ private:
 	EasingCurveModel m_scaleModel;
 	QDataWidgetMapper m_dataMapper;
 
-	SplineEditor	m_splineEditor;
 	QTextEdit		m_textEdit;
 };
 

@@ -9,6 +9,8 @@
 #include <QEasingCurve>
 #include <QHash>
 
+
+class EasingCurveModel;
 class SplineEditor : public QWidget
 {
     Q_OBJECT

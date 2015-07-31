@@ -10,11 +10,14 @@ EasingCurveModel::EasingCurveModel(QObject *parent)
 	: QAbstractListModel(parent), m_customCurve(QEasingCurve::Custom)
 {
 	createEasingCurveIcon();
+	m_pSplineEditor = new SplineEditor();
+	connect(m_pSplineEditor, SIGNAL(easingCurveChanged()), this, SLOT(onCustomEasingCurveChanged()));
 }
 
 EasingCurveModel::~EasingCurveModel()
 {
-
+	delete m_pSplineEditor;
+	m_pSplineEditor = NULL;
 }
 
 int EasingCurveModel::rowCount(const QModelIndex & parent /*= QModelIndex()*/) const
