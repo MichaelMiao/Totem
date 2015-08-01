@@ -569,86 +569,12 @@
     <ClCompile Include="GeneratedFiles\Release\moc_processorconfiglistener.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="designnetcoreplugin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="designnet_core_global.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="designnetconstants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="designnetcontext.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="property\propertyowner.h">
-      <Filter>Header Files\property</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_datadetailwidget.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="data\normaldatafactory.h">
-      <Filter>Header Files\data</Filter>
-    </ClInclude>
-    <ClInclude Include="designnetbase\block.h">
-      <Filter>Header Files\designnetbase</Filter>
-    </ClInclude>
-    <ClInclude Include="toolitem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="designnet_core.pluginspec" />
-    <None Include="media\item-close.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\blackboard.jpg">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\port_connected.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\port_notconnected.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\DesignNet.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\topmost_hover.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\topmost_normal.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\untopmost_hover.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\untopmost_normal.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\default_processor.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\detail48.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\colorimage.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\grayimages.jpg">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\binaryimage.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\matrix.jpg">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="media\intdata.png">
-      <Filter>Resource Files</Filter>
-    </None>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designnetcoreplugin.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designnetcoreplugin.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="designnetmode.h">
@@ -818,6 +744,82 @@
     </CustomBuild>
     <CustomBuild Include="processorconfiglistener.h">
       <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnet_core.pluginspec" />
+    <CustomBuild Include="toolitem.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetconstants.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetcontext.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetcoreplugin.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnet_core_global.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetbase\block.h">
+      <Filter>Header Files\designnetbase</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\propertyowner.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="data\normaldatafactory.h">
+      <Filter>Header Files\data</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\binaryimage.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\blackboard.jpg">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\colorimage.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\default_processor.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\DesignNet.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\detail48.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\grayimages.jpg">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\intdata.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\item-close.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\matrix.jpg">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\port_connected.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\port_notconnected.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\topmost_hover.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\topmost_normal.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\untopmost_hover.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\untopmost_normal.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_datadetailwidget.h">
+      <Filter>Generated Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

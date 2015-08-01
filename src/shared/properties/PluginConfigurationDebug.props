@@ -21,7 +21,7 @@
     <Link>
       <OutputFile>$(SolutionDir)$(Platform)\plugins\$(TargetName).dll</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\libs;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>

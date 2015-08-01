@@ -5,15 +5,17 @@
 #include "designnetformmanager.h"
 #include "designneteditorfactory.h"
 #include "data/datamanager.h"
-#include "propertymanager.h"
-#include "normalpropertywidgetfactory.h"
-#include "normaldatafactory.h"
+#include "data/normaldatafactory.h"
+#include "property/normalpropertywidgetfactory.h"
+#include "property/propertymanager.h"
 
 #include "coreplugin/editormanager.h"
 #include "coreplugin/icore.h"
 #include "toolmodel.h"
 #include "processorfactory.h"
 #include <QtPlugin>
+
+
 using namespace ExtensionSystem;
 using namespace Core;
 namespace DesignNet{
@@ -101,6 +103,4 @@ void DesignNetCorePlugin::writeSettings()
 {
 
 }
-
 }
-Q_EXPORT_PLUGIN2(DesignNet::DesignNetCorePlugin, DesignNet::DesignNetCorePlugin)

@@ -1,7 +1,7 @@
 ﻿#include "processorpropertywidget.h"
-#include "property.h"
 #include "processor.h"
-#include "propertymanager.h"
+#include "property/property.h"
+#include "property/propertymanager.h"
 #include "coreplugin/icore.h"
 #include "coreplugin/messagemanager.h"
 

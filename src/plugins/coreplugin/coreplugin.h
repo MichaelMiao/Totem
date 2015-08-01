@@ -11,7 +11,7 @@ namespace Internal
 class MainWindow;
 class CorePlugin : public ExtensionSystem::IPlugin
 {
-    Q_OBJECT
+	Q_OBJECT
 	Q_PLUGIN_METADATA(IID "com.michaelmiao.totem.PluginInterface")
 	Q_INTERFACES(ExtensionSystem::IPlugin)
 

@@ -5,8 +5,16 @@
 #include "extensionsystem/iplugin.h"
 namespace DesignNet{
 class DesignNetCorePluginPrivate;
-class DESIGNNET_CORE_EXPORT DesignNetCorePlugin : public ExtensionSystem::IPlugin
+
+
+class DesignNetCorePlugin : public ExtensionSystem::IPlugin
 {
+public:
+
+	Q_OBJECT
+	Q_PLUGIN_METADATA(IID "com.michaelmiao.totem.DesignNetCorePlugin")
+	Q_INTERFACES(ExtensionSystem::IPlugin)
+
 public:
 	DesignNetCorePlugin();
 	~DesignNetCorePlugin();
@@ -19,6 +27,7 @@ public slots:
 	void writeSettings();
 
 private:
+	
 	DesignNetCorePluginPrivate *d;
 };
 

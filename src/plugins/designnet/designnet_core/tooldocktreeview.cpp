@@ -1,6 +1,6 @@
 #include "tooldocktreeview.h"
 #include "designnetconstants.h"
-#include "ProcessorGraphicsBlock.h"
+#include "graphicsitem/ProcessorGraphicsBlock.h"
 #include <QModelIndex>
 #include <QMimeData>
 #include <QDrag>

@@ -1,5 +1,7 @@
 #include "toolitem.h"
-#include "ProcessorGraphicsBlock.h"
+#include "graphicsitem/ProcessorGraphicsBlock.h"
+
+
 namespace DesignNet{
 ToolItem::ToolItem(Processor* data)
     : m_data(data)

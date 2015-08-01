@@ -189,7 +189,7 @@ void DesignNetMode::currentEditorChanged(Core::IEditor *editor)
     }
     else
     {
-        d->m_currentEditor = QWeakPointer<Core::IEditor>(editor);
+        d->m_currentEditor = QSharedPointer<Core::IEditor>(editor);
 
         if (d->m_currentEditor)
             connect(d->m_currentEditor.data(), SIGNAL(changed()), this, SLOT(updateActions()));

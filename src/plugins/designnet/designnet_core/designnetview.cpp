@@ -20,6 +20,7 @@
 #include <QGraphicsItem>
 #include <QMultiHash>
 #include <QApplication>
+#include <QMimeData>
 namespace DesignNet{
 class DesignNetViewPrivate
 {
@@ -100,7 +101,7 @@ void DesignNetView::dropEvent( QDropEvent * event )
 	if(!event->mimeData()->hasFormat(Constants::MIME_TYPE_TOOLITEM))
 		return;
 
-	QString processorName = QString::fromAscii(event->mimeData()->data(Constants::MIME_TYPE_TOOLITEM).data());
+	QString processorName = QString::fromLatin1(event->mimeData()->data(Constants::MIME_TYPE_TOOLITEM).data());
 	Processor *processor = ProcessorFactory::instance()->create(d->m_designnetSpace, processorName);
 	d->m_designnetSpace->addProcessor(processor);
 	
@@ -213,7 +214,7 @@ void DesignNetView::mouseMoveEvent( QMouseEvent * event )
 
 void DesignNetView::mousePressEvent( QMouseEvent * event )
 {
-	QGraphicsItem *item = scene()->itemAt(mapToScene(event->pos()));
+	QGraphicsItem *item = itemAt(mapToScene(event->pos()).toPoint());
 	PortGraphicsItem *port = qgraphicsitem_cast<PortGraphicsItem*>(item);
 	if (port)
 	{
@@ -235,7 +236,7 @@ void DesignNetView::mouseReleaseEvent( QMouseEvent * event )
 			{
 				delete d->m_currentArrowLinkItem;
 				d->m_currentArrowLinkItem = 0;
-				QGraphicsItem *item = scene()->itemAt(mapToScene(event->pos()));
+				QGraphicsItem *item = itemAt(mapToScene(event->pos()).toPoint());
 				PortGraphicsItem *target = qgraphicsitem_cast<PortGraphicsItem*>(item);
 
 				if (target)

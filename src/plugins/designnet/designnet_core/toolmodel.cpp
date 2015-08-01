@@ -1,8 +1,10 @@
 #include "toolmodel.h"
 #include "toolitem.h"
-#include "processorgraphicsblock.h"
+#include "graphicsitem/processorgraphicsblock.h"
 #include "extensionsystem/pluginmanager.h"
 #include "processorfactory.h"
+
+
 namespace DesignNet{
 ToolModel* ToolModel::m_instance = 0;
 ToolModel::ToolModel(QObject *parent) :

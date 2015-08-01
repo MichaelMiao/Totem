@@ -3,7 +3,7 @@
 #include "designnetconstants.h"
 #include "designnetview.h"
 #include "designnetbase/designnetspace.h"
-#include "processorgraphicsblock.h"
+#include "graphicsitem/processorgraphicsblock.h"
 #include "Utils/XML/xmldeserializer.h"
 #include <QTextEdit>
 #include <QMessageBox>

@@ -4,7 +4,7 @@
 class AnimationEditorPlugin : public ExtensionSystem::IPlugin
 {
 	Q_OBJECT
-	Q_PLUGIN_METADATA(IID "com.michaelmiao.totem.AnimationEditorPlugin" FILE "AnimationEditor.json")
+	Q_PLUGIN_METADATA(IID "com.michaelmiao.totem.AnimationEditorPlugin")
 	Q_INTERFACES(ExtensionSystem::IPlugin)
 
 public:

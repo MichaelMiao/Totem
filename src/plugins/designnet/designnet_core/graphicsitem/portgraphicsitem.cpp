@@ -141,8 +141,7 @@ void PortGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	if(event->button() == Qt::LeftButton)
 	{
 		m_bPressed = true;
-		this->translate(1, 1);
-		
+		this->setTransform(QTransform::fromTranslate(1, 1), true);
 		event->accept();
 		grabMouse();
 	}
@@ -167,7 +166,7 @@ void PortGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     if(m_bPressed)
     {
         m_bPressed = false;
-        this->translate(-1, -1);
+		this->setTransform(QTransform::fromTranslate(-1, -1), true);
 		setOpacity(1);
 		ungrabMouse();
     }

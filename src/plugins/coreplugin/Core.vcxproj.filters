@@ -477,6 +477,12 @@
     <ClCompile Include="icontext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Debug\moc_coreplugin.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_coreplugin.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="coreplugin.h">
@@ -646,12 +652,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="debug\moc_coreplugin.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_coreplugin.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="debug\moc_idocumentfactory.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
