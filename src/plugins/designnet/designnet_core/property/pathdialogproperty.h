@@ -11,7 +11,9 @@ class DESIGNNET_CORE_EXPORT PathDialogProperty : public Property
 {
     Q_OBJECT
     friend class PathDialogPropertyWidget;
+
 public:
+
     QDir::Filters filters() const;
     virtual Core::Id typeID() const;
     explicit PathDialogProperty(const QString &id, QString openPath = "",
@@ -35,9 +37,11 @@ public:
     bool isSinglePath() const{return m_bSinglePath;}
 
 	virtual void serialize(Utils::XmlSerializer& s) const;
-	virtual void deserialize(Utils::XmlDeserializer& s) const;
+	virtual void deserialize(Utils::XmlDeserializer& s);
+
 protected:
-    QList<Utils::Path>  m_paths;         //!< 用来存最终的路径
+    
+	QList<Utils::Path>  m_paths;         //!< 用来存最终的路径
     QString             m_openPath;     //!< 默认打开路径
     QStringList         m_nameFilters;  //!< 文件filter
     QDir::Filters       m_filters;      //!< 类型：文件/文件夹

@@ -135,7 +135,7 @@ MatrixModel::MatrixModel( MatrixDataWidget *widget )
 	
 }
 
-cv::Mat & MatrixModel::matrix() const
+cv::Mat MatrixModel::matrix() const
 {
 	MatrixData *data = qobject_cast<MatrixData*>(m_widget->m_data);
 	if(data)

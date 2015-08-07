@@ -23,9 +23,9 @@ public:
 	DesignNetFormManager();
 	~DesignNetFormManager();
 
-	bool startInit();//开始初始化
+	bool startInit();		//!< 开始初始化
 	static DesignNetFormManager *instance();
-	static void Release();//!< 释放内存，调用析构
+	static void Release();	//!< 释放内存，调用析构
 
 	DesignNetEditor *createEditor(QWidget *parent);
 
@@ -33,7 +33,11 @@ public:
 	void createControlToolBar();
 
 public slots:
-	void onRunDesignNet();	
+
+	void onRunDesignNet();
+	void onDesignNetFinished();
+	void onRelayout();
+
 protected:
 	void setupActions();
 	void addToolAction(QAction* pAction, const Core::Context& context, const Core::Id &id, 

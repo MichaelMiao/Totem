@@ -11,16 +11,16 @@
  *
  *
  */
-class MainApp : public QObject
+class MainApp : public QApplication
 {
     Q_OBJECT
 public:
     explicit MainApp(const QString &id, int &argc, char **argv);
     ~MainApp();
     int init();//!< 初始化，加载插件
-    int exec();//!< 执行app.exe
+//    int exec();//!< 执行app.exe
 
-    SharedTools::QtSingleApplication app;
+//   SharedTools::QtSingleApplication app;
     QFutureInterface<void> *m_futureInterface;//!< 进度监控
 
     ///

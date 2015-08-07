@@ -68,8 +68,8 @@ Core::BaseFileWizardParameters DesignNet::DesignNetSolutionWizard::parameters()
 	Core::BaseFileWizardParameters param;
 	param.setIcon(QIcon(":/media/DesignNet.png"));
 	param.setCategory(tr("DesignNet"));
-	param.setDescription(tr(""));
-	param.setDisplayCategory(tr(""));
+	param.setDescription(tr("The file is used for flowers category recognition"));
+	param.setDisplayCategory(tr("DesignNet File"));
 	param.setDisplayName(tr("miao"));
 	return param;
 }

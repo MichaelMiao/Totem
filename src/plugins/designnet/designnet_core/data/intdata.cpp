@@ -6,7 +6,7 @@ namespace DesignNet{
 IntData::IntData(const int &defaultValue, QObject *parent)
 	: IData(parent), m_value(defaultValue)
 {
-	m_image.load(Constants::DATA_IMAGE_INT);
+//	m_image.load(Constants::DATA_IMAGE_INT);
 }
 
 IntData::~IntData()

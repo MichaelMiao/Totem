@@ -4,12 +4,11 @@
 #include <qglobal.h>
 
 #if defined(CUSTOMUI_LIB)
-#  define CUSTOMUI_EXPORT __declspec(dllexport)
+#  define CUSTOMUI_EXPORT Q_DECL_EXPORT
 #elif  defined(CUSTOMUI_STATIC_LIB) // Abuse single files for manual tests
-#error 1
 #  define CUSTOMUI_EXPORT
 #else
-#  define CUSTOMUI_EXPORT __declspec(dllimport)
+#  define CUSTOMUI_EXPORT Q_DECL_IMPORT
 #endif
 
 #endif // CUSTOMUI_GLOBAL_H

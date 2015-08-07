@@ -121,7 +121,7 @@ using namespace Aggregation;
 */
 Aggregate *Aggregate::parentAggregate(QObject *obj)
 {
-    QReadLocker locker(&lock());
+//    QReadLocker locker(&lock());
     return aggregateMap().value(obj);
 }
 

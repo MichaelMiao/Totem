@@ -34,6 +34,7 @@ ToolDockWidgetPrivate::ToolDockWidgetPrivate(ToolDockWidget *pWidget)
     m_Model                 = ToolModel::instance();
     m_processorTreeWidget   = new ToolDockTreeView(pWidget);
     m_processorTreeWidget->setModel(m_Model);
+	m_processorTreeWidget->expand(QModelIndex());
 
     m_filterLineEdit    = new FilterLineEdit(q);
 

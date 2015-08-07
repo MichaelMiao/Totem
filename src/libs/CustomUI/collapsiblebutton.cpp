@@ -106,9 +106,8 @@ QSize CollapsibleButton::sizeHint() const
 {
     QSize buttonSize = this->buttonSizeHint();
     if (d->m_bCollapsed)
-    {
         return buttonSize + QSize(0,d->m_collapsedHeight);
-    }
+
     QSize s = this->QAbstractButton::sizeHint();
     return s.expandedTo(buttonSize + QSize(0, d->m_collapsedHeight));
 }
@@ -129,16 +128,15 @@ bool CollapsibleButton::event(QEvent *event)
 
 bool CollapsibleButton::eventFilter(QObject *child, QEvent *e)
 {
-    if(d->m_bForcingVisibility)
-    {
+    if (d->m_bForcingVisibility)
         return false;
-    }
-    if(e->type() == QEvent::ShowToParent)
+    
+	if (e->type() == QEvent::ShowToParent)
     {
         child->setProperty("visibilityToParent", true);
         d->setChildVisibility(qobject_cast<QWidget*>(child));
     }
-    else if(e->type() == QEvent::HideToParent)
+    else if (e->type() == QEvent::HideToParent)
     {
         child->setProperty("visibilityToParent", false);
     }
@@ -150,16 +148,14 @@ void CollapsibleButton::setVisible(bool bShow)
     d->m_bForcingVisibility = true;
     QWidget::setVisible(bShow);
     d->m_bForcingVisibility = false;
-    if(!d->m_bStateCreated && this->testAttribute(Qt::WA_WState_Created))
+    if (!d->m_bStateCreated && this->testAttribute(Qt::WA_WState_Created))
     {
         d->m_bStateCreated = true;
         foreach(QObject* child, this->children())
         {
             QWidget* childWidget = qobject_cast<QWidget*>(child);
             if(childWidget)
-            {
                 d->setChildVisibility(childWidget);
-            }
         }
     }
 }
@@ -168,10 +164,9 @@ void CollapsibleButton::setVisible(bool bShow)
 void CollapsibleButton::collapse(bool c)
 {
     if(c == d->m_bCollapsed)
-    {
         return;
-    }
-    d->m_bCollapsed = c;
+    
+	d->m_bCollapsed = c;
     if(c)
     {
         d->m_maximumHeight = this->maximumHeight();
@@ -187,28 +182,20 @@ void CollapsibleButton::collapse(bool c)
     {
         QWidget* childWidget = qobject_cast<QWidget*>(child);
         if(childWidget)
-        {
             d->setChildVisibility(childWidget);
-        }
     }
     QWidget* parent = this->parentWidget();
     if(!d->m_bCollapsed && (!parent || !parent->layout()))
-    {
         this->resize(this->sizeHint());
-    }
     else
-    {
         this->updateGeometry();
-    }
     emit contentsCollapsed(c);
 }
 
 void CollapsibleButton::onToggled(bool clicked)
 {
     if(this->isCheckable())
-    {
         this->collapse(!clicked);
-    }
 }
 
 void CollapsibleButton::paintEvent(QPaintEvent *_event)
@@ -228,9 +215,7 @@ void CollapsibleButton::paintEvent(QPaintEvent *_event)
             if ((*it)->underMouse())
             {
                 if (!_event->rect().contains(buttonRect))
-                {
                     this->update(buttonRect);
-                }
                 opt.state &= ~QStyle::State_MouseOver;
                 exclusiveMouseOver = true;
                 break;
@@ -239,9 +224,7 @@ void CollapsibleButton::paintEvent(QPaintEvent *_event)
         if (d->m_bExclusiveMouseOver && !exclusiveMouseOver)
         {
             if (!_event->rect().contains(buttonRect))
-            {
                 this->update(buttonRect);
-            }
         }
     }
     d->m_bExclusiveMouseOver = exclusiveMouseOver;
@@ -252,13 +235,9 @@ void CollapsibleButton::paintEvent(QPaintEvent *_event)
     int buttonHeight = opt.rect.height();
     uint tf = d->m_textAlignment;
     if (this->style()->styleHint(QStyle::SH_UnderlineShortcut, &opt, this))
-    {
         tf |= Qt::TextShowMnemonic;
-    }
     else
-    {
         tf |= Qt::TextHideMnemonic;
-    }
     int textWidth = opt.fontMetrics.boundingRect(opt.rect, tf, opt.text).width();
     int indicatorSpacing = this->style()->pixelMetric(QStyle::PM_CheckBoxLabelSpacing, &opt, this);
     int buttonMargin = this->style()->pixelMetric(QStyle::PM_ButtonMargin, &opt, this);
@@ -300,51 +279,35 @@ void CollapsibleButton::paintEvent(QPaintEvent *_event)
                                   indicatorSize.width(), indicatorSize.height());
     }
     if (d->m_bCollapsed)
-    {
         style()->drawPrimitive(QStyle::PE_IndicatorArrowRight, &indicatorOpt, &p, this);
-    }
     else
-    {
         style()->drawPrimitive(QStyle::PE_IndicatorArrowDown, &indicatorOpt, &p, this);
-    }
 
     // Draw Text
     if (d->m_textAlignment & Qt::AlignLeft)
     {
         if (d->m_indicatorAlignment & Qt::AlignLeft)
-        {
             opt.rect.setLeft(indicatorOpt.rect.right() + indicatorSpacing);
-        }
         else
-        {
             opt.rect.setLeft(opt.rect.x() + buttonMargin);
-        }
     }
     else if (d->m_textAlignment & Qt::AlignHCenter)
     {
         if (d->m_indicatorAlignment & Qt::AlignHCenter)
-        {
             opt.rect.setLeft(indicatorOpt.rect.right() + indicatorSpacing);
-        }
         else
         {
             opt.rect.setLeft(opt.rect.x() + opt.rect.width() / 2 - textWidth / 2);
             if (d->m_indicatorAlignment & Qt::AlignLeft)
-            {
                 opt.rect.setLeft( qMax(indicatorOpt.rect.right() + indicatorSpacing, opt.rect.left()) );
-            }
         }
     }
     else if (d->m_textAlignment & Qt::AlignRight)
     {
         if (d->m_indicatorAlignment & Qt::AlignRight)
-        {
             opt.rect.setLeft(indicatorOpt.rect.left() - indicatorSpacing - textWidth);
-        }
         else
-        {
             opt.rect.setLeft(opt.rect.right() - buttonMargin - textWidth);
-        }
     }
     // all the computations have been made infering the text would be left oriented
     tf &= ~Qt::AlignHCenter & ~Qt::AlignRight;
@@ -357,7 +320,7 @@ void CollapsibleButton::paintEvent(QPaintEvent *_event)
     fopt.init(this);
     // HACK: on some styles, the frame doesn't exactly touch the button.
     // this is because the button has some kind of extra border.
-	fopt.rect.setTop(buttonHeight);
+    fopt.rect.setTop(buttonHeight);
     fopt.frameShape = d->m_contentsFrameShape;
     switch (d->m_contentsFrameShadow)
     {
@@ -439,17 +402,11 @@ void CollapsibleButton::initStyleOption(QStyleOptionButton *option) const
     option->initFrom(this);
 
     if (this->isDown() )
-    {
         option->state |= QStyle::State_Sunken;
-    }
     if (this->isChecked() && !d->m_bLookOffWhenChecked)
-    {
         option->state |= QStyle::State_On;
-    }
     if (!this->isDown())
-    {
         option->state |= QStyle::State_Raised;
-    }
 
     option->text = this->text();
     option->icon = this->icon();

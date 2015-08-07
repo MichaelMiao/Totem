@@ -1,19 +1,35 @@
 ﻿#ifndef PROCESSOR_H
 #define PROCESSOR_H
 
-#include <QObject>
-#include <QList>
 
 #include "../designnet_core_global.h"
 #include "../property/propertyowner.h"
+#include "../data/datatype.h"
 #include "Utils/XML/xmldeserializer.h"
 #include "port.h"
-#include <QWaitCondition>
-#include <QMutex>
+#include "../widgets/processorfrontwidget.h"
 #include <QFutureInterface>
+#include <QFutureWatcher>
 #include <QObject>
 #include <QIcon>
+#include <QVector>
+#include <QList>
+#include <QMap>
 #include <QReadWriteLock>
+
+#define DECLEAR_PROCESSOR(x) \
+	virtual Processor* create(DesignNet::DesignNetSpace *space = 0) const \
+	{ \
+		return new x(space); \
+	}
+
+#define BEGIN_PROCESS() \
+	notifyDataWillChange(); \
+	m_bDataDirty = true;
+#define END_PROCESS() \
+	m_bDataDirty = false;
+
+
 QT_BEGIN_NAMESPACE
 class QThread;
 QT_END_NAMESPACE
@@ -23,6 +39,23 @@ namespace DesignNet{
 class IData;
 class DesignNetSpace;
 class Processor;
+
+enum ProcessorType
+{
+	ProcessorType_Permanent,
+	ProcessorType_Once
+};
+
+class ProcessResult
+{
+public:
+	ProcessResult() : m_bSucessed(true), m_bNeedLoop(false)
+	{
+	}
+	bool m_bSucessed;
+	bool m_bNeedLoop;	// 是否需要重复执行
+};
+
 class ProcessorWorker : public QObject{
 	Q_OBJECT
 public:
@@ -34,90 +67,170 @@ public slots:
 	void stopped();
 	void started();
 protected:
+	QFutureInterface<ProcessResult> futureInterface;
 	bool			m_bWorking;				//!< 是否正在执行
 	QMutex			m_mutex;
 };
 
 class DESIGNNET_CORE_EXPORT Processor : public QObject, public PropertyOwner
 {
-    friend class Port;
 	friend class ProcessorWorker;
 	Q_OBJECT
 public:
-    explicit Processor(DesignNetSpace *space = 0, QObject* parent = 0);
+    
+	explicit Processor(DesignNetSpace *space = 0, QObject* parent = 0, ProcessorType processorType = ProcessorType_Once);
     virtual ~Processor();
-	virtual void init() {};
-    virtual Processor* create(DesignNetSpace *space = 0) const = 0;  //!< 创建Processor
+	
+	virtual void init() { }
+	virtual Processor* create(DesignNetSpace *space = 0) const = 0;  //!< 创建Processor
 
-    const QList<Port*> & getInputPorts() const;
-    const QList<Port *> &getOutputPorts() const;
-
-    Port*	getPort(const QString &name) const; //!< 得到指定名称的Port
-	void    addPort(Port* port);			//!< 添加端口
-
-	void    removePort(Port* port = 0);     //!< 删除端口
+	virtual ProcessorFrontWidget* processorFrontWidget() { return 0; }
 
 	void waitForFinish();
-	QIcon icon() const;
-	void setIcon(const QString &str);
-    
-    void    setName(const QString& name);//!< set name
-    virtual QString name() const;        //!< get name
-    void    setID(const int &id);       //!< 在一个DesignNetSpace中的唯一ID
-    int     id() const;                 //!< getter
+	void waitChildrenFinished();
+	ProcessResult result() { return m_watcher.result(); }
 
-    virtual Core::Id typeID() const;			//!< 返回类型ID
-    virtual QString category() const;			//!< 返回种类
-    virtual void pushData(IData *data, const QString& portname );
-    int indegree(QList<Processor*> exclusions = QList<Processor*>()) const; //!< 计算入度
+	int indegree(QList<Processor*> exclusions = QList<Processor*>()) const; //!< 计算入度
+	virtual bool connectionTest(Port* pOutput, Port* pInput);
+	virtual bool connectionTest(Processor* father);
+
+	QList<Processor*> getInputProcessor() const;
+	QList<Processor*> getOutputProcessor() const;
+
+	//////////////////////////////////////////////////////////////////////////
+
+	QIcon	icon() const;
+	void	setIcon(const QString &str);
     
+    void    setName(const QString& name);	//!< set name
+    QString name() const;					//!< get name
+
+    void    setID(const int &id);			//!< 在一个DesignNetSpace中的唯一ID
+    int     id() const;						//!< getter
+
 	DesignNetSpace *space() const{ return m_space; }
-	void setSpace(DesignNetSpace *space) ;
+	void	setSpace(DesignNetSpace *space) ;
 
-	virtual bool isDataReady() const;				//!< 数据是否已经准备好了
-	void setDataReady(const bool &bReady = true);	//!< 设置数据是否准备好了
-	void setRepickData(const bool &repick = true);	//!< 下次执行是否重新去数据
+    virtual Core::Id typeID() const;		//!< 返回类型ID
+    virtual QString category() const;		//!< 返回种类
+    
+	//////////////////////////////////////////////////////////////////////////
+
+	bool	addPort(Port::PortType pt, DataType dt, QString sLabel, bool bRemovable = false);
+	void	removePort(Port *pPort);
+	Port*	getPort(Port::PortType pt, DataType dt);
+	Port*	getPort(Port::PortType pt, QString sLabel);
+	Port*	getPort(const int iIndex);
+	QList<Port*> getPorts(Port::PortType pt) const;
+	
+	QList<ProcessData*> getData(QString sLabel);
+	ProcessData			getOneData(QString sLabel);
+
+	template<class T>
+	T getPortData(PortData ptData)
+	{
+		return getOneData(ptData.strName).variant.value<T>();
+	}
+
+
+	void pushData(ProcessData &pd, QString strLabel);
+	void pushData(QVariant &var, DataType dataType, QString strLabel = "", int iProcessId = -1);
+	void pushData(IData* data, QString strLabel = "", int iProcessId = -1);
+
+	QList<ProcessData>	getOutputData(DataType dt = DATATYPE_INVALID);
+	QList<ProcessData>	getInputData(DataType dt = DATATYPE_INVALID);
+	//////////////////////////////////////////////////////////////////////////
+
+	void start();
 
 	virtual void serialize(Utils::XmlSerializer& s) const;
 	virtual void deserialize(Utils::XmlDeserializer& s) ;
 	virtual QString serializableType() const;
 	virtual Utils::XmlSerializable* createSerializable() const;
-	bool isPortCountResizable() const;
-	void setPortCountResizable(const bool &resizable);
-	bool isRunning();
-	QReadWriteLock m_workingLock;
-signals:
-	void logout(QString log);
-public slots:
-	void run();							//!< 线程执行该函数
-	void onPropertyChanged_internal();
-protected:
-	virtual void propertyChanged(Property *prop);
 	
-	virtual void propertyAdded(Property* prop);
-	virtual bool process() = 0;			//!< 正式处理
-	virtual bool beforeProcess();		//!< 处理之前的准备,这里会确保数据已经准备好了
-	virtual void afterProcess(bool status = true);		//!< 完成处理
-	virtual void showConfig();			//!< 显示config
-    virtual void stateChanged(Port* port);  //!< 端口状态改变
-    virtual void dataArrived(Port* port);  //!< 数据到达
-	virtual bool connectionTest(Port* src, Port* target);
-	virtual bool checkDataReady();			//!< 检查数据是否准备好了
+	bool isRunning();
 
-    QList<Port*>	m_inputPorts;			//!< 输入端口列表
-    QList<Port*>	m_outputPorts;			//!< 输出端口列表
-    QIcon			m_icon;
+	virtual bool prepareProcess() { return true; }
+
+	bool connectTo(Processor* child);
+	bool disconnect(Processor* pChild);
+	bool isConnectTo(Processor* pChild);
+	void detach();
+
+	bool isDataDirty();
+
+	bool isResizableInput() { return m_bResizableInput; }
+
+
+	void notifyDataWillChange();	//!< 通知数据有变化
+	void notifyProcess();			//!< 通知处理器处理
+
+	QReadWriteLock m_workingLock;
+
+signals:
+
+	void logout(QString log);
+	void connected(Processor* father, Processor* pChild);
+	void disconnected(Processor* father, Processor* pChild);
+	void processorModified();
+	void childProcessFinished();
+	
+	void processStarted();
+	void processFinished();
+
+	void portAdded(Port* pPort);
+	void portRemoved(Port* pPort);
+
+public slots:
+
+	void run(QFutureInterface<ProcessResult> &future);//!< 线程执行该函数
+
+	void onPropertyChanged_internal();
+
+	void onPortConnected(Port* src, Port* target);
+	void onPortDisconnected(Port* src, Port* target);
+
+	void onChildProcessFinished();
+
+
+protected:
+
+	
+	virtual void onNotifyDataChanged();
+	virtual void onNotifyProcess();
+	virtual void onChildProcessorFinish(Processor* p);
+
+	virtual void propertyChanged(Property *prop);
+	virtual void propertyAdded(Property* prop);
+
+	virtual bool beforeProcess(QFutureInterface<ProcessResult> &future);		//!< 处理之前的准备,这里会确保数据已经准备好了
+	virtual bool process(QFutureInterface<ProcessResult> &future) = 0;			//!< 正式处理
+	virtual void afterProcess(bool status = true);		//!< 完成处理
+	virtual bool finishProcess() { return true; }
+	
+	virtual void onCreateNewPort(Port::PortType pt);
+
+	//////////////////////////////////////////////////////////////////////////
+
+	QIcon			m_icon;
 	QString			m_title;				//!< 种类title
-    DesignNetSpace* m_space;				//!< DesignNetSpace
-    int				m_id;
-	QWaitCondition	m_dataReadyWait;			//!< 等待数据到来
-	QMutex			m_dataReadyMutex;
-	bool			m_portCountResizable;	//!< 端口可变
-	mutable QMutex	m_mutexReady;			//!< 数据操作锁
-	bool			m_bReady;
-	bool			m_bRepickData;			//!< 下次执行是否重新取数据
+	int				m_id;
+	ProcessorType	m_eType;
+	bool			m_bDataDirty;			//!< 数据有更新
+
+	QList<Port*>	m_outputPort;			//!< 所有的输出端口
+	QList<Port*>	m_inputPort;			//!< 输入端口
+
+	QList<Processor*> m_waitProcessors;		//!< 还未收到完成通知的处理器列表 
 	ProcessorWorker m_worker;
+	DesignNetSpace* m_space;				//!< DesignNetSpace
+
+	bool			m_bResizableInput;		//!< 可变数量的输入
+
+	QFutureWatcher<ProcessResult> m_watcher;	//!< 用于控制进度
 	QThread*  m_thread;
+
+	friend class Port;
 };
 }
 

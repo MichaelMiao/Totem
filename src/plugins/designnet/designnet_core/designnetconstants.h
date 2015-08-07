@@ -22,19 +22,19 @@ const char DESIGNNET_ICON[]         = ":/media/DesignNet.png";
 const char DESIGNNET_MODE_DISPLAYNAME[] = QT_TRANSLATE_NOOP("DesignNet", "DesignNet");
 
 const char DESIGNNET_PROCESS_ID[]   = "DesignNet.Process";
+
+const char DESIGNNET_EDITSTATE_MOVE_ACTION[]	= "DesignNet.EditState.Move";
+const char DESIGNNET_EDITSTATE_LINK_ACTION[]	= "DesignNet.EditState.Link";
+const char DESIGNNET_EDITSTATE_RELAYOUT_ACTION[] = "DesignNet.EditState.Relayout";
 /// DockWidget Name
 const char DESIGN_DOCKNAME_TOOL[]       = "DockName.Tools";
 const char DESIGN_DOCKNAME_PROPERTY[]   = "DockName.Properties";
+const char DESIGN_DOCKNAME_AVAILIABLEDATA[] = "DockName.AvailiableData";
+
 /// GraphicsItem Image
 const char ITEM_IMAGE_PORT_CONNECTED[]        = ":/media/port_connected.png";
 const char ITEM_IMAGE_PORT_NOTCONNECTED[]     = ":/media/port_notconnected.png";
 
-/// Data Type Image
-const char DATA_IMAGE_COLOR_IMAGE[]			= ":/media/colorimage.png";
-const char DATA_IMAGE_GRAY_IMAGE[]			= ":/media/grayimages.jpg";
-const char DATA_IMAGE_BINARY_IMAGE[]		= ":/media/binaryimage.png";
-const char DATA_IMAGE_MATRIX[]				= ":/media/matrix.jpg";
-const char DATA_IMAGE_INT[]					= ":/media/intdata.png";
 //MIME Type
 const char MIME_TYPE_TOOLITEM[] = "DesignNet/ToolItem";
 
@@ -50,6 +50,7 @@ const char DATA_TYPE_LABEL[]	= "DataType/Label";
 const char DATA_TYPE_HISTOGRAM[] = "DataType/Histogram";
 const char DATA_TYPE_MATRIX[]	= "DataType/Matrix";
 const char DATA_TYPE_INT[]		= "DataType/Int";
+const char DATA_TYPE_CUSTOM[]	= "DataType/Custom";
 /// Data Widget Factory ID
 const char DATA_WIDGET_FACTORY_NORMAL[] = "DataWidgetFactory/Normal";
 /// ICON
@@ -66,10 +67,20 @@ const float ZValue_Tooltip = 40.0f;
 
 ///
 /// GraphicsItem的Type
-const int PortGraphicsItemType = 1;         //!< 端口类型
-const int PortArrowLinkItemType = 2;        //!< 端口箭头类型
-const int ProcessorGraphicsBlockType = 3;   //!< 处理器类型
+const int GraphicsItemType_Port			= 1;	//!< 端口类型
+const int GraphicsItemType_PortConnect	= 2;	//!< 端口箭头类型
+const int GraphicsItemType_Process		= 3;	//!< 处理器类型
+const int GraphicsItemType_ProcessConnect = 4;	//!< 处理器箭头类型
 }//namespace DesignNet
+
+
 #define _T(x) QLatin1String(x)
+
+#define PORTITEM_WIDTH		16
+#define PORTITEM_SPACE		5
+
+#define TYPE(CLASS, x) \
+	enum { Type = UserType + x }; \
+	int type() const override { return CLASS::Type; }
 
 #endif // DESIGNNETCONSTANTS_H

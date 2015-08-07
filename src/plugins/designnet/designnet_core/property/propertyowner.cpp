@@ -4,6 +4,7 @@
 #include "Utils/XML/xmlserializer.h"
 #include "Utils/XML/xmlserializable.h"
 #include <QDebug>
+#include "Utils/XML/xmldeserializer.h"
 using namespace Aggregation;
 namespace DesignNet{
 
@@ -104,17 +105,16 @@ QList<Property*> PropertyOwner::getInvalidProperties()
 	return list;
 }
 
-void PropertyOwner::serialize( Utils::XmlSerializer& s )const
+void PropertyOwner::serialize( Utils::XmlSerializer& s ) const
 {
 	foreach(Property *p, m_aggregate->components<Property>())
-	{
 		s.serialize("Property", *p);
-	}
 }
 
 void PropertyOwner::deserialize( Utils::XmlDeserializer& s )
 {
-
+	foreach(Property *p, m_aggregate->components<Property>())
+		s.deserialize("Property", *p);
 }
 
 void PropertyOwner::propertyRemoving( Property* prop )

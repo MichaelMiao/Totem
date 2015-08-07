@@ -3,12 +3,12 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>$(SolutionDir)$(Platform)\plugins\</OutDir>
-    <IntDir>$(SolutionDir)$(Platform)\Intermediate\$(Configuration)\$(ProjectName)\</IntDir>
-    <TargetName>$(ProjectName)d</TargetName>
     <EnableManagedIncrementalBuild>true</EnableManagedIncrementalBuild>
     <LinkIncremental>true</LinkIncremental>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <TargetName>$(ProjectName)d</TargetName>
+    <OutDir>$(SolutionDir)$(Platform)\plugins\</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\Intermediate\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>

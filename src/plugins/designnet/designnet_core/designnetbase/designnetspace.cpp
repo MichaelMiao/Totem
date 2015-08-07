@@ -1,25 +1,23 @@
 #include "designnetspace.h"
 #include "utils/totemassert.h"
-#include "port.h"
 #include "coreplugin/icore.h"
 #include "coreplugin/messagemanager.h"
-
 #include "Utils/XML/xmlserializer.h"
 #include "Utils/XML/xmldeserializer.h"
 #include "utils/runextensions.h"
-
 #include <QDebug>
+#include <QFutureSynchronizer>
 using namespace Utils;
 namespace DesignNet{
 
 void Connection::serialize( XmlSerializer& s ) const
 {
 	if (m_srcProcessor == -1 || -1 == m_targetProcessor)
-	{
 		return;
-	}
+
 	s.serialize("src_processor", m_srcProcessor);
 	s.serialize("src_port", m_srcPort);
+
 	s.serialize("target_processor", m_targetProcessor);
 	s.serialize("target_port", m_targetPort);
 }
@@ -28,33 +26,33 @@ void Connection::deserialize( XmlDeserializer& s )
 {
 	s.deserialize("src_processor", m_srcProcessor);
 	s.deserialize("src_port", m_srcPort);
+
 	s.deserialize("target_processor", m_targetProcessor);
 	s.deserialize("target_port", m_targetPort);
 }
 
 Connection::Connection( const Connection &c )
 {
-	m_srcPort		= c.m_srcPort;
 	m_srcProcessor	= c.m_srcProcessor;
-	m_targetPort	= c.m_targetPort;
+	m_srcPort		= c.m_srcPort;
 	m_targetProcessor	= c.m_targetProcessor;
+	m_targetPort	= c.m_targetPort;
 }
 
 
 DesignNetSpace::DesignNetSpace(DesignNetSpace *space, QObject *parent) :
-    Processor(space),
-    m_bProcessing(false)
+    Processor(space, parent, ProcessorType_Permanent)
 {
-    connect(this, SIGNAL(logout(QString)), Core::ICore::messageManager(), SLOT(printToOutputPanePopup(QString)));
+	QObject::connect(this, SIGNAL(processStarted()), this, SLOT(testOnProcessFinished()));
 }
 
-void DesignNetSpace::addProcessor(Processor *processor)
+void DesignNetSpace::addProcessor(Processor *processor, bool bNotifyModify)
 {
     TOTEM_ASSERT(processor != 0, return);
     bool bret = contains(processor);
     if(bret)
     {
-        LOGOUT(tr("can't add the exist processor to the space"));
+        emit logout(tr("can't add the exist processor to the space"));
         return;
     }
 	processor->setSpace(this);
@@ -63,12 +61,35 @@ void DesignNetSpace::addProcessor(Processor *processor)
 		int iUID = generateUID();
 		processor->setID(iUID);
 	}
-	
     m_processors.push_back(processor);
-    emit processorAdded(processor);
-	emit modified();
+	
+	QObject::connect(processor, SIGNAL(connected(Processor*, Processor*)), this, SIGNAL(connectionAdded(Processor*, Processor*)));
+	QObject::connect(processor, SIGNAL(disconnected(Processor*, Processor*)), this, SIGNAL(connectionRemoved(Processor*, Processor*)));
+	QObject::connect(processor, SIGNAL(processorModified()), this, SIGNAL(modified()));
+
+	emit processorAdded(processor);
+	if (bNotifyModify)
+		emit modified();
 }
 
+void DesignNetSpace::removeProcessor(Processor *processor, bool bNotifyModify)
+{
+	if (processor == 0)
+	{
+		foreach (Processor* p, m_processors)
+			removeProcessor(processor, bNotifyModify);
+		return ;
+	}
+	processor->detach();
+	QList<Processor*>::const_iterator itr = (qFind(m_processors, processor));
+	TOTEM_ASSERT(itr != m_processors.end(), qDebug()<< "can't remove the processor");
+	m_processors.removeOne(processor);
+	emit processorRemoved(processor);
+	delete processor;
+
+	if (bNotifyModify)
+		emit modified();
+}
 
 bool DesignNetSpace::contains(Processor *processor)
 {
@@ -84,26 +105,6 @@ Processor *DesignNetSpace::create(DesignNetSpace *space) const
 QString DesignNetSpace::name() const
 {
     return QString("DesignNetSpace");
-}
-
-bool DesignNetSpace::connectPort(Port *inputPort, Port *outputPort)
-{
-    if(outputPort->connect(inputPort))
-    {
-        emit connectionAdded(inputPort, outputPort);
-        return true;
-    }
-    return false;
-}
-
-bool DesignNetSpace::disconnectPort(Port *inputPort, Port *outputPort)
-{
-    if(outputPort->disconnect(inputPort))
-    {
-        emit connectionRemoved(inputPort, outputPort);
-        return true;
-    }
-    return false;
 }
 
 int DesignNetSpace::generateUID()
@@ -125,59 +126,99 @@ void DesignNetSpace::propertyRemoved(Property *prop)
 {
 }
 
-void DesignNetSpace::removeProcessor(Processor *processor)
+bool DesignNetSpace::prepareProcess()
 {
-    QList<Processor*>::const_iterator itr = (qFind(m_processors, processor));
-    TOTEM_ASSERT(itr != m_processors.end(), qDebug()<< "can't not remove the processor");
-    m_processors.removeOne(processor);
-    emit processorRemoved(processor);
-    delete processor;
-}
+	QList<Processor*> exclusions;
 
-bool DesignNetSpace::process()
-{	
-    m_bProcessing = true;
-    ///
-    /// \brief 首先进行拓扑排序
-    ///
-    QList<Processor*> exclusions;
-    QList<Processor*> tempNet = m_processors;
-    bool dirty = true;
-    while(dirty)
-    {
-        dirty = false;
-        foreach(Processor* processor, tempNet)
-        {
-            int indegree = processor->indegree(exclusions);
-            if(indegree == 0)
-            {
-                exclusions.append(processor);
-                tempNet.removeOne(processor);
-                dirty = true;
-            }
-        }
-    }
-    if(!tempNet.isEmpty())
-    {
-        emit logout(tr("The designnet space can't be processed. Maybe there are some circle relationships in the space."));
-        return false;
-    }
+	if(!sortProcessors(exclusions))
+	{
+		emit logout(tr("The designnet space can't be processed. Maybe there are some circle relationships in the space."));
+		return false;
+	}
+	QList<Processor*> tempNet;
 	foreach(Processor* processor, exclusions)
 	{
-		if(processor->indegree() == 0)
+		QList<Processor*> processors;
+		bool bHasError = false;
+		if(processor->indegree(tempNet) == 0)
 		{
-			processor->setDataReady(true);
+			bHasError = !processor->prepareProcess();
+			if (bHasError)
+				return false;
+			processors.push_back(processor);
+			tempNet.push_back(processor);
 		}
 	}
+	return true;
+}
+
+bool DesignNetSpace::process(QFutureInterface<ProcessResult> &future)
+{	
+    ///
+    /// \brief 首先进行拓扑排序, 检查一下是否可以执行
+    ///
+    QList<Processor*> exclusions;
+    if(!sortProcessors(exclusions))
+    {
+        emit logout(tr("The designnet space can't be processed. Maybe there are some circle relationships in the space."));
+		return false;
+    }
+	QList<Processor*> tempNet;
+	QList<Processor*> zeroProcessors;
 	foreach(Processor* processor, exclusions)
+	{
+		if(processor->indegree(tempNet) == 0)
+			zeroProcessors.push_back(processor);
+	}
+	tempNet << zeroProcessors;
+	foreach(Processor* processor, zeroProcessors)
+	{
+		processor->start();
+	}
+	foreach(Processor* processor, zeroProcessors)
 	{
 		processor->waitForFinish();
 	}
-	QString log = tr("The designnet space has been processed.");
-    
-	emit logout(log);
-	m_bProcessing = false;
-	waitForFinish();
+// 	bool bNeedLoop = true;
+// 	while (bNeedLoop)
+// 	{
+// 		bNeedLoop = false;
+// 
+// 		QList<Processor*> tempNet;
+// 		foreach(Processor* processor, exclusions)
+// 		{
+// 			QList<Processor*> processors;
+// 			if(processor->indegree(tempNet) == 0)
+// 			{
+// 				processor->start();
+// 				processors.push_back(processor);
+// 				tempNet.push_back(processor);
+// 			}
+// 			foreach(Processor* processor, processors)
+// 			{
+// 				processor->waitForFinish();
+// 				ProcessResult pr = processor->result();
+// 				qDebug() << pr.m_bSucessed << pr.m_bNeedLoop;
+// 				if (!pr.m_bSucessed)
+// 				{
+// 					emit logout(tr("Processor %d run faild").arg(processor->id()));
+// 					return false;
+// 				}
+// 				else
+// 				{
+// 					bNeedLoop |= processor->result().m_bNeedLoop;
+// 				}
+// 			}
+// 		}
+// 	}
+	
+	emit logout(tr("The designnet space has been processed."));
+	return true;
+}
+
+bool DesignNetSpace::finishProcess()
+{
+	emit processFinished();
 	return true;
 }
 
@@ -203,44 +244,46 @@ void DesignNetSpace::onPropertyChanged_internal()
 		propertyChanged(prop);
 }
 
-void DesignNetSpace::propertyChanged( Property *prop )
+void DesignNetSpace::propertyChanged(Property *prop)
 {
 	
 }
 
-void DesignNetSpace::propertyAdded( Property* prop )
+void DesignNetSpace::propertyAdded(Property* prop)
 {
 	QObject::connect(prop, SIGNAL(changed()), this, SLOT(onPropertyChanged_internal()));	
 }
 
-void DesignNetSpace::serialize( Utils::XmlSerializer& s ) const
+void DesignNetSpace::serialize(Utils::XmlSerializer& s) const
 {
 	Processor::serialize(s);
-	QList<Connection> connections;
-	foreach(Processor *processor, m_processors)
+	s.serialize("processors", m_processors, "processor");
+	QList<Connection> vecConn;
+	for (QList<Processor*>::const_iterator itr = m_processors.begin(); itr != m_processors.end(); itr++)
 	{
-		foreach(Port* outputport, processor->getOutputPorts())
+		const QList<Port*> ports = (*itr)->getPorts(Port::OUT_PORT);
+		for (QList<Port*>::const_iterator itrPort = ports.begin(); itrPort != ports.end(); itrPort++)
 		{
-			foreach (Port* inputport, outputport->connectedPorts())
+			const QList<Port*> portsConnected = (*itrPort)->connectedPorts();
+			for (QList<Port*>::const_iterator i = portsConnected.begin(); i != portsConnected.end(); i++)
 			{
-				Connection c;
-				c.m_srcPort			= outputport->name();
-				c.m_srcProcessor	= outputport->processor()->id();
-				c.m_targetPort		= inputport->name();
-				c.m_targetProcessor = inputport->processor()->id();
-				connections.push_back(c);
+				Connection cnn;
+				cnn.m_srcProcessor	= (*itr)->id();
+				cnn.m_srcPort		= (*itrPort)->getIndex();
+				cnn.m_targetProcessor	= (*i)->processor()->id();
+				cnn.m_targetPort	= (*i)->getIndex();
+				vecConn.push_back(cnn);
 			}
 		}
 	}
-	s.serialize("Processors", m_processors, "Processor");
-	s.serialize("Connections", connections, "Connection");
+	s.serialize("Connections", vecConn, "Connection");
 }
 
-void DesignNetSpace::deserialize( Utils::XmlDeserializer& s )
+void DesignNetSpace::deserialize(Utils::XmlDeserializer& s)
 {
 	Processor::deserialize(s);
 	QList<Processor*> processors;
-	s.deserializeCollection("Processors", processors, "Processor");
+	s.deserializeCollection("processors", processors, "processor");
 	foreach(Processor* p, processors)
 	{
 		p->init();
@@ -273,7 +316,7 @@ void DesignNetSpace::deserialize( Utils::XmlDeserializer& s )
 					.arg(c.m_srcPort).arg(c.m_targetPort));
 				continue;
 			}
-			if(!connectPort(targetPort, srcPort))
+			if(!srcPort->connect(targetPort))
 			{
 				emit logout(tr("Cannot add the connection from port [%1] to port [%2] ")
 					.arg(c.m_srcPort).arg(c.m_targetPort));
@@ -288,25 +331,61 @@ QList<Processor*> DesignNetSpace::processors()
 	return m_processors;
 }
 
-Processor* DesignNetSpace::findProcessor( const int &id )
+Processor* DesignNetSpace::findProcessor(const int &id)
 {
 	QList<Processor*> processorList = processors();
 	foreach(Processor* p, processorList)
 	{
 		if(p->id() == id)
-		{
 			return p;
-		}
 	}
 	return 0;
 }
 
-void DesignNetSpace::detachProcessor( Processor* processor )
+void DesignNetSpace::setModified()
+{
+	emit modified();
+}
+
+void DesignNetSpace::detachProcessor(Processor* processor)
 {
 	QList<Processor*>::const_iterator itr = (qFind(m_processors, processor));
-	TOTEM_ASSERT(itr != m_processors.end(), qDebug()<< "can't not remove the processor");
-	m_processors.removeOne(processor);
-	emit processorRemoved(processor);
+	TOTEM_ASSERT(itr != m_processors.end(), qDebug()<< "can't not detach the processor");
+	processor->detach();
+}
+
+bool DesignNetSpace::sortProcessors(QList<Processor*> &processors)
+{
+	Q_ASSERT(processors.size() == 0);
+
+	QList<Processor*> tempNet = m_processors;
+	bool dirty = true;
+	while(dirty)
+	{
+		dirty = false;
+		for(int i = 0; i < tempNet.size(); i++)
+		{
+			Processor* processor = tempNet.at(i);
+			int iTemp = processor->indegree(processors);
+			if(iTemp == 0)
+			{
+				processors.append(processor);
+				tempNet.removeOne(processor);
+				dirty = true;
+			}
+		}
+	}
+	if(!tempNet.isEmpty())
+		return false;
+	
+	return true;
+}
+
+void DesignNetSpace::testOnProcessFinished()
+{
+	int i = 0;
+	i++;
+	qDebug() << "testOnProcessFinished" << endl;
 }
 
 }

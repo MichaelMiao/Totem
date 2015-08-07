@@ -52,6 +52,7 @@ QStringList DesignNetEditorFactory::suffixTypes() const
 
 Core::Id DesignNetEditorFactory::id() const
 {
+	Core::Id id(Constants::NETEDITOR_ID);
 	return Constants::NETEDITOR_ID;
 }
 

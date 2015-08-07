@@ -1,20 +1,22 @@
 #include "tooldockwidgetview.h"
-#include "tooldockwidget.h"
-#include "CustomUI/flowlayout.h"
-#include "toolitem.h"
-#include "designnetconstants.h"
-#include "designnetbase/processor.h"
-
-#include <QEvent>
-#include <QResizeEvent>
 #include <QButtonGroup>
+#include <QDrag>
+#include <QEvent>
+#include <QHash>
 #include <QImage>
+#include <QMimeData>
+#include <QResizeEvent>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QToolButton>
-#include <QHash>
-#include <QDrag>
-#include <QMimeData>
+#include "CustomUI/flowlayout.h"
+#include "designnetbase/processor.h"
+#include "designnetconstants.h"
+#include "tooldockwidget.h"
+#include "toolitem.h"
+
+
+
 const int ExtraWidth = 3;
 using namespace CustomUI;
 namespace DesignNet{
@@ -78,7 +80,7 @@ void ToolDockWidgetView::clicked(QAbstractButton *button)
     QToolButton *pButton = qobject_cast<QToolButton*>(button);
     QModelIndex index = m_toolIndexs.value(pButton);
     QDrag *drag = new QDrag(this);
-    QMimeData *data = new QMimeData();
+    QMimeData *data = new QMimeData;
 //    DesignNetTool*pTool = (DesignNetTool*)(index.data().value<void*>());
 //    ProcessorGraphicsBlock *processor = pTool->getGraphicsProcessor();
 //    data->setData(Constants::MIME_TYPE_TOOLITEM, processor->metaObject()->className());

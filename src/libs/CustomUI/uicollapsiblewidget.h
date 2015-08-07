@@ -26,6 +26,9 @@ public:
     void insertRegion(const QString &text, QLayout *pLayout, int index = 0);
 
     void removeRegion(const int &index);
+
+	QSize sizeHint() const override;
+
 signals:
 
 public slots:

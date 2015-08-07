@@ -5,22 +5,7 @@
 
 #include <QLineEdit>
 #include <QAbstractButton>
-
-CUSTOMUI_EXPORT int testfunc();
-class CUSTOMUI_EXPORT AAA
-{
-public:
-
-	AAA(){}
-
-	void func();
-};
-
 namespace CustomUI{
-
-
-
-	 
 class FancyLineEditPrivate;
 
 class CUSTOMUI_EXPORT FancyLineEdit : public QLineEdit

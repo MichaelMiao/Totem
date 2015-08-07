@@ -1,9 +1,16 @@
 #ifndef PROCESSORCONFIGWIDGET_H
 #define PROCESSORCONFIGWIDGET_H
 
-#include <QWidget>
 #include "../designnet_core_global.h"
-#include <QList>
+#include <QWidget>
+
+#define PROPERTY_WIDGET(X)	\
+	virtual ProcessorConfigWidget* create(Processor* processor, QWidget *parent = 0, bool bAddProperty = false) \
+	{ \
+		return new X(processor, parent, bAddProperty); \
+	}
+
+
 QT_BEGIN_NAMESPACE
 class QTabWidget;
 QT_END_NAMESPACE
@@ -17,15 +24,24 @@ class DESIGNNET_CORE_EXPORT ProcessorConfigWidget : public QWidget
 	Q_OBJECT
 
 public:
-	ProcessorConfigWidget(Processor* processor, QWidget *parent);
+
+	PROPERTY_WIDGET(ProcessorConfigWidget)
+	ProcessorConfigWidget(Processor* processor, QWidget *parent, bool bPropertyPage = false);
 	virtual ~ProcessorConfigWidget();
-	virtual ProcessorConfigWidget* create(Processor* processor, QWidget *parent = 0);
-	void addPropertyPage(Processor* processor);
+
+	virtual void init();
+	void addPropertyPage();
 	void addPage(ProcessorConfigPage* page);
 	void addListener(ProcessorConfigListener *listener);
+
 public slots:
+
 	void onSettingsChanged();
-private:
+
+protected:
+	
+	void showEvent(QShowEvent *);
+
 	QTabWidget*	m_tabWidget;
 	Processor*	m_processor;
 	QList<ProcessorConfigListener*> m_listeners;

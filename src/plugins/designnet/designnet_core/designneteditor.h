@@ -15,6 +15,7 @@ class DesignNetEditor : public Core::IEditor
 	Q_OBJECT
 
 public:
+
 	DesignNetEditor(QObject *parent);
 	~DesignNetEditor();
 	// IEditor
@@ -36,13 +37,21 @@ public:
 
 	DesignNetView *designNetView();
 
-	void run();
+	bool run();
+
+Q_SIGNALS:
+
+	void designNetFinished();
+
 protected:
 	void createCommand();
 
 public slots:
+	
 	void onDeserialized(Utils::XmlDeserializer &x);
 	void onSerialized(Utils::XmlSerializer &s);
+	void onFinish();
+
 private:
 	DesignNetEditorPrivate *d;
 };

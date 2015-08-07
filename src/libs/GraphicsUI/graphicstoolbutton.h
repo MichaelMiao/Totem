@@ -9,8 +9,10 @@ class TOTEM_GRAPHICSUI_EXPORT GraphicsToolButton : public GraphicsAutoShowHideIt
 {
 	Q_OBJECT
 public:
+
     GraphicsToolButton(QGraphicsItem *parent = 0);
 	virtual ~GraphicsToolButton();
+
 };
 }
 

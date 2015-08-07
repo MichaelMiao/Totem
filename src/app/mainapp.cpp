@@ -147,39 +147,39 @@ int loadPluginThread(MainApp *receiver)
 //    QString overrideLanguage = settings->value("General/OverrideLanguage").toString();
 //    if (!overrideLanguage.isEmpty())
 //        uiLanguages.prepend(overrideLanguage);
-    const QString &totemTrPath = QCoreApplication::applicationDirPath()
-            + QLatin1String(SHARE_PATH "/translations");
-    foreach (const QString &locale, uiLanguages)
-    {
-        if (translator.load(QLatin1String("totem_") + locale, totemTrPath))
-        {
-            const QString &qtTrPath = QLibraryInfo::location(QLibraryInfo::TranslationsPath);
-            const QString &qtTrFile = QLatin1String("qt_") + locale;
-
-            if (qtTranslator.load(qtTrFile, qtTrPath) || qtTranslator.load(qtTrFile, totemTrPath))
-            {
-                receiver->app.installTranslator(&translator);
-                receiver->app.installTranslator(&qtTranslator);
-                receiver->app.setProperty("qtc_locale", locale);
-                break;
-            }
-            translator.load(QString()); // unload()
-        }
-        else if (locale == QLatin1String("C") /* overrideLanguage == "English" */)
-        {
-            break;
-        }
-        else if (locale.startsWith(QLatin1String("en")) /* "English" is built-in */)
-        {
-            break;
-        }
-    }
+//     const QString &totemTrPath = QCoreApplication::applicationDirPath()
+//             + QLatin1String(SHARE_PATH "/translations");
+//     foreach (const QString &locale, uiLanguages)
+//     {
+//         if (translator.load(QLatin1String("totem_") + locale, totemTrPath))
+//         {
+//             const QString &qtTrPath = QLibraryInfo::location(QLibraryInfo::TranslationsPath);
+//             const QString &qtTrFile = QLatin1String("qt_") + locale;
+// 
+//             if (qtTranslator.load(qtTrFile, qtTrPath) || qtTranslator.load(qtTrFile, totemTrPath))
+//             {
+//                 receiver->app.installTranslator(&translator);
+//                 receiver->app.installTranslator(&qtTranslator);
+//                 receiver->app.setProperty("qtc_locale", locale);
+//                 break;
+//             }
+//             translator.load(QString()); // unload()
+//         }
+//         else if (locale == QLatin1String("C") /* overrideLanguage == "English" */)
+//         {
+//             break;
+//         }
+//         else if (locale.startsWith(QLatin1String("en")) /* "English" is built-in */)
+//         {
+//             break;
+//         }
+//     }
     //这里没有考虑MacOS,Unix
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
     //设置插件搜索路径
     const QStringList pluginPaths = getPluginPaths();
-	receiver->app.setLibraryPaths(pluginPaths);
+//	receiver->app.setLibraryPaths(pluginPaths);
     pm->setPluginPaths(pluginPaths);
 
     //检查核心插件
@@ -216,16 +216,17 @@ int loadPluginThread(MainApp *receiver)
     pm->loadPluginsAuto();
 
     //初始化应用程序实例
-    receiver->app.initialize();
-    QObject::connect(&(receiver->app), SIGNAL(messageReceived(QString)),
-                     pm, SLOT(remoteArguments(QString)));
-    QObject::connect(&(receiver->app), SIGNAL(aboutToQuit()), pm, SLOT(shutdown()));
-
+//    receiver->app.initialize();
+//     QObject::connect(&(receiver->app), SIGNAL(messageReceived(QString)),
+//                      pm, SLOT(remoteArguments(QString)));
+//     QObject::connect(&(receiver->app), SIGNAL(aboutToQuit()), pm, SLOT(shutdown()));
+// 
     QMetaObject::invokeMethod(receiver, "onFinish", Qt::QueuedConnection);
     return 0;
 }
-MainApp::MainApp(const QString &id, int &argc, char **argv) :
-    app(id, argc, argv)
+// MainApp::MainApp(const QString &id, int &argc, char **argv) :
+//     app(id, argc, argv)
+MainApp::MainApp(const QString &id, int &argc, char **argv) : QApplication(argc, argv)
 {
 
 }
@@ -236,32 +237,32 @@ MainApp::~MainApp()
 
 int MainApp::init()
 {
-    QTranslator ts;
-    ts.load("translations/Totem_ZN");
-    app.installTranslator(&ts);
-    //------------------------------------------
-    qint64 pid = -1;
-    if (app.isRunning())
-    {
-        if (app.sendMessage(QLatin1String("ack"), 5000, pid))
-            return 0;
-        if (app.isRunning(pid))
-        {
-            int button = askMsgSendFailed();
-            //如果无法一直是“重试”
-            while(button == QMessageBox::Retry)
-            {
-                if (app.sendMessage("pm->serializedArguments()", 5000 /*timeout*/, pid))
-                    return 0;
-                if (!app.isRunning(pid)) //说明应用程序退出了，可以启动新的实例了。
-                    button = QMessageBox::Yes;
-                else
-                    button = askMsgSendFailed();
-            }
-            if (button == QMessageBox::No)//说明用户放弃操作，选了“否”
-                return -1;
-        }
-    }
+//     QTranslator ts;
+//     ts.load("translations/Totem_ZN");
+//     app.installTranslator(&ts);
+//     //------------------------------------------
+//     qint64 pid = -1;
+//     if (app.isRunning())
+//     {
+//         if (app.sendMessage(QLatin1String("ack"), 5000, pid))
+//             return 0;
+//         if (app.isRunning(pid))
+//         {
+//             int button = askMsgSendFailed();
+//             //如果无法一直是“重试”
+//             while(button == QMessageBox::Retry)
+//             {
+//                 if (app.sendMessage("pm->serializedArguments()", 5000 /*timeout*/, pid))
+//                     return 0;
+//                 if (!app.isRunning(pid)) //说明应用程序退出了，可以启动新的实例了。
+//                     button = QMessageBox::Yes;
+//                 else
+//                     button = askMsgSendFailed();
+//             }
+//             if (button == QMessageBox::No)//说明用户放弃操作，选了“否”
+//                 return -1;
+//         }
+//     }
 
 
     m_futureInterface = new QFutureInterface<void>();
@@ -274,17 +275,18 @@ int MainApp::init()
 /**
  * 直接调用app.exec()
  */
-int MainApp::exec()
-{
-    return app.exec();
-}
+//int MainApp::exec()
+// {
+// 	return;
+//    return app.exec();
+//}
 
 bool MainApp::loadSkin(const QString &strFileName)
 {
     QFile file(strFileName);
     if(file.open(QIODevice::ReadOnly))
     {
-        app.setStyleSheet(file.readAll());
+//        app.setStyleSheet(file.readAll());
         file.close();
         return true;
     }

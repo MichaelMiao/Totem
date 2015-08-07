@@ -1,7 +1,9 @@
-#include "totem_gui_pch.h"
 #include "arrowlinkcontrolitem.h"
 #include <QPainterPath>
 #include <QPainter>
+#include <QGraphicsSceneMouseEvent>
+
+
 namespace GraphicsUI{
 const int AC_WIDTH = 12;
 const int AC_HEIGHT = 12;
@@ -9,9 +11,10 @@ ArrowLinkControlItem::ArrowLinkControlItem(QGraphicsItem *parent) :
     QGraphicsObject(parent)
 {
     setAcceptHoverEvents(true);
-    setFlags(ItemIsMovable
-             | ItemSendsGeometryChanges
+	m_bPressed = false;
+    setFlags(ItemSendsScenePositionChanges
              | ItemIgnoresTransformations);
+	setCacheMode(DeviceCoordinateCache);
 }
 
 QRectF ArrowLinkControlItem::boundingRect() const
@@ -34,16 +37,47 @@ void ArrowLinkControlItem::paint(QPainter *painter, const QStyleOptionGraphicsIt
 
 QVariant ArrowLinkControlItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
 {
-    if(change == ItemPositionChange && scene())
+    if(change == ItemScenePositionHasChanged && scene())
     {
         emit positionChanged();
     }
+	else if (change == ItemSelectedHasChanged)
+	{
+		QGraphicsItem *pItem = parentItem();
+		if(pItem)
+			pItem->setFlag(ItemIsMovable, !value.toBool());
+	}
     return QGraphicsItem::itemChange(change, value);
 }
 
 ArrowLinkControlItem::~ArrowLinkControlItem()
 {
 
+}
+
+void ArrowLinkControlItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+	if (!m_bPressed)
+		return;
+
+	QPointF pt = event->scenePos();
+	QPointF ptItem = pt;
+	if (parentItem())
+		ptItem = parentItem()->mapFromScene(pt);
+	setPos(ptItem);
+	event->accept();
+}
+
+void ArrowLinkControlItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+	grabMouse();
+	m_bPressed = true;
+}
+
+void ArrowLinkControlItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+	ungrabMouse();
+	m_bPressed = false;
 }
 
 }

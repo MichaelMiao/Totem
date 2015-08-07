@@ -18,5 +18,11 @@
         <file>media/intdata.png</file>
         <file>media/pause.png</file>
         <file>media/start.png</file>
+        <file>media/link.png</file>
+        <file>media/cursor_arrow.png</file>
+        <file>media/showport.png</file>
+        <file>media/histogramimage.png</file>
+        <file>media/textimage.png</file>
+        <file>media/layout.png</file>
     </qresource>
 </RCC>

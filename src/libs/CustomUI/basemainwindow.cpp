@@ -77,7 +77,7 @@ void BaseMainWindow::addDockWidgetDirectly(DockWindow *dockWindow,
 
 QList<DockWindow *> BaseMainWindow::dockWidgets() const
 {
-	return this->findChildren<DockWindow *>();
+	return findChildren<DockWindow *>();
 }
 
 void BaseMainWindow::saveSettings(QSettings *settings) const
@@ -150,7 +150,7 @@ void BaseMainWindow::contextMenuEvent(QContextMenuEvent *event)
 QMenu *BaseMainWindow::createPopupMenu()
 {
     QList<QAction *> actions;
-    QList<DockWindow *> dockwidgets = this->findChildren<DockWindow *>();
+	QList<DockWindow *> dockwidgets = findChildren<DockWindow *>();
     for (int i = 0; i < dockwidgets.size(); ++i)
     {
         DockWindow *dockWidget = dockwidgets.at(i);

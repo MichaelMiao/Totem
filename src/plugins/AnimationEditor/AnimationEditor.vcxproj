@@ -276,9 +276,6 @@
     <ProjectReference Include="..\..\libs\GraphicsUI\GraphicsUI.vcxproj">
       <Project>{ec895c56-9f64-4366-a9c0-5f395727a57d}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\coreplugin\Core.vcxproj">
-      <Project>{25dc0b5e-9c29-341d-ad7d-9108d1e3cc3c}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="addanimation.ui">

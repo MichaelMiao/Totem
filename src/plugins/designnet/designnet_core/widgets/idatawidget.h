@@ -28,23 +28,28 @@ public:
 		QGraphicsItem *parent = 0, 
 		Qt::WindowFlags wFlags = Qt::FramelessWindowHint);
     virtual ~IDataWidget(){}
-    virtual QRectF boundingRect() const;
-    virtual QSizeF sizeHint(Qt::SizeHint which,
+    virtual QRectF	boundingRect() const;
+    virtual QSizeF	sizeHint(Qt::SizeHint which,
                             const QSizeF & constraint = QSizeF()) const;
-	virtual bool isValid()const;
+	virtual bool	isValid()const;
 	virtual void	hideEvent ( QHideEvent * event );
 	virtual void	showEvent ( QShowEvent * event );
 	void initConnection();
 	void closeConnection();
+
 signals:
 
 public slots:
+
     void updateData();          //!< 根据数据变化更新窗口
 	void showDetail();
+
 protected:
+
 	virtual void onShowDetail() = 0;//!< 显示详细信息
-    virtual void onUpdate() = 0;    //!< 由子类来完成如何更新
-    IData *m_data;
+	virtual void onUpdate() { };    //!< 由子类来完成如何更新
+
+	IData *m_data;
 	bool m_bDetailButton;		//!< 是否使用detail按钮
 	GraphicsUI::GraphicsAutoShowHideItem * m_detailButton;
 };

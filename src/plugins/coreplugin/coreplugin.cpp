@@ -1,64 +1,28 @@
+#include "stdafx.h"
 #include "coreplugin.h"
-#include "extensionsystem/pluginmanager.h"
-#include "mainwindow.h"
-#include "editmode.h"
-#include "modemanager.h"
+#include "icore.h"
 
-#include <QtPlugin>
-#include <QDebug>
-
-using namespace Core;
-using namespace Core::Internal;
 
 CorePlugin::CorePlugin()
-    : m_mainWindow(0),
-      m_editMode(0)
 {
-
 }
+
 CorePlugin::~CorePlugin()
 {
-    if(m_editMode)
-    {
-        removeObject(m_editMode);
-		delete m_editMode;
-    }
-    if(m_mainWindow)
-    {
-		delete m_mainWindow;
-        m_mainWindow = 0;
-    }
 }
 
-bool CorePlugin::initialize(const QStringList &arguments, QString *errorMessage)
+bool CorePlugin::initialize(const QStringList &arguments, QString *errorString)
 {
-	m_mainWindow = new MainWindow;
-    const bool success = m_mainWindow->initialize(errorMessage);
-//     if (success)
-//     {
-// 		m_editMode = new EditMode;
-//         addObject(m_editMode);
-//         ModeManager::activateMode(m_editMode->id());
-//     }
-    return success;
+	ICore::instance()->initialize();
+	return true;
 }
 
 void CorePlugin::extensionsInitialized()
 {
-    m_mainWindow->extensionsInitialized();
-}
-
-bool CorePlugin::delayedInitialize()
-{
-    return true;
+	ICore::instance()->extensionsInitialized();
 }
 
 ExtensionSystem::IPlugin::ShutdownFlag CorePlugin::aboutToShutdown()
 {
-    m_mainWindow->aboutToShutdown();
-    return SynchronousShutdown;
-}
-
-void CorePlugin::remoteCommand(const QStringList &, const QStringList &args)
-{
+	return SynchronousShutdown;
 }

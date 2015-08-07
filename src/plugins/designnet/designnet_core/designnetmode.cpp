@@ -1,15 +1,17 @@
-#include "designnetmode.h"
-#include "designnetconstants.h"
-#include "coreplugin/coreconstants.h"
-#include "coreplugin/icorelistener.h"
-#include "coreplugin/ieditor.h"
-#include "coreplugin/icontext.h"
-#include "extensionsystem/pluginmanager.h"
-#include "coreplugin/editormanager.h"
-#include "coreplugin/modemanager.h"
-#include "coreplugin/icore.h"
-#include <QStackedWidget>
+﻿#include "designnetmode.h"
 #include <QPushButton>
+#include <QStackedWidget>
+#include "../../coreplugin/coreconstants.h"
+#include "../../coreplugin/editormanager.h"
+#include "../../coreplugin/icontext.h"
+#include "../../coreplugin/icore.h"
+#include "../../coreplugin/icorelistener.h"
+#include "../../coreplugin/ieditor.h"
+#include "../../coreplugin/modemanager.h"
+#include "extensionsystem/pluginmanager.h"
+#include "designnetconstants.h"
+
+
 namespace CC = Core::Constants;
 
 
@@ -20,7 +22,10 @@ class DesignNetModeCoreListener : public Core::ICoreListener
 {
 public:
     DesignNetModeCoreListener(DesignNetMode* mode);
-    bool coreAboutToClose();
+    
+	bool coreAboutToClose();
+	bool editorAboutToClose(IEditor * editor) override;
+
 private:
     DesignNetMode *m_mode;
 };
@@ -34,6 +39,11 @@ bool DesignNetModeCoreListener::coreAboutToClose()
 {
     m_mode->currentEditorChanged(0);
     return true;
+}
+
+bool DesignNetModeCoreListener::editorAboutToClose(IEditor * editor)
+{
+	return true;
 }
 
 }//namespace Internal
@@ -55,7 +65,7 @@ public:
     ~DesignNetModePrivate();
 public:
     Internal::DesignNetModeCoreListener *m_coreListener;
-    QWeakPointer<Core::IEditor> m_currentEditor;
+	QPointer<Core::IEditor> m_currentEditor;
     bool m_isActive;
     QList<DesignEditorInfo*> m_editors;
     QStackedWidget *m_stackWidget;
@@ -176,7 +186,7 @@ void DesignNetMode::currentEditorChanged(Core::IEditor *editor)
             } // foreach editorInfo
         }
     }
-    //断开原始的信号槽连接
+
     if (d->m_currentEditor)
         disconnect(d->m_currentEditor.data(), SIGNAL(changed()), this, SLOT(updateActions()));
 
@@ -184,12 +194,12 @@ void DesignNetMode::currentEditorChanged(Core::IEditor *editor)
     {
         setActiveContext(Context());
         setEnabled(false);
-        d->m_currentEditor = QWeakPointer<Core::IEditor>();
+        d->m_currentEditor = 0;
         emit actionsUpdated(d->m_currentEditor.data());
     }
     else
     {
-        d->m_currentEditor = QWeakPointer<Core::IEditor>(editor);
+        d->m_currentEditor = editor;
 
         if (d->m_currentEditor)
             connect(d->m_currentEditor.data(), SIGNAL(changed()), this, SLOT(updateActions()));

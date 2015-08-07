@@ -41,6 +41,7 @@ DesignNetDocument::DesignNetDocument(DesignNetEditor *parent)
 	d->bModified    = false;
 	d->space		= new DesignNetSpace(0, this);
 	connect(d->space, SIGNAL(modified()), this, SLOT(onModified()));
+	m_bOpening		= false;
 }
 
 DesignNetDocument::~DesignNetDocument()
@@ -98,6 +99,8 @@ void DesignNetDocument::setModified(const bool &bModified)
         return;
     d->bModified = bModified;
     emit changed();
+	
+	emit titleChanged(bModified ? d->fileName + "*" : d->fileName);
 }
 
 bool DesignNetDocument::reload(QString *errorString, IDocument::ReloadFlag flag, IDocument::ChangeType type)
@@ -118,6 +121,7 @@ bool DesignNetDocument::save(QString *errorString, const QString &fileName, bool
 	x.serialize("DesignNetSpace", *(d->space));
 	emit serialized(x);
 	x.write(fileName);
+	setModified(false);
     return true;
 }
 
@@ -128,16 +132,20 @@ DesignNetSpace * DesignNetDocument::designNetSpace() const
 
 void DesignNetDocument::onModified()
 {
-	setModified(true);
+	if (!m_bOpening)
+		setModified(true);
 }
 
 bool DesignNetDocument::open( QString *errorString, const QString &fileName, const QString &realFileName )
 {
+	m_bOpening = true;
+	bool bRet = IDocument::open(errorString, fileName, realFileName);
 	d->space->setObjectName(realFileName);
 	Utils::XmlDeserializer deserializer(realFileName);
 	deserializer.deserialize("DesignNetSpace", *(d->space));
 	emit deserialized(deserializer);
-	return IDocument::open(errorString, fileName, realFileName);
+	m_bOpening = false;
+	return bRet;
 }
 
 }//namespace DesignNet

@@ -1,91 +1,104 @@
 #include "port.h"
-#include "utils/totemassert.h"
-#include "coreplugin/icore.h"
-#include "coreplugin/messagemanager.h"
 #include <QWriteLocker>
+#include "../../../coreplugin/icore.h"
+#include "../../../coreplugin/messagemanager.h"
+#include "../designnetconstants.h"
+#include "utils/totemassert.h"
+#include "processor.h"
+
+
 namespace DesignNet{
 
-Port::Port(IData *data, PortType portType,const QString &name, QObject *parent) :
+Port::Port(PortType portType, DataType dt, const QString &name, bool bRemovable, QObject *parent) :
 	QObject(parent),
     m_bMultiInput(false),
+	m_bRemovable(bRemovable),
     m_portType(portType),
     m_processor(0),
-    m_data(data),
-	m_name(name)
+	m_name(name),
+	m_data(dt)
 {
 }
 /*!
  * \brief Port::connect
  *
- * 1ã€è‡ªå·±ä¸èƒ½è¿æ¥è‡ªå·±
- * 2ã€è¦ä¹ˆthiså¯ä»¥å’Œportè¿æ¥ï¼Œè¦ä¹ˆportå¯ä»¥å’Œthisè¿æ¥
- * \param[in] port è¦è¿æ¥çš„ç«¯å£
- * \return æ˜¯å¦è¿æ¥æˆåŠŸ
+ * 1¡¢×Ô¼º²»ÄÜÁ¬½Ó×Ô¼º
+ * \param[in] port ÒªÁ¬½ÓµÄ¶Ë¿Ú
+ * \return ÊÇ·ñÁ¬½Ó³É¹¦
  *
  */
 bool Port::connect(Port *port)
 {
-    TOTEM_ASSERT(port != 0, return false);
     if(port == this)
         return false;
     if(!canConnectTo(port))
         return false;
+	bool bConnected = m_processor->isConnectTo(port->processor());
     m_portsConnected.push_back(port);
-    port->addConnectedPort(this);/// ç›´æ¥å°†è‡ªå·±æ”¾åˆ°inputPortçš„åˆ—è¡¨ä¸­
-    ///
-    /// ä¸¤ç«¯å£é€šçŸ¥çŠ¶æ€æ”¹å˜
-    this->notifyStateChanged();
-    port->notifyStateChanged();
+    port->addConnectedPort(this);/// Ö±½Ó½«×Ô¼º·Åµ½inputPortµÄÁĞ±íÖĞ
+	if (!bConnected)
+	{
+		QObject::connect(port->processor(), SIGNAL(childProcessFinished()),
+			m_processor, SLOT(onChildProcessFinished()), Qt::QueuedConnection);
+		emit connectPort(this, port);
+		emit m_processor->connected(m_processor, port->processor());
+	}
+	
     return true;
 }
 
-bool Port::disconnect(Port *port)
+bool Port::disconnect(Port *inputport)
 {
-    if(port == 0)/// ç§»é™¤æ‰€æœ‰é“¾æ¥çš„ç«¯å£
+	QList<Processor*> procConnectedOld = connectedProcessors();
+
+    if(inputport == 0)/// ÒÆ³ıËùÓĞÁ´½ÓµÄ¶Ë¿Ú
     {
         foreach(Port* p, m_portsConnected)
         {
            p->removeConnectedPort(this);
-           p->notifyStateChanged();
+		   emit disconnectPort(this, p);
         }
         m_portsConnected.clear();
-        this->notifyStateChanged();
     }
     else
     {
-        this->removeConnectedPort(port);
-        port->removeConnectedPort(this);
-        this->notifyStateChanged();
-        port->notifyStateChanged();
+        this->removeConnectedPort(inputport);
+        inputport->removeConnectedPort(this);
+		emit disconnectPort(this, inputport);
     }
+	QList<Processor*> procConnected = connectedProcessors();
+	QList<Processor*>::iterator itr = procConnectedOld.begin();
+	while (itr != procConnectedOld.end())
+	{
+		if (!procConnected.contains(*itr))
+			emit m_processor->disconnected(m_processor, *itr);
+		itr++;
+	}
     return true;
 }
 /*!
  * \brief Port::canConnectTo
  *
- * 1ã€æœ¬ç«¯å£éœ€è¦æ˜¯\e OUT_PORT ç±»å‹çš„ï¼Œ
- * \e inputPort éœ€è¦æ˜¯\e IN_PORT ç±»å‹çš„ã€‚
- * 2ã€ç«¯å£ä¸èƒ½æ˜¯å·²ç»è¿æ¥è¿‡çš„
- * 3ã€inputPortå¦‚æœæ˜¯ä¸æ”¯æŒå¤šè¾“å…¥çš„ï¼Œé‚£ä¹ˆï¼Œå¦‚æœå·²ç»æœ‰è¿æ¥ï¼Œè¿”å›false
+ * 1¡¢±¾¶Ë¿ÚĞèÒªÊÇ\e OUT_PORT ÀàĞÍµÄ£¬
+ * \e inputPort ĞèÒªÊÇ\e IN_PORT ÀàĞÍµÄ¡£
+ * 2¡¢¶Ë¿Ú²»ÄÜÊÇÒÑ¾­Á¬½Ó¹ıµÄ
+ * 3¡¢inputPortÈç¹ûÊÇ²»Ö§³Ö¶àÊäÈëµÄ£¬ÄÇÃ´£¬Èç¹ûÒÑ¾­ÓĞÁ¬½Ó£¬·µ»Øfalse
  *
- * \param[in] inputPort ç›®æ ‡ç«¯å£ï¼ˆè¯¥ç«¯å£è¦ä¸ºè¾“å…¥ç«¯å£ï¼‰
+ * \param[in] inputPort Ä¿±ê¶Ë¿Ú£¨¸Ã¶Ë¿ÚÒªÎªÊäÈë¶Ë¿Ú£©
  * \return
  */
 bool Port::canConnectTo(Port *inputPort)
 {
-    TOTEM_ASSERT(inputPort != 0, return false);
     ///
-    /// æœ¬ç«¯å£éœ€è¦æ˜¯\e OUT_PORT ç±»å‹çš„ï¼ŒinputPortçš„ç±»å‹åº”è¯¥æ˜¯è¾“å…¥ç«¯å£
+    /// ±¾¶Ë¿ÚĞèÒªÊÇ\e OUT_PORT ÀàĞÍµÄ£¬inputPortµÄÀàĞÍÓ¦¸ÃÊÇÊäÈë¶Ë¿Ú
     if(m_portType!= OUT_PORT || inputPort->portType() != IN_PORT)
-    {
-        return false;
-    }
+		return false;
     ///
-    /// è¯¥ç«¯å£ä¸èƒ½æ˜¯å·²ç»è¿æ¥è¿‡çš„
+    /// ¸Ã¶Ë¿Ú²»ÄÜÊÇÒÑ¾­Á¬½Ó¹ıµÄ
     if(isConnectedTo(inputPort))
         return false;
     ///
-    /// æ£€æŸ¥è¯¥ç«¯å£æ˜¯å¦æ˜¯æ”¯æŒå¤šè¾“å…¥çš„,è‹¥ä¸æ”¯æŒï¼Œå¹¶å·²ç»æœ‰é“¾æ¥çš„ï¼Œè¿”å›false
+    /// ¼ì²é¸Ã¶Ë¿ÚÊÇ·ñÊÇÖ§³Ö¶àÊäÈëµÄ,Èô²»Ö§³Ö£¬²¢ÒÑ¾­ÓĞÁ´½ÓµÄ£¬·µ»Øfalse
     if(inputPort->isMultiInputSupported() == false
             && inputPort->connectedCount() > 0)
     {
@@ -96,9 +109,13 @@ bool Port::canConnectTo(Port *inputPort)
 
 bool Port::isConnectedTo(const Port *port) const
 {
-    QList<Port*>::const_iterator itr = qFind(m_portsConnected, port);
-    if(itr != m_portsConnected.constEnd())
-        return true;
+    QList<Port*>::const_iterator itr = m_portsConnected.begin();
+	while (itr != m_portsConnected.constEnd())
+	{
+		if (*itr == port)
+			return true;
+		itr++;
+	}
     return false;
 }
 
@@ -125,12 +142,11 @@ bool Port::isMultiInputSupported() const
 QList<Processor *> Port::connectedProcessors() const
 {
     QList<Processor *> result;
-    foreach(Port* port, m_portsConnected)
+	QList<Port*>::const_iterator itr = m_portsConnected.begin();
+    for(; itr != m_portsConnected.end(); itr++)
     {
-        if(!result.contains(port->processor()))
-        {
-            result.append(port->processor());
-        }
+        if(!result.contains((*itr)->processor()))
+            result.append((*itr)->processor());
     }
     return result;
 }
@@ -150,12 +166,19 @@ void Port::addConnectedPort(Port *port)
     if(m_portsConnected.contains(port))
         return;
     m_portsConnected.push_back(port);
+	if (m_portType == OUT_PORT)
+		emit connectPort(this, port);
+	else
+		emit connectPort(port, this);
 }
 
 void Port::removeConnectedPort(Port *port)
 {
     m_portsConnected.removeOne(port);
-	emit disconnectFromPort(port);
+	if (m_portType == OUT_PORT)
+		emit disconnectPort(this, port);
+	else
+		emit disconnectPort(port, this);
 }
 
 QString Port::name() const
@@ -168,53 +191,59 @@ void Port::setName(const QString &name)
     m_name = name;
 }
 
-void Port::notifyStateChanged()
+void Port::addData(ProcessData* data)
 {
-    processor()->stateChanged(this);
-}
-
-void Port::notifyDataArrive()
-{
-	QWriteLocker locker(&processor()->m_workingLock);
-    processor()->dataArrived(this);
-}
-
-void Port::addData(IData *data)
-{
+	Q_ASSERT(m_portType == OUT_PORT);
 	QWriteLocker locker(&m_dataLocker);
-	m_data->copy(data);
-	if (m_portType == IN_PORT)
-	{
-		m_processor->waitForFinish();/// ç­‰å¾…è¯¥ç«¯å£æ‰€åœ¨çš„å¤„ç†å™¨å®Œæˆä»»åŠ¡åï¼Œæ‰èƒ½å†™æ•°æ®
-		
-		notifyDataArrive();
-	}
-	if(m_portType == OUT_PORT)
-	{
-		foreach(Port* port, m_portsConnected)
-		{
-			port->addData(data);
-		}
-	}
+	m_data = *data;
+	emit dataChanged();
 }
 
-IData *Port::data() const
+ProcessData *Port::data()
 {
-    return m_data;
+	return &m_data;
 }
 
-Port::~Port()
+ProcessData* Port::getInputData()
 {
-	if (m_data)
-	{
-		delete m_data;
-		m_data = 0;
-	}
+	QList<Port*> portsConnected = connectedPorts();
+	for (int i = 0; i < portsConnected.size(); i++)
+		return portsConnected[i]->data();
+	return 0;
 }
 
 void Port::setMultiInputSupported( const bool &bSupported /*= true*/ )
 {
 	m_bMultiInput = bSupported;
+}
+
+int Port::getIndex()
+{
+	int iIndex = -1;
+	QList<Port*> inputPort = m_processor->getPorts(IN_PORT);
+	for (QList<Port*>::iterator itr = inputPort.begin(); itr != inputPort.end(); itr++)
+	{
+		iIndex++;
+		if (*itr == this)
+			return iIndex;
+	}
+	QList<Port*> outputPort = m_processor->getPorts(OUT_PORT);
+	for (QList<Port*>::iterator itr = outputPort.begin(); itr != outputPort.end(); itr++)
+	{
+		iIndex++;
+		if (*itr == this)
+			return iIndex;
+	}
+	return -1;
+}
+
+void Port::setProcessor(Processor* processor)
+{
+	m_processor = processor; m_data.processorID = processor->id();
+}
+
+ProcessData::ProcessData(DataType dt) : dataType(dt), m_iIndex(-1)
+{
 }
 
 }

@@ -92,6 +92,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_textanimationblock.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="loadingicon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_loadingicon.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_loadingicon.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="arrowlinkcontrolitem.h">
@@ -110,6 +119,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="textanimationblock.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="loadingicon.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\shared\totem_gui_pch.h">

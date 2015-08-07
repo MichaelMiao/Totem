@@ -1,5 +1,4 @@
-﻿#include "totem_gui_pch.h"
-#include "imagelistautoview.h"
+﻿#include "imagelistautoview.h"
 
 #include <QGraphicsScene>
 #include <QApplication>

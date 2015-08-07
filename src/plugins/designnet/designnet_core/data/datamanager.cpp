@@ -57,7 +57,8 @@ void DataManager::objectAdded(QObject *obj)
 
 IDataWidget *DataManager::createWidget(IData *data, QGraphicsItem *parent)
 {
-    foreach (IDataWidgetFactory* factory, d->m_factories) {
+    foreach (IDataWidgetFactory* factory, d->m_factories)
+	{
         IDataWidget* widget = factory->createWidget(data, parent);
         if(widget)
         {

@@ -37,7 +37,7 @@
 #include "utils/hostosinfo.h"
 
 #include <QDebug>
-#include <QStandardPaths>
+#include <QDesktopServices>
 #include <QDir>
 #include <QEvent>
 #include <QFileDialog>
@@ -547,7 +547,10 @@ QString PathChooser::label()
 
 QString PathChooser::homePath()
 {
-	return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+	QStringList ls = QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation);
+	if (!ls.empty())
+		return ls.front();
+    return "";
 }
 
 void PathChooser::setExpectedKind(Kind expected)

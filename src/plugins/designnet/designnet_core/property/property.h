@@ -42,7 +42,7 @@ public:
 	virtual bool isValid() const = 0;
 
 	virtual void serialize(Utils::XmlSerializer& s) const;
-	virtual void deserialize(Utils::XmlDeserializer& s) ;
+	virtual void deserialize(Utils::XmlDeserializer& s);
 	virtual QString serializableType() const;
 	virtual XmlSerializable* createSerializable() const;
 signals:

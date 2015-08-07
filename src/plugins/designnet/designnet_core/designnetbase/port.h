@@ -1,95 +1,129 @@
 #ifndef PORT_H
 #define PORT_H
 
-#include <QObject>
 #include "../designnet_core_global.h"
-#include "processor.h"
 #include "../data/idata.h"
+#include "../data/datatype.h"
+#include <QObject>
 #include <QReadWriteLock>
+#include <QVariant>
+
+
 namespace DesignNet{
+
+
+class DESIGNNET_CORE_EXPORT ProcessData
+{
+public:
+
+	ProcessData(DataType dt = DATATYPE_INVALID);
+	QVariant	variant;		//!< ÕæÕýµÄÊý¾Ý
+	int			processorID;	//!< ²úÉú¸ÃÊý¾ÝµÄ´¦ÀíÆ÷
+	DataType	dataType;		//!< Êý¾ÝÀàÐÍ
+	int			m_iIndex;		//!< Êý¾ÝË÷Òý
+};
+
 /**
  * @brief The Port class
  *
- * ç«¯å£ï¼Œåœ¨Processorä¸­æœ‰è¾“å…¥è¾“å‡ºä¸¤ç§ç«¯å£ï¼Œä¸€ä¸ªè¾“å…¥ç«¯å£å¯ä»¥ä½¿ç”¨å¤šä¸ªè¾“å‡ºç«¯å£æ•°æ®
- *ï¼ˆå¯ä»¥é€šè¿‡è®¾ç½®MultiInputå±žæ€§ä½¿è¯¥åŠŸèƒ½enble or notï¼‰
+ * ¶Ë¿Ú£¬ÔÚProcessorÖÐÓÐÊäÈëÊä³öÁ½ÖÖ¶Ë¿Ú£¬Ò»¸öÊäÈë¶Ë¿Ú¿ÉÒÔÊ¹ÓÃ¶à¸öÊä³ö¶Ë¿ÚÊý¾Ý
+ *£¨¿ÉÒÔÍ¨¹ýÉèÖÃMultiInputÊôÐÔÊ¹¸Ã¹¦ÄÜenble or not£©
  */
-
+class Processor;
 class DESIGNNET_CORE_EXPORT Port : public QObject
 {
 	Q_OBJECT
 public:
     enum PortType{
-        IN_PORT,    //!< è¾“å…¥ç«¯å£
-        OUT_PORT    //!< è¾“å‡ºç«¯å£
+        IN_PORT,    //!< ÊäÈë¶Ë¿Ú
+        OUT_PORT    //!< Êä³ö¶Ë¿Ú
     };
 
-    explicit Port(IData *data, PortType portType, const QString &name = "", QObject *parent = 0);
-	virtual ~Port();
-    PortType portType() const{return m_portType;}
-    void setPortType(const PortType &portType){m_portType = portType;}
+    explicit Port(PortType portType, DataType dt,
+			const QString &label = "", bool bRemovable = false, QObject *parent = 0);
+	virtual ~Port() { }
+    PortType portType() const{ return m_portType; }
+    void setPortType(const PortType &portType){ m_portType = portType; }
 
-    Processor* processor() const{return m_processor;}
-    void setProcessor(Processor* processor){m_processor = processor;}
+    Processor* processor() const{ return m_processor; }
+    void setProcessor(Processor* processor);
+
+	int getIndex();
     /*!
      * \brief connect
      *
-     * è¿žæŽ¥ä¸¤ä¸ªç«¯å£ï¼Œè¯¥å‡½æ•°åº”è¯¥ç”±è¾“å‡ºç«¯å£è°ƒç”¨ï¼Œå¦åˆ™è¿”å›žfalse
-     * \param[in] port å½“å‰ç«¯å£æ‰€è¦è¿žæŽ¥çš„ç›®æ ‡ç«¯å£
-     * \return æ˜¯å¦è¿žæŽ¥æˆåŠŸï¼Œå‡½æ•°å†…éƒ¨é€šè¿‡canConnectTo()åˆ¤æ–­
+     * Á¬½ÓÁ½¸ö¶Ë¿Ú£¬¸Ãº¯ÊýÓ¦¸ÃÓÉÊä³ö¶Ë¿Úµ÷ÓÃ£¬·ñÔò·µ»Øfalse
+     * \param[in] port µ±Ç°¶Ë¿ÚËùÒªÁ¬½ÓµÄÄ¿±ê¶Ë¿Ú
+     * \return ÊÇ·ñÁ¬½Ó³É¹¦£¬º¯ÊýÄÚ²¿Í¨¹ýcanConnectTo()ÅÐ¶Ï
      */
-    bool connect(Port* port);//!< å½“å‰ç«¯å£å°†ä¼šä½œä¸ºè¾“å‡ºç«¯å£è¿žæŽ¥åˆ°\e inputPort.
+    bool connect(Port* inputPort);//!< µ±Ç°¶Ë¿Ú½«»á×÷ÎªÊä³ö¶Ë¿ÚÁ¬½Óµ½\e inputPort.
 
     bool disconnect(Port* port = 0);
-    bool canConnectTo(Port* inputPort);     //!< åˆ¤æ–­æ˜¯å¦èƒ½å¤Ÿè¿žæŽ¥åˆ°\e inputPort
+    bool canConnectTo(Port* inputPort);				//!< ÅÐ¶ÏÊÇ·ñÄÜ¹»Á¬½Óµ½\e inputPort
 
-    bool isConnectedTo(const Port* port) const;   //!< æ˜¯å¦å·²ç»è¿žæŽ¥åˆ°äº†ç«¯å£\e port
-    bool isConnected() const;               //!< æ˜¯å¦å¤„äºŽè¿žæŽ¥çŠ¶æ€
+    bool isConnectedTo(const Port* port) const;		//!< ÊÇ·ñÒÑ¾­Á¬½Óµ½ÁË¶Ë¿Ú\e port
+    bool isConnected() const;						//!< ÊÇ·ñ´¦ÓÚÁ¬½Ó×´Ì¬
     bool isConnectedTo(const Processor* processor) const;
+	bool isRemovable() const { return m_bRemovable; }
+
     bool isMultiInputSupported() const;
-	void setMultiInputSupported(const bool &bSupported = true); //!< è®¾ç½®ç«¯å£æ˜¯å¦æ”¯æŒå¤šè¾“å…¥
-    QList<Processor*> connectedProcessors() const;  //!< è¿”å›žè¯¥ç«¯å£æ‰€è¿žæŽ¥çš„æ‰€æœ‰å¤„ç†å™¨
-    QList<Port*>      connectedPorts() const;        //!< è¿”å›žæ‰€æœ‰è¿žæŽ¥çš„ç«¯å£
+	void setMultiInputSupported(const bool &bSupported = true); //!< ÉèÖÃ¶Ë¿ÚÊÇ·ñÖ§³Ö¶àÊäÈë
+    QList<Processor*> connectedProcessors() const;  //!< ·µ»Ø¸Ã¶Ë¿ÚËùÁ¬½ÓµÄËùÓÐ´¦ÀíÆ÷
+    QList<Port*>      connectedPorts() const;        //!< ·µ»ØËùÓÐÁ¬½ÓµÄ¶Ë¿Ú
     int connectedCount() const;
     /*!
      * \brief addConnectedPort
      *
-     * å†…éƒ¨ä½¿ç”¨è¯¥å‡½æ•°
-     * \note è¯¥å‡½æ•°æ²¡æœ‰è¿›è¡Œç±»åž‹æ£€æŸ¥ï¼Œéœ€è¦è°ƒç”¨\a canConnect
+     * ÄÚ²¿Ê¹ÓÃ¸Ãº¯Êý
+     * \note ¸Ãº¯ÊýÃ»ÓÐ½øÐÐÀàÐÍ¼ì²é£¬ÐèÒªµ÷ÓÃ\a canConnect
      * \param port
      */
     void addConnectedPort(Port* port);
     /*!
      * \brief addConnectedPort
      *
-     * å†…éƒ¨ä½¿ç”¨è¯¥å‡½æ•°
-     * \note è¯¥å‡½æ•°æ²¡æœ‰è¿›è¡Œç±»åž‹æ£€æŸ¥ï¼Œéœ€è¦è°ƒç”¨\a canConnect
+     * ÄÚ²¿Ê¹ÓÃ¸Ãº¯Êý
+     * \note ¸Ãº¯ÊýÃ»ÓÐ½øÐÐÀàÐÍ¼ì²é£¬ÐèÒªµ÷ÓÃ\a canConnect
      * \param port
      */
     void removeConnectedPort(Port* port);//!< \note
 
-
     QString name() const;
     void setName(const QString &name);
 
-    void notifyStateChanged();  //!< ç«¯å£çŠ¶æ€æ”¹å˜
-    void notifyDataArrive();    //!< é€šçŸ¥æ•°æ®åˆ°è¾¾
-    //////////////////////////////////////////////////////
     ///
     ///
-    void addData(IData* data);  //!< å‘ç«¯å£æ·»åŠ æ•°æ®
-    IData* data() const;        //!< ç«¯å£ä¸­å­˜æ”¾çš„æ•°æ®
-	void waitForReadyToWrite() const;	//!< ç­‰å¾…ç«¯å£å¯å†™ 
+    void addData(ProcessData* data);  //!< Ïò¶Ë¿ÚÌí¼ÓÊý¾Ý
+    ProcessData* data();        //!< ¶Ë¿ÚÖÐ´æ·ÅµÄÊý¾Ý
+	ProcessData* getInputData();
+
 signals:
-	void disconnectFromPort(Port* port);
+
+	void connectPort(Port* src, Port* target);
+	void disconnectPort(Port* src, Port* target);
+	void dataChanged();
+
 protected:
-    bool        m_bMultiInput;  //!< æ˜¯å¦æ”¯æŒå¤šä»½è¾“å…¥
-    PortType    m_portType;     //!< ç«¯å£ç±»åž‹
-    IData*      m_data;         //!< æ•°æ®
-    QString     m_name;         //!< ç«¯å£åç§°ï¼ˆä¸€ä¸ªProcessorä¸­åç§°å”¯ä¸€ï¼‰
-    Processor*  m_processor;    //!< è¯¥ç«¯å£æ‰€å±žçš„å¤„ç†å™¨
-    QList<Port*> m_portsConnected;//!< å½“å‰ç«¯å£æ‰€è¿žæŽ¥çš„æ‰€æœ‰Port
-	QReadWriteLock m_dataLocker;
+
+    bool			m_bMultiInput;  //!< ÊÇ·ñÖ§³Ö¶à·ÝÊäÈë
+    bool			m_bRemovable;	//!< ÊÇ·ñ¿ÉÒÔÒÆ³ý
+	PortType		m_portType;     //!< ¶Ë¿ÚÀàÐÍ
+    ProcessData		m_data;         //!< Êý¾Ý
+	
+    QString			m_name;         //!< ¶Ë¿ÚÃû³Æ£¨Ò»¸öProcessorÖÐÃû³ÆÎ¨Ò»£©
+    Processor*		m_processor;    //!< ¸Ã¶Ë¿ÚËùÊôµÄ´¦ÀíÆ÷
+    QList<Port*>	m_portsConnected;//!< µ±Ç°¶Ë¿ÚËùÁ¬½ÓµÄËùÓÐPort
+	QReadWriteLock	m_dataLocker;
 };
+
+
+struct PortData
+{
+	Port::PortType	ePortType;
+	DataType		eDataType;
+	QString			strName;
+};
+
 }
 
 #endif // PORT_H

@@ -1,4 +1,3 @@
-#include "totem_gui_pch.h"
 #include "graphicsautoshowhideitem.h"
 
 #include <QParallelAnimationGroup>
@@ -27,12 +26,14 @@ GraphicsAutoShowHideItem::GraphicsAutoShowHideItem(QGraphicsItem *parent) :
 
 void GraphicsAutoShowHideItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    this->moveBy(1, 1);
+    setTransform(QTransform::fromTranslate(1, 1), true);
+	grabMouse();
 }
 
 void GraphicsAutoShowHideItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-	this->moveBy(-1, -1);
+	ungrabMouse();
+	setTransform(QTransform::fromTranslate(-1, -1), true);
     emit clicked();
 	event->accept();
 }

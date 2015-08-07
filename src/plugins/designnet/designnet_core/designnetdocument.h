@@ -45,6 +45,7 @@ public slots:
 	void onModified();
 private:
     DesignNetDocumentPrivate *d;
+	bool m_bOpening;
 };
 }//namespace DesignNet
 

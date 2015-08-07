@@ -21,11 +21,12 @@ void IconButton::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     QRect pixmapRect = QRect(0, 0, m_pixmap.width(), m_pixmap.height());
+    pixmapRect.moveCenter(rect().center());
 
     if (m_autoHide)
         painter.setOpacity(m_iconOpacity);
 
-    painter.drawPixmap(rect(), m_pixmap, pixmapRect);
+    painter.drawPixmap(pixmapRect, m_pixmap);
 }
 
 void IconButton::animateShow(bool visible)

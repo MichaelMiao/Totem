@@ -49,7 +49,7 @@ void PathListModel::addPath(const QString &strPath, bool bRecursion)
     emit dataChanged( posIndex, posIndex);
 }
 
-QModelIndex PathListModel::index(int row, int column, const QModelIndex &) const
+QModelIndex PathListModel::index(int row, int column, const QModelIndex &parent) const
 {
     if(row >= m_paths.count() || column > 1)
         return QModelIndex();
@@ -128,7 +128,7 @@ bool PathListModel::setData(const QModelIndex &index, const QVariant &value, int
     return false;
 }
 
-bool PathListModel::insertRows(int row, int count, const QModelIndex &)
+bool PathListModel::insertRows(int row, int count, const QModelIndex &parent)
 {
     qDebug() << "insertRows";
     beginInsertRows(QModelIndex(), row, row + count - 1);
@@ -138,7 +138,7 @@ bool PathListModel::insertRows(int row, int count, const QModelIndex &)
     return true;
 }
 
-bool PathListModel::removeRows(int row, int count, const QModelIndex &)
+bool PathListModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     beginRemoveRows(QModelIndex(), row, row + count - 1);
     for (int i = 0; i < count; ++i)

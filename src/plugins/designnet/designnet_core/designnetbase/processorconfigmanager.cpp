@@ -66,11 +66,17 @@ void ProcessorConfigManager::registerConfigWidget( const QString &processorId, P
 ProcessorConfigWidget* ProcessorConfigManager::createConfigWidget( Processor* processor, QWidget *parent )
 {
 	ProcessorConfigWidget* widget = d->m_processorConfigWidgets.value(processor->typeID().toString(), 0);
+	if (!widget)
+	{
+		widget = new ProcessorConfigWidget(processor, parent, true);
+		d->m_processorConfigWidgets.insert(processor->typeID().toString(), widget);
+	}
 	if (widget)
 	{
-		widget = widget->create(processor, parent);
+		widget = widget->create(processor, parent, true);
 		widget->setWindowTitle(tr("%1-%2-ID:%3").arg(widget->windowTitle()).arg(processor->name()).arg(processor->id()));
 		widget->setAttribute(Qt::WA_DeleteOnClose);
+		widget->init();
 		return widget;
 	}
 	return 0;

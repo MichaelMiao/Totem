@@ -276,20 +276,20 @@
     <CustomBuild Include="styledbar.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="basepopupwidget_p.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="customui_global.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="flowlayout.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
     <CustomBuild Include="GeneratedFiles\ui_filewizardpage.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="basepopupwidget_p.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="customui_global.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="flowlayout.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="uipopupwidget_p.h">
-      <Filter>Header Files</Filter>
+      <Filter>Generated Files</Filter>
     </CustomBuild>
     <CustomBuild Include="media\add_file.png">
       <Filter>Resource Files</Filter>

@@ -1,10 +1,12 @@
 #include "idatawidget.h"
-#include "GraphicsUI/graphicsautoshowhideitem.h"
-#include <QPainter>
 #include <QGraphicsScene>
-#include <QLabel>
 #include <QHideEvent>
+#include <QLabel>
+#include <QPainter>
 #include <QShowEvent>
+#include "GraphicsUI/graphicsautoshowhideitem.h"
+
+
 namespace DesignNet {
 
 const char DETAILICON[] = ":/media/detail48.png";
@@ -67,7 +69,7 @@ void IDataWidget::showEvent( QShowEvent * event )
 
 void IDataWidget::initConnection()
 {
-	connect(m_data, SIGNAL(dataChanged()), this ,SLOT(updateData()), Qt::BlockingQueuedConnection);
+	connect(m_data, SIGNAL(dataChanged()), this ,SLOT(updateData()), Qt::QueuedConnection);
 }
 
 void IDataWidget::closeConnection()

@@ -22,6 +22,8 @@ public:
 
     Property* property() const;
     void setLabelText(const QString& text) const;
+
+
 protected:
     /*!
      * \brief addWidget 在布局中添加\e widget ，不要修改布局，如果添加窗口，使用
@@ -35,6 +37,7 @@ protected:
      * \param[in] widget 要添加的widget
      */
     void addLayout(QLayout* layout);
+
     Property*   m_property; //!< 属性
     QLabel*     m_label;    //!< 标签
     QHBoxLayout*m_layout;   //!< 横向布局

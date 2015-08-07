@@ -5,12 +5,11 @@
 #include "../designnet_core_global.h"
 #include "../designnetbase/processor.h"
 #include "../designnetconstants.h"
-#include "../designnetbase/port.h"
 #include "Utils/XML/xmlserializable.h"
-
+#include "portitem.h"
 #include <QList>
 #include <QIcon>
-#include <QGraphicsItem>
+#include <QGraphicsObject>
 
 #define DECLARE_PROCESSOR_SERIALIZABLE(TNAME) \
 	DECLARE_SERIALIZABLE(TNAME, ProcessorGraphicsBlock)
@@ -20,18 +19,19 @@ class XmlSerializer;
 }
 QT_BEGIN_NAMESPACE
 class QMenu;
-class QGraphicsBlurEffect;
+class QGraphicsDropShadowEffect;
 class  QGraphicsSceneMouseEvent;
 QT_END_NAMESPACE
 namespace GraphicsUI{
 class GraphicsToolButton;
 class TextAnimationBlock;
 class GraphicsAutoShowHideItem;
+class LoadingICON;
 }
 
 namespace DesignNet{
 
-
+class PortArrowLink;
 class DESIGNNET_CORE_EXPORT Position : public Utils::XmlSerializable
 {
 public:
@@ -47,16 +47,17 @@ public:
 	float	m_y;
 	int		m_id;
 };
-class PortGraphicsItem;
 class BlockTextItem;
-class DesignView;
-class PortArrowLinkItem;
+class DesignNetView;
 class ProcessorConfigWidget;
+
 class DESIGNNET_CORE_EXPORT ProcessorGraphicsBlock
-        : public QObject, public QGraphicsItem
+        : public QGraphicsObject
 {
     Q_OBJECT
 public:
+
+	TYPE(ProcessorGraphicsBlock, GraphicsItemType_Process);
 
 	/**
 	 * \enum	
@@ -65,21 +66,21 @@ public:
 	 */
 
 	enum{
-		DEFAULT_WIDTH	= 110, //!< 默认宽度
-		DEFAULT_HEIGHT	= 150,//!< 默认高度
-		TITLE_HEIGHT	= 30,	 //!< title高度
-		ITEMSPACING		= 5,	 //!< spacing
-		STATUSBAR_HEIGHT = 15   //!< 状态栏高度
+		DEFAULT_WIDTH	= 50,		//!< 默认宽度
+		DEFAULT_HEIGHT	= 50,		//!< 默认高度
+		TITLE_HEIGHT	= 30,		//!< title高度
+		ITEMSPACING		= 5,		//!< spacing
+		STATUSBAR_HEIGHT = 15		//!< 状态栏高度
 	};
-    enum {Type = UserType + ProcessorGraphicsBlockType};
+    
 	enum State{
 		STATE_WORKING	= 0x000001,
 		STATE_MOUSEOVER = 0x000001 << 1,
-		STATE_SELECTED  = 0x000001 << 2
+		STATE_SELECTED  = 0x000001 << 2,
+		STATE_EMPHASIZE = 0x000001 << 3,
 	};
 
-    int type() const;
-    ProcessorGraphicsBlock(Processor *processor = 0, QGraphicsScene *scene = 0, 
+    ProcessorGraphicsBlock(Processor *processor = 0, QGraphicsScene *scene = 0, DesignNetView* pView = 0,
 		const QPointF &pos = QPointF(0, 0), QGraphicsItem *parent = 0);
     virtual ~ProcessorGraphicsBlock();
 	virtual void init();
@@ -92,78 +93,100 @@ public:
 		const QStyleOptionGraphicsItem *option,
 		QWidget* widget = 0 );
 
-
-    virtual void layoutItems(); //!< 布局所有的子Item，如Port
-
     Processor* processor();     //!< 返回Processor
 
-    bool connect(PortGraphicsItem *inputPort, PortGraphicsItem *outputPort);
-    PortGraphicsItem *getPortGraphicsItem(Port* port);
-    
 	virtual void propertyRemoving(Property* prop);
     virtual void propertyRemoved(Property* prop);
 	virtual void propertyAdded(Property* prop);
 
-    void detach();              //!< 移除所有连接
-
-
 	virtual void serialize(Utils::XmlSerializer& s) const;
-	virtual void deserialize(Utils::XmlDeserializer& s) ;
+	virtual void deserialize(Utils::XmlDeserializer& s);
 
 	Position originalPosition() const;
 	virtual void createContextMenu(QMenu *parentMenu);
-	void setPortCountResizable(const bool &bResizable = true);
-	void removePort(PortGraphicsItem* port);
 
-	void setState(const State &s, const bool &bAdd = false); //!< 设置状态，\e bAdd \e 表示是否以添加的形式添加属性。
+	
+	void setHover(bool bHovered = true);
+	bool isHover() { return testState(STATE_MOUSEOVER); }
+
+	void setEmphasized(bool bEmphasized = true);
+	bool isEmphasized() { return testState(STATE_EMPHASIZE); }
+
+	QPointF getCrossPoint(const QLineF &line);
+
+	void setPortVisible(bool bVisible = true, int iType = 0); //!< iType 大于 0: 输出端口，iType = 0: 输入和输出端口，iType 小于 0：输入端口
+	bool isPortVisible(int iType = 0);
+
+	PortItem* cvtPortItem(Port* port);
+
 signals:
-    void arrowStarted(PortArrowLinkItem* item);
-    void selectionChanged(bool bSelected);
     
-signals:
+	void selectionChanged(bool bSelected);
+    void positionChanged();
+
 	void closed();
 	void processorLog(const QString &log);
+
+	void portVisibleChanged(bool bVisible, int iType);
+
+
 public slots:
+	
 	void onPropertyChanged_internal();
-	void relayout();
-	void onRemovePort();
-	void onAddPort();
 	void onShowLog(const QString &log);
 	void configWidgetClosed();
 	void startDeserialize(Utils::XmlDeserializer& s);
-protected:
+	void onSetPortVisible();
+	void onPortConnected(Port* src, Port* target);
+	void onPortDisconnected(Port* src, Port* target);
 
+	void onProcessStarted();
+	void onProcessFinished();
+
+	void onAddPort(Port*);			//!< process添加Port的槽
+	void onClickAddPort();		//!< Action Clicked了
+
+	void onClickRemovePort();
+
+	void relayoutPort();
+
+protected:
+	
+	virtual QPainterPath shape() const;
+
+	void setState(const State &s, const bool &bAdd = false); //!< 设置状态，\e bAdd \e 表示是否以添加的形式添加属性。
+	bool testState(const State &s) { return m_state & s; }
 	void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-	bool sceneEventFilter ( QGraphicsItem * watched, QEvent * event );
-	virtual QRectF mainRect() const;        //!< 返回除了Title部分的Main区域大小
-	virtual QSizeF mainSize() const;		//!< 返回main区域的size
 	virtual void propertyChanged(Property *prop);
-    void stateChanged(Port *port);
 
     QVariant itemChange(GraphicsItemChange change, const QVariant & value);
-    void createPortItems();     //!< 创建端口
-	void mouseDoubleClickEvent (  QGraphicsSceneMouseEvent * event );
-	virtual void	hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
-	virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
-	void mousePressEvent ( QGraphicsSceneMouseEvent * event );
-	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-	void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
-	void setLayoutDirty(const bool &dirty = true);			//!< 设置是否需要重新计算布局
+	void mouseDoubleClickEvent (QGraphicsSceneMouseEvent * event);
+	void hoverEnterEvent (QGraphicsSceneHoverEvent* event) override;
+	void hoverLeaveEvent (QGraphicsSceneHoverEvent* event) override;
+	void mousePressEvent (QGraphicsSceneMouseEvent* event) override;
+	void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+	void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+
+	void setLayoutDirty(const bool &dirty = true);				//!< 设置是否需要重新计算布局
 	void showStatus(const QString &msg);
-	QGraphicsBlurEffect*					m_blurEffect;
-	GraphicsUI::GraphicsAutoShowHideItem*   m_closeItem;
-	GraphicsUI::GraphicsToolButton*			m_addInputPortItem;
+
+	QGraphicsDropShadowEffect*				m_dropdownShadowEffect;
+	GraphicsUI::GraphicsToolButton*			m_btnShowPort;		//!< 显示端口
 	BlockTextItem*							m_titleItem;
-	GraphicsUI::TextAnimationBlock*			m_statusBlock;
-    QList<PortGraphicsItem*>    m_inputPortItems;
-    QList<PortGraphicsItem*>    m_outputPortItems;
+	QList<PortItem*>						m_outputPorts;
+	QList<PortItem*>						m_inputPorts;
+	QList<PortArrowLink*>					m_portArrowLinks;	//!< 端口连接线
+	DesignNetView*							m_pNetView;
+	bool									m_bInputPortVisible;
+	bool									m_bOutputPortVisible;
 	Position					m_pos;
 	mutable bool				m_layoutDirty;	//!< 是否需要重新计算布局
 	mutable QSizeF				m_mainSize;		//!< main区域的size
 	int							m_state;		//!< block状态
 	Processor*					m_processor;
 	ProcessorConfigWidget*		m_configWidget;
+	QString						m_strLog;
 };
 }
 

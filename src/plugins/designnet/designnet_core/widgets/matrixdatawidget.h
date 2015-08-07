@@ -11,13 +11,16 @@ class MatrixModel : public QAbstractTableModel
 {
 	Q_OBJECT
 public:
+
 	MatrixModel(MatrixDataWidget *widget);
 	int rowCount ( const QModelIndex & parent = QModelIndex() ) const;
 	int columnCount(const QModelIndex &/*parent*/) const;
 	QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
 	void updateData();
+
 protected:
-	cv::Mat &matrix() const;
+
+	cv::Mat matrix() const;
 	mutable MatrixDataWidget *m_widget;
 };
 
