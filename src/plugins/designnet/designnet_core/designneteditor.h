@@ -1,61 +1,37 @@
-#ifndef DESIGNNETEDITOR_H
-#define DESIGNNETEDITOR_H
+#pragma once
+#include "../../coreplugin/document/ieditor.h"
+#include "designnetdocument.h"
+#include "designnetview.h"
 
-#include "coreplugin/ieditor.h"
 
-namespace Utils{
-class XmlDeserializer;
-class XmlSerializer;
-}
-namespace DesignNet{
-class DesignNetEditorPrivate;
-class DesignNetView;
+class DesignNetMainWindow;
 class DesignNetEditor : public Core::IEditor
 {
 	Q_OBJECT
-
 public:
 
-	DesignNetEditor(QObject *parent);
-	~DesignNetEditor();
-	// IEditor
-	virtual bool createNew(const QString &contents = QString());
-	virtual bool open(QString *errorString, const QString &fileName, const QString &realFileName);
-	virtual Core::IDocument *document();
-	virtual Core::Id id() const;
-	virtual QString displayName() const;
-	virtual void setDisplayName(const QString &title);
-	
-	virtual QByteArray saveState() const;
-	virtual bool restoreState(const QByteArray &state);
+	DesignNetEditor(QObject* pObj, DesignNetMainWindow* pMainWindow);
+	~DesignNetEditor() {}
 
-	virtual bool isTemporary() const;
+	bool createNew(const QString &contents = QString()) override;
+	bool open(QString *errorString, const QString &fileName, const QString &realFileName) override;
 
-	virtual QWidget *toolBar();
+	Core::IDocument *document() override;
+	Core::Id id() const override;
+	QString displayName() const override;
+	void setDisplayName(const QString &title) override;
 
-	Core::Id preferredModeType() const;
+	QByteArray saveState() const override;
+	bool restoreState(const QByteArray &state) override;
 
-	DesignNetView *designNetView();
+	bool isTemporary() const override;
 
-	bool run();
+	QWidget *toolBar() override { return 0; }
 
-Q_SIGNALS:
-
-	void designNetFinished();
-
-protected:
-	void createCommand();
-
-public slots:
-	
-	void onDeserialized(Utils::XmlDeserializer &x);
-	void onSerialized(Utils::XmlSerializer &s);
-	void onFinish();
+	DesignNetView* view() { return m_pView; }
 
 private:
-	DesignNetEditorPrivate *d;
+
+	DesignNetView*		m_pView;
+	DesignNetDocument*	m_pDoc;
 };
-
-}
-
-#endif // DESIGNNETEDITOR_H

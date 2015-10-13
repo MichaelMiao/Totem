@@ -17,6 +17,7 @@
       <DisableSpecificWarnings>4819;4251;4290;4250;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>true</MinimalRebuild>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <OutputFile>$(SolutionDir)$(Platform)\plugins\$(TargetName).dll</OutputFile>

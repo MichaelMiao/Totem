@@ -43,11 +43,13 @@ public:
     static QString stringWithAppendedShortcut(const QString &str, const QKeySequence &shortcut);
 
 private slots:
+
     void actionChanged();
     void updateState();
     void updateToolTipWithKeySequence();
 
 private:
+
     void disconnectAction();
     void connectAction();
     void update(QAction *action, bool initialize);

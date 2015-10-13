@@ -1,8 +1,0 @@
-<RCC>
-    <qresource prefix="/AnimationEditor">
-        <file>Resources/AnimateEdit.png</file>
-        <file>imageLoad.png</file>
-        <file>Resources/more_easingcurve.png</file>
-        <file>Resources/obj.jpg</file>
-    </qresource>
-</RCC>

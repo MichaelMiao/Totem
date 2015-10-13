@@ -1,0 +1,921 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;cxx;c;def</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>moc;h;cpp</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Debug">
+      <UniqueIdentifier>{0ce12267-b2d4-4a50-91f9-a11df25dbd50}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Release">
+      <UniqueIdentifier>{442d016f-91f4-4626-8b75-10b5312e85af}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Source Files\designnetbase">
+      <UniqueIdentifier>{964a1bc7-b348-48bb-ad7e-3bdffe5f0b8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\designnetbase">
+      <UniqueIdentifier>{d522a693-141b-400d-b31f-dae59f734942}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\property">
+      <UniqueIdentifier>{be519ee9-de55-4f7a-bfb6-523a59975b59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\property">
+      <UniqueIdentifier>{33f9159c-ef4d-4e00-88b8-1fb4542dc241}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\widgets">
+      <UniqueIdentifier>{7859e42c-c3d6-474a-97e6-f395c1e5f619}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\widgets">
+      <UniqueIdentifier>{ecc41eda-b86d-48a7-b385-2909a22dd344}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\data">
+      <UniqueIdentifier>{e5e0dcc0-ca2b-4c57-a313-ae4c29fe000d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\data">
+      <UniqueIdentifier>{97487d10-ad12-4d8e-a456-17577053ddb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphicsitem">
+      <UniqueIdentifier>{66bd9f7f-d433-4ec5-a9c2-37073171379d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphicsitem">
+      <UniqueIdentifier>{b885b732-a953-4b5a-87aa-5be781ce6c03}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="designnetcoreplugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designnetmode.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designnetmode.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetmode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_resource.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetsolutionwizard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designnetsolutionwizard.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designnetsolutionwizard.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetmainwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designnetmainwindow.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designnetmainwindow.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="designneteditorfactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designneteditorfactory.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designneteditorfactory.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetformmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designnetformmanager.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designnetformmanager.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="designneteditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designneteditor.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designneteditor.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetdocument.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designnetdocument.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designnetdocument.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetcontext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetview.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designnetview.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designnetview.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_processor.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_processor.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetbase\processor.cpp">
+      <Filter>Source Files\designnetbase</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_boolproperty.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_boolproperty.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_doublerangeproperty.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_doublerangeproperty.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ipropertywidgetfactory.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ipropertywidgetfactory.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_normalpropertywidgetfactory.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_normalpropertywidgetfactory.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_optionproperty.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_optionproperty.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_pathdialogproperty.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_pathdialogproperty.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_property.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_property.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_propertymanager.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_propertymanager.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="property\propertyowner.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\propertymanager.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\property.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\pathdialogproperty.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\optionproperty.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\normalpropertywidgetfactory.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\ipropertywidgetfactory.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\doublerangeproperty.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\boolproperty.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_boolpropertywidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_boolpropertywidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_datadetailwidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_datadetailwidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_doublerangepropertywidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_doublerangepropertywidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_idatawidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_idatawidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_imagedatawidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_imagedatawidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ipropertywidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ipropertywidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_matrixdatawidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_matrixdatawidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_optionpropertywidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_optionpropertywidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_pathdialogpropertywidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_pathdialogpropertywidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_processorpropertywidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_processorpropertywidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_tooltipgraphicsitem.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_tooltipgraphicsitem.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\tooltipgraphicsitem.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\processorpropertywidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\pathdialogpropertywidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\boolpropertywidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\matrixdatawidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\datadetailwidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\idatawidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\doublerangepropertywidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\imagedatawidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\ipropertywidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\optionpropertywidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_datamanager.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_datamanager.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_histogramdata.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_histogramdata.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_idatawidgetfactory.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_idatawidgetfactory.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_intdata.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_intdata.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_labeldata.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_labeldata.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_matrixdata.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_matrixdata.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="data\idata.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="data\imagedata.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="data\intdata.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="data\labeldata.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="data\matrixdata.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="data\normaldatafactory.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="data\idatawidgetfactory.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="data\histogramdata.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_blocktextitem.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_blocktextitem.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_processorgraphicsblock.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_processorgraphicsblock.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="graphicsitem\blocktextitem.cpp">
+      <Filter>Source Files\graphicsitem</Filter>
+    </ClCompile>
+    <ClCompile Include="graphicsitem\processorgraphicsblock.cpp">
+      <Filter>Source Files\graphicsitem</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetbase\designnetspace.cpp">
+      <Filter>Source Files\designnetbase</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designnetspace.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designnetspace.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetbase\processorfactory.cpp">
+      <Filter>Source Files\designnetbase</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_processorfactory.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_processorfactory.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetbase\processresultinfo.cpp">
+      <Filter>Source Files\designnetbase</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_processresultinfo.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_processresultinfo.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_toolloadingprocess.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_toolloadingprocess.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="tooldocktreeview.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_tooldocktreeview.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_tooldocktreeview.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="tooldockwidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_tooldockwidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_tooldockwidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="tooldockwidgetview.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_tooldockwidgetview.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_tooldockwidgetview.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="toolitem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="toolmodel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_toolmodel.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_toolmodel.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_processorconfigmanager.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_processorconfigmanager.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetbase\processorconfigmanager.cpp">
+      <Filter>Source Files\designnetbase</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_processorconfigwidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_processorconfigwidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\processorconfigwidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_processorconfigpage.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_processorconfigpage.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\processorconfigpage.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="processorconfiglistener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_processorconfiglistener.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_processorconfiglistener.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_customdata.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_customdata.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="data\customdata.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_idata.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_idata.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_imagedata.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_imagedata.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_processorarrowlink.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_processorarrowlink.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="graphicsitem\processorarrowlink.cpp">
+      <Filter>Source Files\graphicsitem</Filter>
+    </ClCompile>
+    <ClCompile Include="availabledatawidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_availabledatawidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_availabledatawidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="data\datatype.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetbase\port.cpp">
+      <Filter>Source Files\designnetbase</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_port.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_port.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="graphicsitem\portitem.cpp">
+      <Filter>Source Files\graphicsitem</Filter>
+    </ClCompile>
+    <ClCompile Include="graphicsitem\portarrowlink.cpp">
+      <Filter>Source Files\graphicsitem</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_portarrowlink.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_portarrowlink.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_portitem.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_portitem.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designnetcoreplugin.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designnetcoreplugin.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="minimapnavigator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_minimapnavigator.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_minimapnavigator.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="data\datamanager.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="graphicsitem\portitemdataviewer.cpp">
+      <Filter>Source Files\graphicsitem</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_portitemdataviewer.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_portitemdataviewer.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\processorfrontwidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_processorfrontwidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_processorfrontwidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetfrontwidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designnetfrontwidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designnetfrontwidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="DesignNetUserMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DesignNetUserMode.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DesignNetUserMode.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="data\resultdata.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="designnetmode.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetsolutionwizard.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetmainwindow.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designneteditorfactory.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetformmanager.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designneteditor.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetdocument.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetview.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetbase\processor.h">
+      <Filter>Header Files\designnetbase</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\boolproperty.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\doublerangeproperty.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\ipropertywidgetfactory.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\normalpropertywidgetfactory.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\optionproperty.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\pathdialogproperty.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\property.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\propertymanager.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\boolpropertywidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\datadetailwidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\doublerangepropertywidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\idatawidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\imagedatawidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\ipropertywidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\matrixdatawidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\optionpropertywidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\pathdialogpropertywidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\processorpropertywidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\datadetailwidget.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\tooltipgraphicsitem.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="data\histogramdata.h">
+      <Filter>Header Files\data</Filter>
+    </CustomBuild>
+    <CustomBuild Include="data\idata.h">
+      <Filter>Header Files\data</Filter>
+    </CustomBuild>
+    <CustomBuild Include="data\idatawidgetfactory.h">
+      <Filter>Header Files\data</Filter>
+    </CustomBuild>
+    <CustomBuild Include="data\imagedata.h">
+      <Filter>Header Files\data</Filter>
+    </CustomBuild>
+    <CustomBuild Include="data\intdata.h">
+      <Filter>Header Files\data</Filter>
+    </CustomBuild>
+    <CustomBuild Include="data\labeldata.h">
+      <Filter>Header Files\data</Filter>
+    </CustomBuild>
+    <CustomBuild Include="data\matrixdata.h">
+      <Filter>Header Files\data</Filter>
+    </CustomBuild>
+    <CustomBuild Include="graphicsitem\processorgraphicsblock.h">
+      <Filter>Header Files\graphicsitem</Filter>
+    </CustomBuild>
+    <CustomBuild Include="graphicsitem\blocktextitem.h">
+      <Filter>Header Files\graphicsitem</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetbase\designnetspace.h">
+      <Filter>Header Files\designnetbase</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetbase\processorfactory.h">
+      <Filter>Header Files\designnetbase</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetbase\processresultinfo.h">
+      <Filter>Header Files\designnetbase</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetbase\toolloadingprocess.h">
+      <Filter>Header Files\designnetbase</Filter>
+    </CustomBuild>
+    <CustomBuild Include="tooldocktreeview.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="tooldockwidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="tooldockwidgetview.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="toolmodel.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetbase\processorconfigmanager.h">
+      <Filter>Header Files\designnetbase</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\processorconfigwidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\processorconfigpage.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="processorconfiglistener.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="data\customdata.h">
+      <Filter>Header Files\data</Filter>
+    </CustomBuild>
+    <CustomBuild Include="graphicsitem\processorarrowlink.h">
+      <Filter>Header Files\graphicsitem</Filter>
+    </CustomBuild>
+    <CustomBuild Include="availabledatawidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetbase\port.h">
+      <Filter>Header Files\designnetbase</Filter>
+    </CustomBuild>
+    <CustomBuild Include="graphicsitem\portarrowlink.h">
+      <Filter>Header Files\graphicsitem</Filter>
+    </CustomBuild>
+    <CustomBuild Include="graphicsitem\portitem.h">
+      <Filter>Header Files\graphicsitem</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetcoreplugin.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="minimapnavigator.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="data\datamanager.h">
+      <Filter>Header Files\data</Filter>
+    </CustomBuild>
+    <CustomBuild Include="graphicsitem\portitemdataviewer.h">
+      <Filter>Header Files\graphicsitem</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\processorfrontwidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetfrontwidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DesignNetUserMode.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnet_core.pluginspec" />
+    <CustomBuild Include="toolitem.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetconstants.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetcontext.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnet_core_global.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="BroadcastMsg.h">
+      <Filter>Header Files\designnetbase</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\propertyowner.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="data\datatype.h">
+      <Filter>Header Files\data</Filter>
+    </CustomBuild>
+    <CustomBuild Include="data\resultdata.h">
+      <Filter>Header Files\data</Filter>
+    </CustomBuild>
+    <CustomBuild Include="data\normaldatafactory.h">
+      <Filter>Header Files\data</Filter>
+    </CustomBuild>
+    <CustomBuild Include="graphicsitem\designnet_define.h">
+      <Filter>Header Files\graphicsitem</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\binaryimage.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\blackboard.jpg">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\colorimage.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\default_processor.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\DesignNet.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\detail48.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\grayimages.jpg">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\intdata.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\item-close.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\matrix.jpg">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\port_connected.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\port_notconnected.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\topmost_hover.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\topmost_normal.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\untopmost_hover.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="media\untopmost_normal.png">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_datadetailwidget.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

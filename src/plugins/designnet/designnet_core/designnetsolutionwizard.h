@@ -1,10 +1,9 @@
-#ifndef DESIGNNETSOLUTIONWIZARD_H
-#define DESIGNNETSOLUTIONWIZARD_H
+#pragma once
 
-#include "coreplugin/basefilewizard.h"
-#include "coreplugin/generatedfile.h"
+#include "../../coreplugin/generatedfile.h"
+#include "../../coreplugin/mainwindow/basefilewizard.h"
 
-namespace DesignNet{
+
 class DesignNetSolutionWizard : public Core::BaseFileWizard
 {
 	Q_OBJECT
@@ -12,9 +11,11 @@ class DesignNetSolutionWizard : public Core::BaseFileWizard
 public:
 	DesignNetSolutionWizard(Core::BaseFileWizardParameters &p, QObject *parent);
 	~DesignNetSolutionWizard();
+	
 	static Core::BaseFileWizardParameters parameters();
 	
 protected:
+
 	virtual QWizard *createWizardDialog(QWidget *parent,
 		const Core::WizardDialogParameters &wizardDialogParameters) const;
 
@@ -22,6 +23,3 @@ protected:
 		QString *errorMessage) const;
 	
 };
-}
-
-#endif // DESIGNNETSOLUTIONWIZARD_H

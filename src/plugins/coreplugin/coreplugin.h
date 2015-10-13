@@ -4,7 +4,6 @@
 
 #include "core_global.h"
 #include "../../libs/extensionsystem/iplugin.h"
-#include "mainwindow.h"
 
 class CorePlugin : public ExtensionSystem::IPlugin
 {

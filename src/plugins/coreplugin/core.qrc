@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>medias/about-totem.png</file>
+        <file>medias/option.png</file>
+        <file>medias/about-plugin.png</file>
+        <file>qml/rebar.qml</file>
+        <file>medias/category_shortcut.png</file>
+    </qresource>
+</RCC>

@@ -28,7 +28,7 @@ copy  "$(TargetDir)$(TargetName).lib" "$(SolutionDir)$(Platform)\libs\$(TargetNa
     </PostBuildEvent>
     <PostBuildEvent />
     <ClCompile>
-      <AdditionalIncludeDirectories>$(OPENCV_DIR)include;$(SolutionDir)src;$(SolutionDir)src\libs;$(SolutionDir)src\shared;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include;$(QTDIR)\include\ActiveQt;debug;$(QTDIR)\mkspecs\default;.\GeneratedFiles;$(QTDIR)\include\QtXml;.\;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtOpenGL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OPENCV_DIR)include;$(SolutionDir)src;$(SolutionDir)src\libs;$(SolutionDir)src\shared;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include;$(QTDIR)\include\ActiveQt;debug;$(QTDIR)\mkspecs\default;.\GeneratedFiles;$(QTDIR)\include\QtXml;.\;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />

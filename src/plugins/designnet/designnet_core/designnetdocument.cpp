@@ -1,56 +1,24 @@
+#include "stdafx.h"
 #include "designnetdocument.h"
-#include "designneteditor.h"
-
-#include "designnetconstants.h"
-#include "designnetspace.h"
-#include "Utils/XML/xmlserializer.h"
+#include <QFileInfo>
 #include "Utils/XML/xmldeserializer.h"
 #include "Utils/XML/xmlserializable.h"
-#include <QFileInfo>
+#include "Utils/XML/xmlserializer.h"
+#include "designnet_core_def.h"
+#include "DesignNetEditor.h"
+
+
 using namespace Core;
-namespace DesignNet{
-
-class DesignNetDocumentPrivate
-{
-public:
-	DesignNetDocumentPrivate(){}
-	~DesignNetDocumentPrivate();
-    QString fileName;
-    DesignNetEditor *editor;
-	DesignNetSpace	*space;
-    QString suffexType;
-    bool bModified;
-};
-
-DesignNetDocumentPrivate::~DesignNetDocumentPrivate()
-{
-	if (space)
-	{
-		delete space;
-		space = 0;
-	}
-}
 
 //----------------------------------------------
 DesignNetDocument::DesignNetDocument(DesignNetEditor *parent)
     : IDocument(parent),
-      d(new DesignNetDocumentPrivate())
+	m_pEditor(parent), m_bOpening(false), m_bModified(false)
 {
-    d->editor       = parent;
-    d->suffexType   = DesignNet::Constants::NETEDITOR_FILETYPE;
-	d->bModified    = false;
-	d->space		= new DesignNetSpace(0, this);
-	connect(d->space, SIGNAL(modified()), this, SLOT(onModified()));
-	m_bOpening		= false;
 }
 
 DesignNetDocument::~DesignNetDocument()
 {
-    if(d)
-    {
-        delete d;
-        d = 0;
-    }
 }
 
 QString DesignNetDocument::defaultPath() const
@@ -65,7 +33,7 @@ QString DesignNetDocument::suggestedFileName() const
 
 QString DesignNetDocument::suffixType() const
 {
-    return d->suffexType;
+    return DesignNet::Constants::NETEDITOR_FILETYPE;
 }
 
 bool DesignNetDocument::shouldAutoSave() const
@@ -75,7 +43,7 @@ bool DesignNetDocument::shouldAutoSave() const
 
 bool DesignNetDocument::isModified() const
 {
-    return d->bModified;
+	return m_bModified;
 }
 
 bool DesignNetDocument::isSaveAsAllowed() const
@@ -85,22 +53,21 @@ bool DesignNetDocument::isSaveAsAllowed() const
 
 void DesignNetDocument::rename(const QString &newName)
 {
-    const QString oldFilename = d->fileName;
-    d->fileName = newName;
-    d->editor->setDisplayName(QFileInfo(d->fileName).fileName());
-	d->space->setObjectName(newName);
+	QString oldFilename = m_fileName;
+	m_fileName = newName;
+	m_pEditor->setDisplayName(QFileInfo(m_fileName).fileName());
     emit fileNameChanged(oldFilename, newName);
     emit changed();
 }
 
 void DesignNetDocument::setModified(const bool &bModified)
 {
-    if(bModified == d->bModified)
+    if(bModified == m_bModified)
         return;
-    d->bModified = bModified;
+	m_bModified = bModified;
     emit changed();
 	
-	emit titleChanged(bModified ? d->fileName + "*" : d->fileName);
+	emit titleChanged(bModified ? m_fileName + "*" : m_fileName);
 }
 
 bool DesignNetDocument::reload(QString *errorString, IDocument::ReloadFlag flag, IDocument::ChangeType type)
@@ -112,22 +79,17 @@ bool DesignNetDocument::reload(QString *errorString, IDocument::ReloadFlag flag,
         emit changed();
         return true;
     }
-    return d->editor->open(errorString, d->fileName, d->fileName);
+	return m_pEditor->open(errorString, m_fileName, m_fileName);
 }
 
 bool DesignNetDocument::save(QString *errorString, const QString &fileName, bool autoSave)
 {
-	Utils::XmlSerializer x;
-	x.serialize("DesignNetSpace", *(d->space));
-	emit serialized(x);
-	x.write(fileName);
+// 	Utils::XmlSerializer x;
+// 	x.serialize("DesignNetSpace", *(d->space));
+// 	emit serialized(x);
+// 	x.write(fileName);
 	setModified(false);
     return true;
-}
-
-DesignNetSpace * DesignNetDocument::designNetSpace() const
-{
-	return d->space;
 }
 
 void DesignNetDocument::onModified()
@@ -140,12 +102,9 @@ bool DesignNetDocument::open( QString *errorString, const QString &fileName, con
 {
 	m_bOpening = true;
 	bool bRet = IDocument::open(errorString, fileName, realFileName);
-	d->space->setObjectName(realFileName);
-	Utils::XmlDeserializer deserializer(realFileName);
-	deserializer.deserialize("DesignNetSpace", *(d->space));
-	emit deserialized(deserializer);
+// 	Utils::XmlDeserializer deserializer(realFileName);
+// 	deserializer.deserialize("DesignNetSpace", *(d->space));
+// 	emit deserialized(deserializer);
 	m_bOpening = false;
 	return bRet;
 }
-
-}//namespace DesignNet

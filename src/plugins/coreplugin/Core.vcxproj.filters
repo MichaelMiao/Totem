@@ -45,6 +45,33 @@
     <Filter Include="Source Files\Skin">
       <UniqueIdentifier>{bb114464-7f19-411b-99ff-79893af38675}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\actioncontainer">
+      <UniqueIdentifier>{3e5938de-a901-4ec0-9023-2ecf085ab895}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\actioncontainer">
+      <UniqueIdentifier>{2de5620b-3c81-4794-8ef3-e4ccc1957e96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\mainwindow">
+      <UniqueIdentifier>{1e070373-e0bf-465f-94e3-cf3b7ec6c04f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mainwindow">
+      <UniqueIdentifier>{764cee7e-0405-4c33-be49-91868b2a6c16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="qml">
+      <UniqueIdentifier>{384471dc-aa1e-4295-9668-941ec6e0ac2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\dialogs">
+      <UniqueIdentifier>{c55fc99f-2854-483a-ac1d-3d7926da6317}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\dialogs">
+      <UniqueIdentifier>{4cae4c88-5205-45c4-aaf6-ad24fc36aa5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\document">
+      <UniqueIdentifier>{8ee3597a-9259-4088-8270-30060976a0bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\document">
+      <UniqueIdentifier>{bfaec25f-b3b8-42cf-90d8-eaa5174f5388}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -59,29 +86,11 @@
     <ClCompile Include="GeneratedFiles\Release\moc_coreplugin.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="mainwindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_mainwindow.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_mainwindow.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="Common\minisplitter.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
     <ClCompile Include="Common\settingsdatabase.cpp">
       <Filter>Source Files\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="rebar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_rebar.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_rebar.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="icore.cpp">
       <Filter>Source Files</Filter>
@@ -92,42 +101,461 @@
     <ClCompile Include="GeneratedFiles\Release\moc_icore.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core_global.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\minisplitter.h">
-      <Filter>Header Files\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Skin\SkinDef.h">
-      <Filter>Header Files\Skin</Filter>
-    </ClInclude>
-    <ClInclude Include="version.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\settingsdatabase.h">
-      <Filter>Header Files\Common</Filter>
-    </ClInclude>
+    <ClCompile Include="GeneratedFiles\Debug\moc_icontext.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_icontext.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\icontext.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\id.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_command.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_command.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="actionmanager\command.cpp">
+      <Filter>Source Files\actioncontainer</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_commandprivate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_commandprivate.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="mainwindow\mainwindow.cpp">
+      <Filter>Source Files\mainwindow</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_mainwindow.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_mainwindow.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_rebar.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_rebar.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="mainwindow\rebar.cpp">
+      <Filter>Source Files\mainwindow</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_core.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mainwindow\rebarmodel.cpp">
+      <Filter>Source Files\mainwindow</Filter>
+    </ClCompile>
+    <ClCompile Include="mainwindow\rebarmanager.cpp">
+      <Filter>Source Files\mainwindow</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_rebarobject.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_rebarobject.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="mainwindow\rebarobject.cpp">
+      <Filter>Source Files\mainwindow</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_rebarmanager.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_rebarmanager.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_actioncontainer.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_actioncontainer.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_actioncontainerprivate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_actioncontainerprivate.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_actionmanager.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_actionmanager.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_actionmanagerprivate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_actionmanagerprivate.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="actionmanager\actioncontainer.cpp">
+      <Filter>Source Files\actioncontainer</Filter>
+    </ClCompile>
+    <ClCompile Include="actionmanager\actionmanager.cpp">
+      <Filter>Source Files\actioncontainer</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ioptionspage.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ioptionspage.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_settingsdialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_settingsdialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_shortcutsettings.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_shortcutsettings.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogs\settingsdialog.cpp">
+      <Filter>Source Files\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogs\shortcutsettings.cpp">
+      <Filter>Source Files\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_documentmanager.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_documentmanager.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_idocument.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_idocument.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_idocumentfactory.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_idocumentfactory.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ieditor.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ieditor.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ieditorfactory.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ieditorfactory.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="document\documentmanager.cpp">
+      <Filter>Source Files\document</Filter>
+    </ClCompile>
+    <ClCompile Include="document\idocument.cpp">
+      <Filter>Source Files\document</Filter>
+    </ClCompile>
+    <ClCompile Include="document\ieditorfactory.cpp">
+      <Filter>Source Files\document</Filter>
+    </ClCompile>
+    <ClCompile Include="document\editormanager.cpp">
+      <Filter>Source Files\document</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_editormanager.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_editormanager.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="document\editorview.cpp">
+      <Filter>Source Files\document</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_editorview.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_editorview.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_openeditorsmodel.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_openeditorsmodel.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="document\openeditorsmodel.cpp">
+      <Filter>Source Files\document</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_newdialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_newdialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_newdialogproxymodel.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_newdialogproxymodel.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_promptoverwritedialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_promptoverwritedialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_saveitemsdialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_saveitemsdialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogs\newdialog.cpp">
+      <Filter>Source Files\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogs\newdialogproxymodel.cpp">
+      <Filter>Source Files\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogs\promptoverwritedialog.cpp">
+      <Filter>Source Files\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="dialogs\saveitemsdialog.cpp">
+      <Filter>Source Files\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_iwizard.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_iwizard.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_icorelistener.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_icorelistener.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_commandmappings.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_commandmappings.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_commandsfile.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_commandsfile.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="actionmanager\commandsfile.cpp">
+      <Filter>Source Files\actioncontainer</Filter>
+    </ClCompile>
+    <ClCompile Include="actionmanager\commandmappings.cpp">
+      <Filter>Source Files\actioncontainer</Filter>
+    </ClCompile>
+    <ClCompile Include="iwizard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ifilewizardextension.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ifilewizardextension.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="generatedfile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_basefilewizard.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_basefilewizard.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="mainwindow\basefilewizard.cpp">
+      <Filter>Source Files\mainwindow</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="coreplugin.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="mainwindow.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="rebar.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="icore.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="Common\icontext.h">
+      <Filter>Header Files\Common</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\command.h">
+      <Filter>Header Files\actioncontainer</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\commandprivate.h">
+      <Filter>Header Files\Common</Filter>
+    </CustomBuild>
+    <CustomBuild Include="mainwindow\mainwindow.h">
+      <Filter>Header Files\mainwindow</Filter>
+    </CustomBuild>
+    <CustomBuild Include="mainwindow\rebar.h">
+      <Filter>Header Files\mainwindow</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Core.pluginspec" />
+    <CustomBuild Include="version.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="core_global.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Common\id.h">
+      <Filter>Header Files\Common</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Common\settingsdatabase.h">
+      <Filter>Header Files\Common</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Common\minisplitter.h">
+      <Filter>Header Files\Common</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Skin\SkinDef.h">
+      <Filter>Header Files\Skin</Filter>
+    </CustomBuild>
+    <CustomBuild Include="core.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="mainwindow\rebarobject.h">
+      <Filter>Header Files\mainwindow</Filter>
+    </CustomBuild>
+    <CustomBuild Include="mainwindow\rebarmanager.h">
+      <Filter>Header Files\mainwindow</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\actioncontainer.h">
+      <Filter>Header Files\actioncontainer</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\actioncontainerprivate.h">
+      <Filter>Header Files\actioncontainer</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\actionmanager.h">
+      <Filter>Header Files\actioncontainer</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\actionmanagerprivate.h">
+      <Filter>Header Files\actioncontainer</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\ioptionspage.h">
+      <Filter>Header Files\dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\settingsdialog.h">
+      <Filter>Header Files\dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\shortcutsettings.h">
+      <Filter>Header Files\dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="document\documentmanager.h">
+      <Filter>Header Files\document</Filter>
+    </CustomBuild>
+    <CustomBuild Include="document\idocument.h">
+      <Filter>Header Files\document</Filter>
+    </CustomBuild>
+    <CustomBuild Include="document\idocumentfactory.h">
+      <Filter>Header Files\document</Filter>
+    </CustomBuild>
+    <CustomBuild Include="document\ieditor.h">
+      <Filter>Header Files\document</Filter>
+    </CustomBuild>
+    <CustomBuild Include="document\ieditorfactory.h">
+      <Filter>Header Files\document</Filter>
+    </CustomBuild>
+    <CustomBuild Include="document\editormanager.h">
+      <Filter>Header Files\document</Filter>
+    </CustomBuild>
+    <CustomBuild Include="document\editorview.h">
+      <Filter>Header Files\document</Filter>
+    </CustomBuild>
+    <CustomBuild Include="document\openeditorsmodel.h">
+      <Filter>Header Files\document</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\newdialog.h">
+      <Filter>Header Files\dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\newdialogproxymodel.h">
+      <Filter>Header Files\dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\promptoverwritedialog.h">
+      <Filter>Header Files\dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\saveitemsdialog.h">
+      <Filter>Header Files\dialogs</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\newdialog.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="dialogs\saveitemsdialog.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="iwizard.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="icorelistener.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\commandmappings.h">
+      <Filter>Header Files\actioncontainer</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\commandsfile.h">
+      <Filter>Header Files\actioncontainer</Filter>
+    </CustomBuild>
+    <CustomBuild Include="actionmanager\commandmappings.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ifilewizardextension.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="mainwindow\basefilewizard.h">
+      <Filter>Header Files\mainwindow</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Core.pluginspec" />
+    <ClInclude Include="mainwindow\rebarmodel.h">
+      <Filter>Header Files\mainwindow</Filter>
+    </ClInclude>
+    <ClInclude Include="constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\CommonAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_newdialog.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_saveitemsdialog.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_commandmappings.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="generatedfile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="qml\rebar.qml">
+      <Filter>qml</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="medias\about-totem.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="medias\option.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="medias\about-plugin.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="medias\category_shortcut.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
