@@ -33,6 +33,12 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="Header Files\designnetbase">
+      <UniqueIdentifier>{c80d0623-dfae-4ab1-b248-420fbb0453fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\designnetbase">
+      <UniqueIdentifier>{314c8d53-32a4-4ca5-81eb-907082d0db65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -113,6 +119,9 @@
     <ClCompile Include="GeneratedFiles\qrc_designnet.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="designnetbase\Processor.cpp">
+      <Filter>Source Files\designnetbase</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -123,6 +132,9 @@
     </ClInclude>
     <ClInclude Include="designnet_global.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="designnetbase\Processor.h">
+      <Filter>Header Files\designnetbase</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
