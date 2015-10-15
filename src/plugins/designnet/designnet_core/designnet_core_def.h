@@ -9,4 +9,9 @@ namespace DesignNet
 		const char	NETEDITOR_FILETYPE[] = "txt";
 		const char	NETEDITOR_ID[]	= "Totem.DesignNet.EditorId";
 	}
+
+	enum PropertyType
+	{
+		Propety_Bool,
+	};
 }

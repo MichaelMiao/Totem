@@ -32,21 +32,6 @@ void DesignNetMainWindow::initialize()
 	setCentralWidget(m_pStack);
 }
 
-void DesignNetMainWindow::onNewFile()
-{
-
-}
-
-void DesignNetMainWindow::onOpenFile()
-{
-
-}
-
-void DesignNetMainWindow::onSaveFile()
-{
-
-}
-
 void DesignNetMainWindow::addEditor(DesignNetEditor* pEditor)
 {
 	if (pEditor)

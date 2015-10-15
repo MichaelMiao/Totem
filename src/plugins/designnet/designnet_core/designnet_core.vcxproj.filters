@@ -39,6 +39,12 @@
     <Filter Include="Source Files\designnetbase">
       <UniqueIdentifier>{314c8d53-32a4-4ca5-81eb-907082d0db65}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\property">
+      <UniqueIdentifier>{9d6f9ecb-0752-4627-a762-7a4d17b9fd74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\property">
+      <UniqueIdentifier>{c99de2c7-53ee-49a1-b415-8d3f7f9aa618}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -122,6 +128,81 @@
     <ClCompile Include="designnetbase\Processor.cpp">
       <Filter>Source Files\designnetbase</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_boolproperty.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_boolproperty.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_doublerangeproperty.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_doublerangeproperty.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ipropertywidgetfactory.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ipropertywidgetfactory.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_normalpropertywidgetfactory.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_normalpropertywidgetfactory.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_optionproperty.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_optionproperty.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_pathdialogproperty.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_pathdialogproperty.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_property.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_property.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_propertymanager.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_propertymanager.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="property\boolproperty.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\doublerangeproperty.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\ipropertywidgetfactory.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\normalpropertywidgetfactory.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\optionproperty.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\pathdialogproperty.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\property.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\propertymanager.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="property\propertyowner.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -136,12 +217,12 @@
     <ClInclude Include="designnetbase\Processor.h">
       <Filter>Header Files\designnetbase</Filter>
     </ClInclude>
+    <ClInclude Include="property\propertyowner.h">
+      <Filter>Header Files\property</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="designnet_core.pluginspec" />
-    <None Include="qml\designnet.qml">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="designnetcoreplugin.h">
@@ -170,6 +251,30 @@
     </CustomBuild>
     <CustomBuild Include="designnet.qrc">
       <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\boolproperty.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\doublerangeproperty.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\ipropertywidgetfactory.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\normalpropertywidgetfactory.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\optionproperty.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\pathdialogproperty.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\property.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\propertymanager.h">
+      <Filter>Header Files\property</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

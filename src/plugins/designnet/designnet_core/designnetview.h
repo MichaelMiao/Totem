@@ -1,13 +1,17 @@
 #pragma once
 
-#include <QtQuickWidgets/QQuickWidget>
+#include <QGraphicsView>
 
 
-class DesignNetView : public QQuickWidget
+class DesignNetView : public QGraphicsView
 {
 	Q_OBJECT
 
 public:
 
-	DesignNetView(QWidget* parent) : QQuickWidget(parent) {}
+	DesignNetView(QWidget *parent = 0) {}
+
+private:
+
+
 };

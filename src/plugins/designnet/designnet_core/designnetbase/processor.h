@@ -13,6 +13,6 @@ namespace DesignNet
 
 	private:
 
-		QMap<Core::Id, QVariant> m_mapProperty;
+		QMap<Core::Id, > m_mapProperty;
 	};
 }

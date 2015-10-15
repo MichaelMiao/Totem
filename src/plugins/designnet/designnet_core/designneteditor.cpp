@@ -8,7 +8,6 @@ DesignNetEditor::DesignNetEditor(QObject* pObj, DesignNetMainWindow* pMainWindow
 {
 	m_pDoc = new DesignNetDocument(this);
 	m_pView = new DesignNetView(pMainWindow);
-	m_pView->setSource(QUrl("qrc:/qml/designnet.qml"));
 	setWidget(m_pView);
 }
 

@@ -22,10 +22,6 @@ public:
 
 public slots:
 
-	void onNewFile();
-	void onOpenFile();
-	void onSaveFile();
-
 private:
 
 	QTabWidget*		m_pTabWidget;
