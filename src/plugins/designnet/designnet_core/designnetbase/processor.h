@@ -1,18 +1,16 @@
 #pragma once
-#include "../../../coreplugin/Common/id.h"
+#include "property/propertyowner.h"
 
 
 namespace DesignNet
 {
-	class Processor
-	{
-	public:
+class Property;
+class Processor : public PropertyOwner
+{
+public:
 
 
+private:
 
-
-	private:
-
-		QMap<Core::Id, > m_mapProperty;
-	};
+};
 }

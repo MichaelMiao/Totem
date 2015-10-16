@@ -2,22 +2,23 @@
 #define PROPERTYWIDGETFACTORY_H
 
 #include <QObject>
-#include "designnet_core_global.h"
+#include "designnet_core_def.h"
 #include "widgets/ipropertywidget.h"
-namespace DesignNet{
+
+
+namespace DesignNet
+{
 
 class DESIGNNET_CORE_EXPORT IPropertyWidgetFactory : public QObject
 {
-    Q_OBJECT
-public:
-    explicit IPropertyWidgetFactory(QObject *parent = 0);
-	virtual ~IPropertyWidgetFactory();
-    virtual IPropertyWidget *createWidget(Property *property, QWidget* parent) = 0;
-    virtual Core::Id id() const = 0;
-    virtual QList<Core::Id> supportedTypes() = 0;
-signals:
+	Q_OBJECT
 
-public slots:
+public:
+
+	explicit IPropertyWidgetFactory(QObject* parent = 0) : QObject(parent) {}
+	virtual ~IPropertyWidgetFactory() {}
+	virtual IPropertyWidget* createWidget(Property* property, QWidget* parent) = 0;
+	virtual QList<DesignNet::PropertyType> supportedTypes() = 0;
 
 };
 }
