@@ -12,6 +12,9 @@ namespace DesignNet
 
 	enum PropertyType
 	{
-		Propety_Bool,
+		Property_Bool,
+		Property_Option,
+		Property_Path,
+		Property_Range,
 	};
 }

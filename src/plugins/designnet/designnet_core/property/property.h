@@ -6,7 +6,7 @@
 
 
 #define DECLARE_PROPERTY_TYPE(x) \
-	const DesignNet::PropertyType m_propertyType = x;
+	virtual DesignNet::PropertyType propertyType() const { return x; }
 
 namespace Utils{
 class XmlSerializer;
@@ -27,7 +27,7 @@ public:
      * \param[in] parent
      */
     explicit Property(const QString &id, const QString &name, QObject *parent = 0);
-	virtual ~Property();
+	virtual ~Property() {}
 
     /*!
      * \brief typeID 返回该属性的类型ID
@@ -43,6 +43,8 @@ public:
 
     PropertyOwner *owner() const;
     void setOwner(PropertyOwner *owner);
+
+	virtual DesignNet::PropertyType propertyType() const = 0;
 
 signals:
 

@@ -45,6 +45,12 @@
     <Filter Include="Header Files\property">
       <UniqueIdentifier>{c99de2c7-53ee-49a1-b415-8d3f7f9aa618}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\widgets">
+      <UniqueIdentifier>{909b6563-2f93-4626-a48c-3293059a2da1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\widgets">
+      <UniqueIdentifier>{50d40d02-f9f6-4ad1-a841-5484623e5e06}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -134,12 +140,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_boolproperty.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_doublerangeproperty.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_doublerangeproperty.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_ipropertywidgetfactory.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -179,9 +179,6 @@
     <ClCompile Include="property\boolproperty.cpp">
       <Filter>Source Files\property</Filter>
     </ClCompile>
-    <ClCompile Include="property\doublerangeproperty.cpp">
-      <Filter>Source Files\property</Filter>
-    </ClCompile>
     <ClCompile Include="property\ipropertywidgetfactory.cpp">
       <Filter>Source Files\property</Filter>
     </ClCompile>
@@ -203,6 +200,42 @@
     <ClCompile Include="property\propertyowner.cpp">
       <Filter>Source Files\property</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_boolpropertywidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_boolpropertywidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\boolpropertywidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ipropertywidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ipropertywidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="widgets\ipropertywidget.cpp">
+      <Filter>Source Files\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_doublerangeproperty.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_doublerangeproperty.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="property\doublerangeproperty.cpp">
+      <Filter>Source Files\property</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_port.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_port.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetbase\port.cpp">
+      <Filter>Source Files\designnetbase</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -219,6 +252,9 @@
     </ClInclude>
     <ClInclude Include="property\propertyowner.h">
       <Filter>Header Files\property</Filter>
+    </ClInclude>
+    <ClInclude Include="designnetbase\datatype.h">
+      <Filter>Header Files\designnetbase</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -255,9 +291,6 @@
     <CustomBuild Include="property\boolproperty.h">
       <Filter>Header Files\property</Filter>
     </CustomBuild>
-    <CustomBuild Include="property\doublerangeproperty.h">
-      <Filter>Header Files\property</Filter>
-    </CustomBuild>
     <CustomBuild Include="property\ipropertywidgetfactory.h">
       <Filter>Header Files\property</Filter>
     </CustomBuild>
@@ -275,6 +308,18 @@
     </CustomBuild>
     <CustomBuild Include="property\propertymanager.h">
       <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\boolpropertywidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="widgets\ipropertywidget.h">
+      <Filter>Header Files\widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="property\doublerangeproperty.h">
+      <Filter>Header Files\property</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetbase\port.h">
+      <Filter>Header Files\designnetbase</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

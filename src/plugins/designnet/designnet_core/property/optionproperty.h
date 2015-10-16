@@ -2,32 +2,29 @@
 #define OPTIONPROPERTY_H
 
 #include "property.h"
-#include <QHash>
-#include <QList>
-#include <QVariant>
-namespace DesignNet{
+namespace DesignNet
+{
 
-class DESIGNNET_CORE_EXPORT OptionProperty : public Property
+class OptionProperty : public Property
 {
 	Q_OBJECT
 
 public:
-	OptionProperty(const QString &id, const QString &name, QObject *parent = 0);
+
+	DECLARE_PROPERTY_TYPE(DesignNet::Property_Bool)
+
+	OptionProperty(const QString& id, const QString& name, QObject* parent = 0);
 	virtual ~OptionProperty();
-	virtual Core::Id propertyType() const;
-	virtual bool isValid() const;
-	void addOption(const QString&text, QVariant data = QVariant());
 	
-
-	void select(const QString &text);
+	void		addOption(const QString& text, QVariant data = QVariant());
+	void		select(const QString& text);
+	QVariant	value() { return getValue(m_currentKey); }
+	QVariant	getValue(const QString& key);
+	QString		currentKey() const { return m_currentKey; }
 	QList<QString> keys();
-	QVariant getValue(const QString &key);
-	QString currentKey() const{return m_currentKey;}
-	QVariant value(){return getValue(m_currentKey);}
 
-	virtual void serialize(Utils::XmlSerializer& s) const;
-	virtual void deserialize(Utils::XmlDeserializer& s) ;
 private:
+
 	QHash<QString, QVariant> m_options;
 	QString m_currentKey;
 };
