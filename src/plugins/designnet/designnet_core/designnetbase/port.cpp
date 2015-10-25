@@ -234,34 +234,12 @@ void Port::setMultiInputSupported(const bool& bSupported /*= true*/)
 
 int Port::getIndex()
 {
-	int iIndex = -1;
-	QList<Port*> inputPort = m_processor->getPorts(IN_PORT);
-
-	for (QList<Port*>::iterator itr = inputPort.begin(); itr != inputPort.end(); itr++)
-	{
-		iIndex++;
-
-		if (*itr == this)
-			return iIndex;
-	}
-
-	QList<Port*> outputPort = m_processor->getPorts(OUT_PORT);
-
-	for (QList<Port*>::iterator itr = outputPort.begin(); itr != outputPort.end(); itr++)
-	{
-		iIndex++;
-
-		if (*itr == this)
-			return iIndex;
-	}
-
 	return -1;
 }
 
 void Port::setProcessor(Processor* processor)
 {
 	m_processor = processor;
-	m_data.processorID = processor->id();
 }
 
 ProcessData::ProcessData(PortDataType dt) : dataType(dt), m_iIndex(-1)

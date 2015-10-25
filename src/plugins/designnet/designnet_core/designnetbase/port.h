@@ -18,8 +18,8 @@ public:
 	ProcessData(PortDataType dt = DATATYPE_INVALID);
 	QVariant	variant;		//!< 真正的数据
 	int			processorID;	//!< 产生该数据的处理器
-	PortDataType	dataType;		//!< 数据类型
 	int			m_iIndex;		//!< 数据索引
+	PortDataType	dataType;	//!< 数据类型
 };
 
 /**
@@ -44,21 +44,11 @@ public:
 	explicit Port(PortType portType, PortDataType dt,
 	              const QString& label = "", bool bRemovable = false, QObject* parent = 0);
 	virtual ~Port() { }
-	PortType portType() const
-	{
-		return m_portType;
-	}
-	void setPortType(const PortType& portType)
-	{
-		m_portType = portType;
-	}
+	PortType portType() const {	return m_portType; }
+	void setPortType(const PortType& portType) { m_portType = portType; }
 
-	Processor* processor() const
-	{
-		return m_processor;
-	}
+	Processor* processor() const { return m_processor; }
 	void setProcessor(Processor* processor);
-
 	int getIndex();
 	/*!
 	 * \brief connect
@@ -75,10 +65,7 @@ public:
 	bool isConnectedTo(const Port* port) const;		//!< 是否已经连接到了端口\e port
 	bool isConnected() const;						//!< 是否处于连接状态
 	bool isConnectedTo(const Processor* processor) const;
-	bool isRemovable() const
-	{
-		return m_bRemovable;
-	}
+	bool isRemovable() const { return m_bRemovable;	}
 
 	bool isMultiInputSupported() const;
 	void setMultiInputSupported(const bool& bSupported = true); //!< 设置端口是否支持多输入
@@ -134,7 +121,7 @@ protected:
 struct PortData
 {
 	Port::PortType	ePortType;
-	PortDataType		eDataType;
+	PortDataType	eDataType;
 	QString			strName;
 };
 

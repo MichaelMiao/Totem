@@ -236,6 +236,12 @@
     <ClCompile Include="designnetbase\port.cpp">
       <Filter>Source Files\designnetbase</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_Processor.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_Processor.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -246,9 +252,6 @@
     </ClInclude>
     <ClInclude Include="designnet_global.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="designnetbase\Processor.h">
-      <Filter>Header Files\designnetbase</Filter>
     </ClInclude>
     <ClInclude Include="property\propertyowner.h">
       <Filter>Header Files\property</Filter>
@@ -319,6 +322,9 @@
       <Filter>Header Files\property</Filter>
     </CustomBuild>
     <CustomBuild Include="designnetbase\port.h">
+      <Filter>Header Files\designnetbase</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetbase\Processor.h">
       <Filter>Header Files\designnetbase</Filter>
     </CustomBuild>
   </ItemGroup>

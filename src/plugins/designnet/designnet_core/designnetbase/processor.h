@@ -1,13 +1,18 @@
 #pragma once
 #include "../property/propertyowner.h"
 #include "port.h"
+#include "coreplugin/Common/id.h"
 
 
 namespace DesignNet
 {
 class Property;
-class Processor : public PropertyOwner
+class Port;
+
+class Processor : public QObject
 {
+	Q_OBJECT
+
 public:
 
 	QList<Port*> getPorts(Port::PortType pt) const;
