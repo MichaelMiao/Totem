@@ -28,7 +28,7 @@ Port::Port(PortType portType, PortDataType dt, const QString& name, bool bRemova
  * \return 是否连接成功
  *
  */
-bool Port::connect(Port* port)
+bool Port::connectTo(Port* port)
 {
 	if (port == this)
 		return false;
@@ -51,7 +51,7 @@ bool Port::connect(Port* port)
 	return true;
 }
 
-bool Port::disconnect(Port* inputport)
+bool Port::disconnectFrom(Port* inputport)
 {
 	QList<Processor*> procConnectedOld = connectedProcessors();
 
@@ -71,17 +71,6 @@ bool Port::disconnect(Port* inputport)
 		this->removeConnectedPort(inputport);
 		inputport->removeConnectedPort(this);
 		emit disconnectPort(this, inputport);
-	}
-
-	QList<Processor*> procConnected = connectedProcessors();
-	QList<Processor*>::iterator itr = procConnectedOld.begin();
-
-	while (itr != procConnectedOld.end())
-	{
-		if (!procConnected.contains(*itr))
-			emit m_processor->disconnected(m_processor, *itr);
-
-		itr++;
 	}
 
 	return true;

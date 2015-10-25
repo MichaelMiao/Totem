@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QReadWriteLock>
 #include <QVariant>
+#include "datatype.h"
 
 
 namespace DesignNet
@@ -66,9 +67,9 @@ public:
 	 * \param[in] port 当前端口所要连接的目标端口
 	 * \return 是否连接成功，函数内部通过canConnectTo()判断
 	 */
-	bool connect(Port* inputPort);//!< 当前端口将会作为输出端口连接到\e inputPort.
+	bool connectTo(Port* inputPort);//!< 当前端口将会作为输出端口连接到\e inputPort.
 
-	bool disconnect(Port* port = 0);
+	bool disconnectFrom(Port* port = 0);
 	bool canConnectTo(Port* inputPort);				//!< 判断是否能够连接到\e inputPort
 
 	bool isConnectedTo(const Port* port) const;		//!< 是否已经连接到了端口\e port
