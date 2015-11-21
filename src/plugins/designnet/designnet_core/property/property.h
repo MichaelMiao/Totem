@@ -2,7 +2,9 @@
 #include <QObject>
 #include "../designnet_core_def.h"
 #include "aggregation/aggregate.h"
+#include "Utils/XML/xmldeserializer.h"
 #include "Utils/XML/xmlserializable.h"
+#include "Utils/XML/xmlserializer.h"
 
 
 #define DECLARE_PROPERTY_TYPE(x) \
@@ -14,7 +16,7 @@ class XmlSerializer;
 namespace DesignNet{
 
 class PropertyOwner;
-class DESIGNNET_CORE_EXPORT Property : public QObject
+class DESIGNNET_CORE_EXPORT Property : public QObject, public Utils::XmlSerializable
 {
     Q_OBJECT
 
@@ -36,15 +38,21 @@ public:
      */
 
     QString id() const;
-    void setId(const QString &id);
+    void	setId(const QString &id);
 
     QString name() const;
-    void setName(const QString &name);
+    void	setName(const QString &name);
 
     PropertyOwner *owner() const;
-    void setOwner(PropertyOwner *owner);
+    void	setOwner(PropertyOwner *owner);
 
 	virtual DesignNet::PropertyType propertyType() const = 0;
+
+	//<! 序列化相关代码
+	void	serialize(Utils::XmlSerializer& s) const;
+	void	deserialize(Utils::XmlDeserializer& s);
+	QString serializableType() const;
+	Utils::XmlSerializable* createSerializable() const;
 
 signals:
 

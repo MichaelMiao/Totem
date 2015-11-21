@@ -1,8 +1,5 @@
 #include "stdafx.h"
 #include "property.h"
-#include "Utils/XML/xmldeserializer.h"
-#include "Utils/XML/xmlserializable.h"
-#include "Utils/XML/xmlserializer.h"
 #include "propertyowner.h"
 
 
@@ -42,4 +39,24 @@ DesignNet::PropertyOwner *DesignNet::Property::owner() const
 void DesignNet::Property::setOwner(DesignNet::PropertyOwner *owner)
 {
 	m_owner = owner;
+}
+
+QString DesignNet::Property::serializableType() const
+{
+	return m_id;
+}
+
+void DesignNet::Property::serialize(Utils::XmlSerializer& s) const
+{
+
+}
+
+void DesignNet::Property::deserialize(Utils::XmlDeserializer& s)
+{
+
+}
+
+Utils::XmlSerializable* DesignNet::Property::createSerializable() const
+{
+	return NULL;
 }

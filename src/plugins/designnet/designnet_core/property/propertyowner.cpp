@@ -1,8 +1,10 @@
 ﻿#include "stdafx.h"
 #include "propertyowner.h"
+#include <QDebug>
 #include "coreplugin/icore.h"
 #include "property.h"
-#include <QDebug>
+#include "Utils/XML/xmldeserializer.h"
+#include "Utils/XML/xmlserializer.h"
 
 
 using namespace Aggregation;
@@ -94,6 +96,12 @@ void PropertyOwner::propertyRemoved(Property* prop)
 void PropertyOwner::propertyAdded(Property* prop)
 {
 
+}
+
+void PropertyOwner::serialize(Utils::XmlSerializer& s) const
+{
+	for(Property *p : m_aggregate->components<Property>())
+		s.serialize("Property", *p);
 }
 
 }

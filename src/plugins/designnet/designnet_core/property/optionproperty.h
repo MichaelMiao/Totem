@@ -23,6 +23,9 @@ public:
 	QString		currentKey() const { return m_currentKey; }
 	QList<QString> keys();
 
+	//!< override
+	void serialize(Utils::XmlSerializer& s) const override;
+
 private:
 
 	QHash<QString, QVariant> m_options;

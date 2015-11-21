@@ -29,6 +29,8 @@ public:
 	void	setValue(const double& v);
 	double	value() const;
 
+	void	serialize(Utils::XmlSerializer& s) const override;
+
 signals:
 
 	void	rangeChanged(double dmin, double dmax);

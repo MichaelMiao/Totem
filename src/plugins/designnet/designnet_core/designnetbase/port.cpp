@@ -106,7 +106,7 @@ bool Port::canConnectTo(Port* inputPort)
 		return false;
 	}
 
-	return inputPort->processor()->connectionTest(this, inputPort);
+	return inputPort->processor()->testConnect(inputPort);
 }
 
 bool Port::isConnectedTo(const Port* port) const

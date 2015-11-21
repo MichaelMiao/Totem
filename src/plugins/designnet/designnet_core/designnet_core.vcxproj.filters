@@ -242,6 +242,24 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_Processor.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_link.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_link.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetbase\link.cpp">
+      <Filter>Source Files\designnetbase</Filter>
+    </ClCompile>
+    <ClCompile Include="designnetbase\designnetspace.cpp">
+      <Filter>Source Files\designnetbase</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designnetspace.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designnetspace.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -325,6 +343,12 @@
       <Filter>Header Files\designnetbase</Filter>
     </CustomBuild>
     <CustomBuild Include="designnetbase\Processor.h">
+      <Filter>Header Files\designnetbase</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetbase\link.h">
+      <Filter>Header Files\designnetbase</Filter>
+    </CustomBuild>
+    <CustomBuild Include="designnetbase\designnetspace.h">
       <Filter>Header Files\designnetbase</Filter>
     </CustomBuild>
   </ItemGroup>

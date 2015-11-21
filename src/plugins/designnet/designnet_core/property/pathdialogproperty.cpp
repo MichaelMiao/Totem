@@ -51,8 +51,16 @@ void PathDialogProperty::setDialogOption(const QFileDialog::Option& option)
 	m_dialogOption = option;
 }
 
-QDir::Filters PathDialogProperty::filters() const
+void PathDialogProperty::serialize(Utils::XmlSerializer& s) const
 {
-	return m_filters;
+	Property::serialize(s);
+	s.serialize("Paths", m_paths, "Path");
 }
+
+void PathDialogProperty::deserialize(Utils::XmlDeserializer& s)
+{
+	QList<Utils::Path> pathList;
+	s.deserializeCollection("Paths", m_paths, "Path");
+}
+
 }

@@ -18,28 +18,30 @@ class PathDialogProperty : public Property
 
 public:
 
-	QDir::Filters filters() const;
 	explicit PathDialogProperty(const QString& id, QString openPath = "",
 	                            QStringList nameFilters = QStringList(),
 	                            QDir::Filters filters = QDir::AllEntries,
 	                            bool bSinglePath = true,
 	                            QObject* parent = 0);
 
-	QList<Utils::Path> paths() const;
-	void setPaths(const QList<Utils::Path>& pathlist);
-
-	void setNameFilters(const QStringList& filters);
-	QStringList nameFilters() const;
+	QDir::Filters		filters() const { return m_filters; }
+	QList<Utils::Path>	paths() const;
+	void				setPaths(const QList<Utils::Path>& pathlist);
+	void				setNameFilters(const QStringList& filters);
+	QStringList			nameFilters() const;
 
 	QFileDialog::Option dialogOption() const;
-	void setDialogOption(const QFileDialog::Option& option);
+	void				setDialogOption(const QFileDialog::Option& option);
 
-	void setSinglePath(bool single) { m_bSinglePath = single; }
-	bool isSinglePath() const { return m_bSinglePath; }
+	void				setSinglePath(bool single) { m_bSinglePath = single; }
+	bool				isSinglePath() const { return m_bSinglePath; }
+
+	void				serialize(Utils::XmlSerializer& s) const;
+	void				deserialize(Utils::XmlDeserializer& s);
 
 protected:
 
-	QList<Utils::Path>  m_paths;         //!< 用来存最终的路径
+	QList<Utils::Path>  m_paths;        //!< 用来存最终的路径
 	QString             m_openPath;     //!< 默认打开路径
 	QStringList         m_nameFilters;  //!< 文件filter
 	QDir::Filters       m_filters;      //!< 类型：文件/文件夹

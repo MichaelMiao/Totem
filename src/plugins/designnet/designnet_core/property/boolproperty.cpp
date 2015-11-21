@@ -6,6 +6,7 @@
 #include "Utils/XML/xmlserializer.h"
 
 
+#define BOOL_KEY "value"
 namespace DesignNet{
 
 BoolProperty::BoolProperty( const QString &id, const QString &name, QObject *parent /*= 0*/ )
@@ -33,9 +34,21 @@ bool BoolProperty::value() const
 	return m_value;
 }
 
-void BoolProperty::onValueChanged( bool bValue )
+void BoolProperty::serialize(Utils::XmlSerializer& s) const
+{
+	Property::serialize(s);
+	s.serialize(BOOL_KEY, m_value);
+}
+
+void BoolProperty::onValueChanged(bool bValue)
 {
 	setValue(bValue);
+}
+
+void BoolProperty::deserialize(Utils::XmlDeserializer& s)
+{
+	Property::deserialize(s);
+	s.deserialize(BOOL_KEY, m_value);
 }
 
 }

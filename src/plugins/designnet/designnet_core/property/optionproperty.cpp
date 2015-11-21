@@ -41,4 +41,10 @@ QVariant OptionProperty::getValue(const QString& key)
 	return m_options.value(key, QVariant());
 }
 
+void OptionProperty::serialize(Utils::XmlSerializer& s) const
+{
+	Property::serialize(s);
+	s.serialize("value", m_currentKey);
+}
+
 }

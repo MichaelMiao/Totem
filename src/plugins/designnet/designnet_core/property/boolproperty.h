@@ -16,6 +16,9 @@ public:
 	void setValue(const bool &value);
 	bool value() const;
 
+	void serialize(Utils::XmlSerializer& s) const override;
+	void deserialize(Utils::XmlDeserializer& s) override;
+
 public slots:
 
 	void onValueChanged(bool bValue);

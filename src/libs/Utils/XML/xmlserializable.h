@@ -28,7 +28,7 @@ class TOTEM_UTILS_EXPORT XmlSerializable
 public:
 	XmlSerializable(void);
 	virtual ~XmlSerializable(void);
-	virtual QString serializableType() const= 0;
+	virtual QString serializableType() const = 0;
 	virtual void serialize(XmlSerializer& s) const = 0;
 	virtual void deserialize(XmlDeserializer& s) = 0;
 	virtual XmlSerializable* createSerializable() const = 0;

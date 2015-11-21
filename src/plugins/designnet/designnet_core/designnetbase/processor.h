@@ -9,7 +9,7 @@ namespace DesignNet
 class Property;
 class Port;
 
-class Processor : public QObject
+class Processor : public QObject, public PropertyOwner
 {
 	Q_OBJECT
 
@@ -18,7 +18,11 @@ public:
 	QList<Port*> getPorts(Port::PortType pt) const;
 
 	bool connectTo(Processor* pProcessor);
+	bool canConnectTo(Processor* pProcessor);
+	
+	// override
 
+	virtual bool testConnect(Port* port) = 0;
 
 signals:
 

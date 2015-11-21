@@ -13,39 +13,55 @@
 namespace Utils
 {
 class XmlSerializer;
+class XmlDeserializer;
 }
 namespace DesignNet
 {
 class Property;
-class DESIGNNET_CORE_EXPORT PropertyOwner
+class DESIGNNET_CORE_EXPORT PropertyOwner : public Utils::XmlSerializable
 {
 public:
 	PropertyOwner();
 	virtual ~PropertyOwner();
 
-	Property* getProperty(const QString& id) const;
-	QList<Property*> getProperties() const;
-	virtual QString name() const = 0;
+	Property*			getProperty(const QString& id) const;
+	QList<Property*>	getProperties() const;
+	virtual QString		name() const = 0;
 
-	void setPropertyGroupLabel(const QString& id, const QString& label);
-	QString propertyGroupLabel(const QString& id) const;
+	void				setPropertyGroupLabel(const QString& id, const QString& label);
+	QString				propertyGroupLabel(const QString& id) const;
 
-	virtual void addProperty(Property* prop);
-	virtual void removeProperty(Property* prop);
+	virtual void		addProperty(Property* prop);
+	virtual void		removeProperty(Property* prop);
 	///
 	/// signal-like 函数，由于不是QObject的类型，所以需要子类来完成消息通知
 	/*!
 	 * \brief 需要子类来实现该函数，该函数在属性移除前(还未调用setOwener(0))
 	 * \param[in] prop 要移除的属性
 	 */
-	virtual void propertyRemoving(Property* prop);
+	virtual void		propertyRemoving(Property* prop);
 	/*!
 	 * \brief propertyRemoved 属性已经移除，并且setOwner(0)
 	 *
 	 * \param[in] prop 移除的属性
 	 */
-	virtual void propertyRemoved(Property* prop);
-	virtual void propertyAdded(Property* prop);
+	virtual void		propertyRemoved(Property* prop);
+	virtual void		propertyAdded(Property* prop);
+
+	/*!
+	 * \fn	void PropertyOwner::serialize(Utils::XmlSerializer& s) const override;
+	 *
+	 * \brief	serialize this object to the given stream.
+	 *
+	 * \author	Michael
+	 * \date	2015-11-05
+	 *
+	 * \param [in,out]	s	The Utils::XmlSerializer to process.
+	 */
+	
+	void				serialize(Utils::XmlSerializer& s) const override;
+	void				deserialize(Utils::XmlDeserializer& s) override {}
+
 
 protected:
 

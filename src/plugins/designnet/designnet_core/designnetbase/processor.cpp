@@ -23,3 +23,8 @@ bool DesignNet::Processor::connectTo(Processor* pProcessor)
 	}
 	return bValid;
 }
+
+bool DesignNet::Processor::canConnectTo(Processor* pProcessor)
+{
+	return true;
+}

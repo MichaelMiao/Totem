@@ -78,4 +78,11 @@ double DoubleRangeProperty::value() const
 {
 	return m_value;
 }
+
+void DoubleRangeProperty::serialize(Utils::XmlSerializer& s) const
+{
+	Property::serialize(s);
+	s.serialize("value", m_value);
+}
+
 }
