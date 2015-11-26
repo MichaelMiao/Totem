@@ -57,7 +57,7 @@ public slots:
 	void onSaveFile();
 	void onAddRecentFilesMenu();
 	void onOpenLastUnclosed();
-
+	void openRecentFile();
 	void updateFocusWidget(QWidget *old, QWidget *now);
 
 private:

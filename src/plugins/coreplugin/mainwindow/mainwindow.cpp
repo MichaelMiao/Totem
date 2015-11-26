@@ -191,8 +191,10 @@ void MainWindow::registerDefaultActions()
 	ActionContainer* pOpen = pMgr->actionContainer(Core::Constants::M_FILE_OPEN);
 	ActionContainer* pRecentFileMenu = pMgr->createMenu(Core::Constants::M_FILE_RECENT);
 	pRecentFileMenu->menu()->setTitle("Recent Files...");
+	pRecentFileMenu->setOnAllDisabledBehavior(ActionContainer::Show);
 	pContainer->addMenu(pRecentFileMenu);
-	connect(pRecentFileMenu, SIGNAL(aboutToShow()), this, SLOT(onAddRecentFilesMenu()));
+
+	connect(pContainer->menu(), SIGNAL(aboutToShow()), this, SLOT(onAddRecentFilesMenu()));
 }
 
 void MainWindow::aboutTotem()
@@ -328,6 +330,15 @@ void MainWindow::onOpenLastUnclosed()
 
 }
 
+void MainWindow::openRecentFile()
+{
+	if (const QAction *action = qobject_cast<const QAction*>(sender()))
+	{
+		const DocumentManager::RecentFile file = action->data().value<DocumentManager::RecentFile>();
+		EditorManager::openEditor(file.first, file.second);
+	}
+}
+
 void MainWindow::onAddRecentFilesMenu()
 {
 	ActionContainer* pContainter = ActionManager::actionContainer(Core::Constants::M_FILE_RECENT);
@@ -337,7 +348,7 @@ void MainWindow::onAddRecentFilesMenu()
 	{
 		QAction* pAction = pContainter->menu()->addAction(QDir::toNativeSeparators(file.first));
 		pAction->setData(qVariantFromValue(file));
-		connect(pAction, SIGNAL(triggered()), this, SLOT(onOpenFile()));
+		connect(pAction, SIGNAL(triggered()), this, SLOT(openRecentFile()));
 		bHasRencentFile = true;
 	}
 	pContainter->menu()->setEnabled(bHasRencentFile);
