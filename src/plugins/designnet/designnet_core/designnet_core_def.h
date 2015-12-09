@@ -1,4 +1,6 @@
 #pragma once
+#include <QGraphicsItem>
+
 
 namespace DesignNet
 {
@@ -17,5 +19,10 @@ namespace DesignNet
 		Property_Option,
 		Property_Path,
 		Property_Range,
+	};
+
+	enum GraphicsItemType
+	{
+		GraphicsType_Node = QGraphicsItem::UserType + 1,
 	};
 }

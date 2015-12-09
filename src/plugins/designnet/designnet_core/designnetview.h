@@ -9,9 +9,10 @@ class DesignNetView : public QGraphicsView
 
 public:
 
-	DesignNetView(QWidget *parent = 0) {}
+	explicit DesignNetView(QWidget *parent = 0);
 
 private:
 
-
+	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent * event);
 };

@@ -14,6 +14,7 @@
 #include <QMultiMap>
 #include <QPointer>
 #include <QKeySequence>
+#include <QPainter>
 
 #include "utils/totemassert.h"
 

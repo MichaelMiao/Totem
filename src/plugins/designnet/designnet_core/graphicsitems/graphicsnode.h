@@ -1,16 +1,21 @@
 #ifndef GRAPHICSNODE_H
 #define GRAPHICSNODE_H
 
+
 #include <QGraphicsRectItem>
+#include "designnet_core_def.h"
 
 class GraphicsNode : public QGraphicsRectItem
 {
 public:
 
-	GraphicsNode();
-	~GraphicsNode();
+	enum { Type = DesignNet::GraphicsType_Node };
 
-	void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0) override;
+	GraphicsNode();
+	~GraphicsNode() {}
+
+	void	paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0) override;
+	int		type() const override { return Type; }
 };
 
 #endif // !GRAPHICSNODE_H
