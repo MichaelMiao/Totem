@@ -18,7 +18,7 @@ bool DesignNetEditor::createNew(const QString &contents)
 
 bool DesignNetEditor::open(QString *errorString, const QString &fileName, const QString &realFileName)
 {
-	return true;
+	return m_pDoc->open(errorString, fileName, realFileName);
 }
 
 Core::IDocument * DesignNetEditor::document()
@@ -53,5 +53,5 @@ bool DesignNetEditor::restoreState(const QByteArray &state)
 
 bool DesignNetEditor::isTemporary() const
 {
-	return true;
+	return false;
 }

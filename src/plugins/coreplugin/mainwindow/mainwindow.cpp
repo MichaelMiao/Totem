@@ -84,6 +84,7 @@ void MainWindow::readSettings()
 			resize(1000, 700);
 		restoreState(m_settings->value(QLatin1String(s_windowStateKey)).toByteArray());
 		m_settings->endGroup();
+		DocumentManager::readSettings();
 	}
 }
 
@@ -98,6 +99,7 @@ void MainWindow::writeSettings()
 	}
 	Core::DocumentManager::saveSettings();
 	Core::EditorManager::instance()->saveSettings();
+	ICore::saveSettings();
 }
 
 void MainWindow::closeEvent(QCloseEvent *e)
@@ -344,7 +346,7 @@ void MainWindow::onAddRecentFilesMenu()
 	ActionContainer* pContainter = ActionManager::actionContainer(Core::Constants::M_FILE_RECENT);
 	pContainter->menu()->clear();
 	bool bHasRencentFile = false;
-	foreach(const DocumentManager::RecentFile &file, DocumentManager::recentFiles())
+	for(const DocumentManager::RecentFile &file : DocumentManager::recentFiles())
 	{
 		QAction* pAction = pContainter->menu()->addAction(QDir::toNativeSeparators(file.first));
 		pAction->setData(qVariantFromValue(file));

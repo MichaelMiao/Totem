@@ -51,6 +51,12 @@
     <Filter Include="Source Files\widgets">
       <UniqueIdentifier>{50d40d02-f9f6-4ad1-a841-5484623e5e06}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\graphicsitems">
+      <UniqueIdentifier>{6a87125b-fc7c-459a-9b6c-92c4f45bd4eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphicsitems">
+      <UniqueIdentifier>{72dc48bd-edb7-4217-a903-4c4575cac5d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -260,6 +266,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_designnetspace.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="graphicsitems\graphicsnode.cpp">
+      <Filter>Source Files\graphicsitems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -276,6 +285,9 @@
     </ClInclude>
     <ClInclude Include="designnetbase\datatype.h">
       <Filter>Header Files\designnetbase</Filter>
+    </ClInclude>
+    <ClInclude Include="graphicsitems\graphicsnode.h">
+      <Filter>Header Files\graphicsitems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
