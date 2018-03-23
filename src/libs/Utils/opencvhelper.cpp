@@ -1,4 +1,5 @@
 #include "opencvhelper.h"
+#ifdef USE_OPEN_CV
 #include <QDebug>
 namespace Utils {
 
@@ -32,3 +33,4 @@ QImage OpenCVHelper::Mat2QImage(const cv::Mat &mat)
     return QImage();
 }
 }
+#endif
